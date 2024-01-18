@@ -117,6 +117,17 @@ public final class Constants {
     public static final double TRACKED_TAG_AREA_DRIVE_KP = 0.2; // P (Proportional) constant of a PID loop
     public static final double APRILTAG_POWER_CAP = 0.75;
   };
+  public static class Shooter {
+    public static class ShooterSimConstants{
+      //i dunno what to put in here
+    }
+    public static class ShooterPhysicalConstants {
+       //i dunno what to put in here
+       public static final double maxSpeed;
+       public static final double minSpeed;
+       public static final int SHOOTER_MOTOR_ID = 1257;
+    }
+  }
 
   public static class Vision {
     public static final String kCameraName = "Front_Camera";
