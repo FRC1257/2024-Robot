@@ -8,6 +8,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
+import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -17,6 +18,7 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import static frc.robot.Constants.Vision.*;
 
@@ -71,6 +73,12 @@ public class VisionIOSim implements VisionIO {
             inputs.tagCount = 0;
         }
         inputs.timestamp = lastEstTimestamp;
+        inputs.stdDeviations = getEstimationStdDevs(inputs.estimate);
+        List<PhotonTrackedTarget> tags = result.targets;
+        inputs.targets = new Pose2d[tags.size()];
+        for (int i = 0; i < tags.size(); i++) {
+            inputs.targets[i] = photonEstimator.getFieldTags().getTagPose(tags.get(i).getFiducialId()).get().toPose2d();
+        }
     }
 
     /** A Field2d for visualizing our robot and objects on the field. */

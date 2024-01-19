@@ -4,12 +4,16 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -42,81 +46,97 @@ public final class Constants {
     REPLAY
   }
 
-  public static final class Drivebase {
+  public static final class DriveConstants {
+    // Driving Parameters - Note that these are not the maximum capable speeds of
+    // the robot, rather the allowed maximum speeds
+    public static final double kMaxSpeedMetersPerSecond = 4.8;
+    public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
-    // Hold time on motor brakes when disabled
-    public static final double WHEEL_LOCK_TIME = 10; // seconds
+    public static final double kDirectionSlewRate = 1.2; // radians per second
+    public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
+    public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
+
+    // Chassis configuration
+    public static final double kTrackWidth = Units.inchesToMeters(26.5);
+    // Distance between centers of right and left wheels on robot
+    public static final double kWheelBase = Units.inchesToMeters(26.5);
+    // Distance between front and back wheels on robot
+    public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+        new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+        new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+        new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+        new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
+
+    // Angular offsets of the modules relative to the chassis in radians
+    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
+    public static final double kFrontRightChassisAngularOffset = 0;
+    public static final double kBackLeftChassisAngularOffset = Math.PI;
+    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+
+    // SPARK MAX CAN IDs
+    public static final int kFrontLeftDrivingCanId = 11;
+    public static final int kRearLeftDrivingCanId = 13;
+    public static final int kFrontRightDrivingCanId = 15;
+    public static final int kRearRightDrivingCanId = 17;
+
+    public static final int kFrontLeftTurningCanId = 10;
+    public static final int kRearLeftTurningCanId = 12;
+    public static final int kFrontRightTurningCanId = 14;
+    public static final int kRearRightTurningCanId = 16;
+
+    public static final boolean kGyroReversed = false;
   }
 
-  public static class Drivetrain {
-    // drivetrain constants
-    public static double DRIVE_TRACK_WIDTH_M = 0.86;// 0.66; // m
-    public static double DRIVE_WHEEL_DIAM_M = 0.1524; // m
-    public static double DRIVE_GEARBOX_REDUCTION = 10.71;
+  public static final class ModuleConstants {
+    // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
+    // This changes the drive speed of the module (a pinion gear with more teeth will result in a
+    // robot that drives faster).
+    public static final int kDrivingMotorPinionTeeth = 14;
 
-    // driving modifiers
-    public static double DRIVE_SLOW_TURN_MULT = 0.25;
-    public static double DRIVE_SLOW_FORWARD_MULT = 0.25;
+    // Invert the turning encoder, since the output shaft rotates in the opposite direction of
+    // the steering motor in the MAXSwerve Module.
+    public static final boolean kTurningEncoderInverted = true;
 
-    // closed loop driving
-    public static double DRIVE_CLOSED_MAX_VEL = 4.0; // m/s
-    public static double DRIVE_CLOSED_MAX_ROT_TELEOP = 360.00; //
-    public static double DRIVE_CLOSED_MAX_ROT_AUTO = 100.0; // deg/s
-    public static double DRIVE_CLOSED_MAX_ACC = 1.5; // m/s^2
+    // Calculations required for driving motor conversion factors and feed forward
+    public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
+    public static final double kWheelDiameterMeters = 0.0762;
+    public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
+    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
+    public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+    public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
+        / kDrivingMotorReduction;
 
-    // trajectory following
-    public static double DRIVE_TRAJ_MAX_VEL = 8.0; // m/s
-    public static double DRIVE_TRAJ_MAX_ACC = 0.7515; // .75; // m/s^2
-    public static double DRIVE_TRAJ_RAMSETE_B = 2.0; // don't change
-    public static double DRIVE_TRAJ_RAMSETE_ZETA = 0.7;
+    public static final double kDrivingEncoderPositionFactor = (kWheelDiameterMeters * Math.PI)
+        / kDrivingMotorReduction; // meters
+    public static final double kDrivingEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI)
+        / kDrivingMotorReduction) / 60.0; // meters per second
 
-    public static double DRIVE_TRAJ_KV = 0.0; // don't change
-    public static double DRIVE_TRAJ_KA = 0.0; // don't change
-    public static double DRIVE_TRAJ_KS = 0.0; // don't change
+    public static final double kTurningEncoderPositionFactor = (2 * Math.PI); // radians
+    public static final double kTurningEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
 
-    // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
-    // These characterization values MUST be determined either experimentally or
-    // theoretically
-    // for *your* robot's drive.
-    // The Robot Characterization Toolsuite provides a convenient tool for obtaining
-    // these
-    // values for your robot.
-    public static final double ksVolts = 0.22;
-    public static final double kvVoltSecondsPerMeter = 1.98;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.2;
+    public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
+    public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
-    // aligning
-    public static double DRIVE_ALIGN_MAX_VEL = 0.75; // m/s
-    public static double DRIVE_ALIGN_MAX_ACC = 0.350; // .75; // m/s^2
+    public static final double kDrivingP = 0.04;
+    public static final double kDrivingI = 0;
+    public static final double kDrivingD = 0;
+    public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;
+    public static final double kDrivingMinOutput = -1;
+    public static final double kDrivingMaxOutput = 1;
 
-    // linear position PID
-    public static double[] DRIVE_DIST_PID = { 3.50, 0.0, 0.0 };
-    public static double DRIVE_DIST_ANGLE_P = 0.1;
-    public static double DRIVE_DIST_TOLERANCE = 0.01;
-    public static double DRIVE_DIST_MAX_OUTPUT = 0.6;
+    public static final double kTurningP = 1;
+    public static final double kTurningI = 0;
+    public static final double kTurningD = 0;
+    public static final double kTurningFF = 0;
+    public static final double kTurningMinOutput = -1;
+    public static final double kTurningMaxOutput = 1;
 
-    // angular position PID works for test bot
-    public static double[] DRIVE_ANGLE_PID = { 0.045, 0.1, 0.005 }; // 0.055
-    public static double DRIVE_ANGLE_TOLERANCE = 0.5;
-    public static double DRIVE_ANGLE_MAX_OUTPUT = 0.6;
+    public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
+    public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
-    // velocity PID (for closed loop, profiling, and trajectory)
-    public static int DRIVE_VEL_SLOT = 0;
-    public static double DRIVE_VEL_LEFT_P = 0.25;
-    public static double DRIVE_VEL_LEFT_F = 0.25;
-    public static double DRIVE_VEL_RIGHT_P = 0.25;
-    public static double DRIVE_VEL_RIGHT_F = 0.25;
-
-    // profiling position PID (for further refinement of tracking)
-    public static double DRIVE_PROFILE_LEFT_P = 0.1;
-    public static double DRIVE_PROFILE_RIGHT_P = 0.1;
-
-    // vision PID
-    public static final double TRACKED_TAG_ROTATION_KP = 0.375;
-    public static final double TRACKED_TAG_DISTANCE_DRIVE_KP = 0.3; // P (Proportional) constant of a PID loop
-    public static final double TRACKED_TAG_AREA_DRIVE_KP = 0.2; // P (Proportional) constant of a PID loop
-    public static final double APRILTAG_POWER_CAP = 0.75;
-  };
+    public static final int kDrivingMotorCurrentLimit = 50; // amps
+    public static final int kTurningMotorCurrentLimit = 20; // amps
+  }
 
   public static class Vision {
     public static final String kCameraName = "Front_Camera";
@@ -133,6 +153,10 @@ public final class Constants {
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+  }
+
+  public static final class NeoMotorConstants {
+    public static final double kFreeSpeedRpm = 5676;
   }
 
   public static class ElectricalLayout {

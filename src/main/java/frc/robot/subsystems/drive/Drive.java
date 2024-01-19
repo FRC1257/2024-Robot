@@ -27,6 +27,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -41,6 +42,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.LocalADStarAK;
 
 public class Drive extends SubsystemBase {
@@ -56,10 +58,13 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final VisionIO visionIO;
+  private final VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
+
+  private SwerveDrivePoseEstimator poseEstimator;
 
   public Drive(
       GyroIO gyroIO,
@@ -99,6 +104,8 @@ public class Drive extends SubsystemBase {
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
+
+    poseEstimator = new SwerveDrivePoseEstimator(kinematics, lastGyroRotation, null, pose); // maybe change from not null
   }
 
   public void periodic() {
@@ -109,6 +116,11 @@ public class Drive extends SubsystemBase {
     }
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
+
+    visionIO.updateInputs(visionInputs, getPose());
+    Logger.processInputs("Vision", visionInputs);
+    poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp, visionInputs);
+
     for (var module : modules) {
       module.periodic();
     }
@@ -137,6 +149,8 @@ public class Drive extends SubsystemBase {
       for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
         wheelDeltas[moduleIndex] = modules[moduleIndex].getPositionDeltas()[deltaIndex];
       }
+
+      poseEstimator.updateWithTime(deltaCount, lastGyroRotation, wheelDeltas);
 
       // The twist represents the motion of the robot since the last
       // sample in x, y, and theta based only on the modules, without

@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.targeting.PhotonPipelineResult;
 
@@ -17,6 +18,8 @@ public interface VisionIO {
     public Pose2d estimate = new Pose2d();
     public int tagCount = 0;
     public double timestamp = 0;
+    public Matrix<N3, N1> stdDeviations = null;
+    public Pose2d[] targets = new Pose2d[0];
   }
 
   /** Updates the set of loggable inputs. */

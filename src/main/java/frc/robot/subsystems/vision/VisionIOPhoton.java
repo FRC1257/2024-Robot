@@ -5,6 +5,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -15,6 +16,7 @@ import frc.robot.Robot;
 
 import static frc.robot.Constants.Vision.*;
 
+import java.util.List;
 import java.util.Optional;
 
 public class VisionIOPhoton implements VisionIO {
@@ -46,6 +48,12 @@ public class VisionIOPhoton implements VisionIO {
             inputs.tagCount = 0;
         }
         inputs.timestamp = lastEstTimestamp;
+        inputs.stdDeviations = getEstimationStdDevs(inputs.estimate);
+        List<PhotonTrackedTarget> tags = result.targets;
+        inputs.targets = new Pose2d[tags.size()];
+        for (int i = 0; i < tags.size(); i++) {
+            inputs.targets[i] = photonEstimator.getFieldTags().getTagPose(tags.get(i).getFiducialId()).get().toPose2d();
+        }
     }
 
     public PhotonPipelineResult getLatestResult() {

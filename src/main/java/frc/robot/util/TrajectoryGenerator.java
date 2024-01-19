@@ -12,6 +12,10 @@ import frc.robot.subsystems.drive.Drive;
 
 public class TrajectoryGenerator {
 
+    public static final HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(
+        new PIDConstants(0, 0, 0, 0), 
+        new PIDConstants(0, 0, 0, 0), 0, 0, null, 0)
+
     public static Command followTrajectory(PathPlannerPath path, Drive drive) {
         
     }
