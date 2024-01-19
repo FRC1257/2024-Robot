@@ -95,6 +95,7 @@ public class Drive extends SubsystemBase {
         this);
         
     Pathfinding.setPathfinder(new LocalADStarAK());
+    
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput(

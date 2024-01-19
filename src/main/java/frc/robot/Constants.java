@@ -105,6 +105,11 @@ public final class Constants {
       kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared,
       kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared
     );
+
+    public static final double kSlowModeConstant = 0.5;
+    public static final double kTurnSpeakerP = 0.7;
+    public static final double kTurnSpeakerI = 0;
+    public static final double kTurnSpeakerD = 0;
   }
 
   public static final class ModuleConstants {

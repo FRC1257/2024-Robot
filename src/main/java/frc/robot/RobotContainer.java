@@ -9,13 +9,20 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
@@ -49,6 +56,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
+import java.util.List;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -162,9 +170,11 @@ public class RobotContainer {
         "Drive FF Characterization",
         new FeedForwardCharacterization(
             drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption("Drive Trajectory", 
-        drive.getAuto("Forward And Spin")
-    );
+    autoChooser.addOption("Drive Trajectory",
+        drive.getAuto("Forward And Spin"));
+
+    autoChooser.addOption("Drive Try Trajectory",
+        drive.getAuto("thinger"));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -183,6 +193,13 @@ public class RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX()));
+            
+    driver.leftTrigger().whileTrue(
+        DriveCommands.joystickSpeakerPoint(
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX()));
+
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driver
         .b()
@@ -193,7 +210,23 @@ public class RobotContainer {
                 drive)
                 .ignoringDisable(true));
 
-    driver.a().onTrue(new InstantCommand(() -> drive.goToPose(new Pose2d(10, 10, new Rotation2d(0))).schedule(), drive));
+    driver.a().onTrue(
+        new InstantCommand(
+            () -> {
+              Pathfinding.setStartPosition(drive.getPose().getTranslation());
+              Pathfinding.setGoalPosition(new Translation2d(10, new Rotation2d(45)));
+
+              drive.goToPose(new Pose2d(new Translation2d(10, new Rotation2d(45)), new Rotation2d(0, 0))).schedule();
+            }, drive));
+
+    // Add a button to run pathfinding commands to SmartDashboard
+    SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
+        new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)),
+        new PathConstraints(
+            4.0, 4.0,
+            Units.degreesToRadians(360), Units.degreesToRadians(540)),
+        0,
+        2.0));
 
   }
 

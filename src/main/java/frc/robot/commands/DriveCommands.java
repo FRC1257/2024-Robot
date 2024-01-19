@@ -14,6 +14,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -26,8 +27,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 
+import static frc.robot.Constants.DriveConstants.*;
+
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
+
+  private static double slowMode = kSlowModeConstant;
+
+  private static PIDController angleController = new PIDController(kTurnSpeakerP, kTurnSpeakerI, kTurnSpeakerD);
 
   private DriveCommands() {}
 
@@ -44,10 +51,10 @@ public class DriveCommands {
           // Apply deadband
           double linearMagnitude =
               MathUtil.applyDeadband(
-                  Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
+                  Math.hypot(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode), DEADBAND);
           Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+              new Rotation2d(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode);
+          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble() * slowMode, DEADBAND);
 
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;
@@ -74,4 +81,98 @@ public class DriveCommands {
         },
         drive);
   }
+
+  /**
+   * Robot relative drive command using two joysticks (controlling linear and angular velocities).
+   */
+  public static Command joystickDriveRobotRelative(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier) {
+    return Commands.run(
+        () -> {
+          // Apply deadband
+          double linearMagnitude =
+              MathUtil.applyDeadband(
+                  Math.hypot(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode), DEADBAND);
+          Rotation2d linearDirection =
+              new Rotation2d(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode);
+          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+
+          // Square values
+          linearMagnitude = linearMagnitude * linearMagnitude;
+          omega = Math.copySign(omega * omega, omega);
+
+          // Calcaulate new linear velocity
+          Translation2d linearVelocity =
+              new Pose2d(new Translation2d(), linearDirection)
+                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                  .getTranslation();
+
+          // Convert to robot relative speeds & send command
+          drive.runVelocity(
+              ChassisSpeeds.fromRobotRelativeSpeeds(
+                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                  omega * drive.getMaxAngularSpeedRadPerSec(),
+                  drive.getRotation()));
+        },
+        drive);
+    }
+
+    /**
+     * Drive robot while pointing at a specific point on the field.
+     */
+    public static Command joystickSpeakerPoint(
+        Drive drive,
+        DoubleSupplier xSupplier,
+        DoubleSupplier ySupplier) {
+        return Commands.run(
+            () -> { 
+                Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
+                // Apply deadband
+                double linearMagnitude =
+                    MathUtil.applyDeadband(
+                        Math.hypot(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode), DEADBAND);
+                Rotation2d linearDirection =
+                    new Rotation2d(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode);
+                Transform2d targetTransform = drive.getPose().minus(speakerPose);
+                Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+                // Rotation2d deltaDirection = drive.getRotation().minus(targetDirection);
+                
+                double omega = angleController.calculate(drive.getRotation().getRadians(), targetDirection.getRadians());
+
+                // Square values
+                linearMagnitude = linearMagnitude * linearMagnitude;
+                omega = Math.copySign(omega * omega, omega);
+
+                // Calcaulate new linear velocity
+                Translation2d linearVelocity =
+                    new Pose2d(new Translation2d(), linearDirection)
+                        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                        .getTranslation();
+
+                // Convert to robot relative speeds & send command
+                drive.runVelocity(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                        linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                        omega * drive.getMaxAngularSpeedRadPerSec(),
+                        drive.getRotation()));
+            },
+        drive
+        );
+    }
+
+    /** 
+     * Toggle Slow Mode
+     */
+    public static void toggleSlowMode() {
+      if (slowMode == 1) {
+        slowMode = kSlowModeConstant;
+      } else {
+        slowMode = 1;
+      }
+    }
 }
