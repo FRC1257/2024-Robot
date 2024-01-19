@@ -29,6 +29,7 @@ public class Module {
   public static final double ODOMETRY_FREQUENCY = 250.0;
 
   private final ModuleIO io;
+  //where is moduleioinputsautologged
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private final int index;
 
