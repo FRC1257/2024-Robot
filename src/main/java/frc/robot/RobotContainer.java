@@ -213,10 +213,11 @@ public class RobotContainer {
     driver.a().onTrue(
         new InstantCommand(
             () -> {
+              System.out.println("Starting pathfinding");
               Pathfinding.setStartPosition(drive.getPose().getTranslation());
-              Pathfinding.setGoalPosition(new Translation2d(10, new Rotation2d(45)));
+              Pathfinding.setGoalPosition(new Translation2d(10, Rotation2d.fromDegrees(45)));
 
-              drive.goToPose(new Pose2d(new Translation2d(10, new Rotation2d(45)), new Rotation2d(0, 0))).schedule();
+              drive.goPose(new Pose2d(new Translation2d(10, Rotation2d.fromDegrees(45)), new Rotation2d(0, 0))).schedule();
             }, drive));
 
     // Add a button to run pathfinding commands to SmartDashboard
