@@ -22,8 +22,10 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
+import static frc.robot.Constants.ModuleConstants.*;
+
 public class Module {
-  private static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
+  private static final double WHEEL_RADIUS = kWheelDiameterMeters / 2;
   public static final double ODOMETRY_FREQUENCY = 250.0;
 
   private final ModuleIO io;

@@ -18,7 +18,6 @@ public interface VisionIO {
     public Pose2d estimate = new Pose2d();
     public int tagCount = 0;
     public double timestamp = 0;
-    public Matrix<N3, N1> stdDeviations = null;
     public Pose2d[] targets = new Pose2d[0];
   }
 

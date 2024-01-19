@@ -68,6 +68,14 @@
         },
         "Vision": {
           "open": true
+        }
+      },
+      "CameraPublisher": {
+        "Front_Camera-processed": {
+          "open": true,
+          "string[]##v_/CameraPublisher/Front_Camera-processed/streams": {
+            "open": true
+          }
         },
         "open": true
       },

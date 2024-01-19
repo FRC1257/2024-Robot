@@ -1,6 +1,11 @@
 package frc.robot.subsystems.drive;
 
+import java.util.Queue;
+
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -9,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * 
  * Mostly utilizes the navX-MXP, but uses the ADXRS450 as backup if it disconnects
  */
-public class GyroIOReal {
+public class GyroIOReal implements GyroIO {
     // this class is not like the other Advantage Kit classes because we only want it
     // to run on the real robot
     // we can log all this stuff else where if we want to test it
@@ -20,6 +25,7 @@ public class GyroIOReal {
     private double resetPitch;
     private double resetYaw;
 
+    private final Queue<Double> yawPositionQueue;
     private final ADXRS450_Gyro gyro;
 
     private GyroIOReal() {
@@ -30,6 +36,24 @@ public class GyroIOReal {
 
         gyro = new ADXRS450_Gyro();
         gyro.calibrate();
+        yawPositionQueue =
+          SparkMaxOdometryThread.getInstance()
+              .registerSignal(() -> getYawAngle());
+    }
+
+    @Override
+    public void updateInputs(GyroIOInputs inputs) {
+        inputs.connected = gyro.isConnected();
+        inputs.yawPosition = Rotation2d.fromDegrees(getYawAngle());
+        inputs.rollPosition = Rotation2d.fromDegrees(getRollAngle());
+        inputs.pitchPosition = Rotation2d.fromDegrees(getPitchAngle());
+        inputs.yawVelocityRadPerSec = Units.degreesToRadians(getYawAngleVelocity());
+
+        inputs.odometryYawPositions =
+            yawPositionQueue.stream()
+                .map((Double value) -> Rotation2d.fromDegrees(value))
+                .toArray(Rotation2d[]::new);
+        yawPositionQueue.clear();
     }
 
     /**

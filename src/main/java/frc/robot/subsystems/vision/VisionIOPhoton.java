@@ -43,12 +43,12 @@ public class VisionIOPhoton implements VisionIO {
                 inputs.estimate = est.estimatedPose.toPose2d();
             });
             inputs.tagCount = result.getTargets().size();
-            lastEstTimestamp = inputs.timestamp;
+            lastEstTimestamp = result.getTimestampSeconds();
         } else {
             inputs.tagCount = 0;
         }
         inputs.timestamp = lastEstTimestamp;
-        inputs.stdDeviations = getEstimationStdDevs(inputs.estimate);
+        // inputs.stdDeviations = getEstimationStdDevs(inputs.estimate);
         List<PhotonTrackedTarget> tags = result.targets;
         inputs.targets = new Pose2d[tags.size()];
         for (int i = 0; i < tags.size(); i++) {

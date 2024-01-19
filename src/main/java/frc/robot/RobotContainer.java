@@ -162,6 +162,9 @@ public class RobotContainer {
         "Drive FF Characterization",
         new FeedForwardCharacterization(
             drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    autoChooser.addOption("Drive Trajectory", 
+        drive.getAuto("Forward And Spin")
+    );
 
     // Configure the button bindings
     configureButtonBindings();
@@ -189,6 +192,8 @@ public class RobotContainer {
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                 drive)
                 .ignoringDisable(true));
+
+    driver.a().onTrue(new InstantCommand(() -> drive.goToPose(new Pose2d(10, 10, new Rotation2d(0))).schedule(), drive));
 
   }
 
