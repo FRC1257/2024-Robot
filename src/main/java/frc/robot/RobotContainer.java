@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.commands.TurnAngleCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -201,24 +202,17 @@ public class RobotContainer {
             () -> -driver.getLeftX()));
 
     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    driver
+    /* driver
         .b()
         .onTrue(
             Commands.runOnce(
                 () -> drive.setPose(
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                 drive)
-                .ignoringDisable(true));
+                .ignoringDisable(true)); */
 
-    driver.a().onTrue(
-        new InstantCommand(
-            () -> {
-              System.out.println("Starting pathfinding");
-              Pathfinding.setStartPosition(drive.getPose().getTranslation());
-              Pathfinding.setGoalPosition(new Translation2d(10, Rotation2d.fromDegrees(45)));
-
-              drive.goPose(new Pose2d(new Translation2d(10, Rotation2d.fromDegrees(45)), new Rotation2d(0, 0))).schedule();
-            }, drive));
+    driver.a().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(90))));
+    driver.b().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(0))));
 
     // Add a button to run pathfinding commands to SmartDashboard
     SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(

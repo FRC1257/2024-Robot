@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 
@@ -32,7 +33,9 @@ import static frc.robot.Constants.DriveConstants.*;
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
 
-  private static double slowMode = kSlowModeConstant;
+  private static double slowMode = 
+    1;
+    // kSlowModeConstant;
 
   private static PIDController angleController = new PIDController(kTurnSpeakerP, kTurnSpeakerI, kTurnSpeakerD);
 
