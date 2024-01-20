@@ -1,0 +1,132 @@
+{
+    "name": "Allen",
+    "sourceUrl": "https://gmail1453709.autodesk360.com/g/shares/SH512d4QTec90decfa6e02e12a7dd031133e",
+    "rotations": [
+      {
+        "axis": "z",
+        "degrees": 90
+      }
+    ],
+    "position": [
+      0,
+      0,
+      0
+    ],
+    "cameras": [
+      {
+        "name": "Front Camera",
+        "rotations": [
+          {
+            "axis": "y",
+            "degrees": 20
+          }
+        ],
+        "position": [
+          0.2,
+          0,
+          0.8
+        ],
+        "resolution": [
+          960,
+          720
+        ],
+        "fov": 90
+      },
+      {
+        "name": "Back Camera",
+        "rotations": [
+          {
+            "axis": "y",
+            "degrees": 20
+          },
+          {
+            "axis": "z",
+            "degrees": 180
+          }
+        ],
+        "position": [
+          -0.2,
+          0,
+          0.8
+        ],
+        "resolution": [
+          960,
+          720
+        ],
+        "fov": 90
+      },
+      {
+        "name": "Left Camera",
+        "rotations": [
+          {
+            "axis": "y",
+            "degrees": 20
+          },
+          {
+            "axis": "z",
+            "degrees": 90
+          }
+        ],
+        "position": [
+          0,
+          0.2,
+          0.8
+        ],
+        "resolution": [
+          960,
+          720
+        ],
+        "fov": 90
+      },
+      {
+        "name": "Right Camera",
+        "rotations": [
+          {
+            "axis": "y",
+            "degrees": 20
+          },
+          {
+            "axis": "z",
+            "degrees": -90
+          }
+        ],
+        "position": [
+          0,
+          -0.2,
+          0.8
+        ],
+        "resolution": [
+          960,
+          720
+        ],
+        "fov": 90
+      }
+    ],
+    "components": [
+        {
+            "zeroedRotations": [
+              {
+                "axis": "x",
+                "degrees": 90
+              },
+              {
+                "axis": "z",
+                "degrees": 90
+              },
+              {
+                "axis": "y",
+                "degrees": 90.5
+              },
+              {
+                "axis": "x",
+                "degrees": 180
+              }
+            ],
+            "zeroedPosition": [
+              -0.61,
+              0,
+              -0.005
+            ]
+        }
+    ]
+  }
