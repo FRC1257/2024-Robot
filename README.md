@@ -6,7 +6,7 @@ This project has Parallel Universe's template robot code.
 [Advantage Kit](https://github.com/Mechanical-Advantage/AdvantageKit) improves our logging, simulation, and readibility. All of our subsystems are separated into simulation and real IO modes. The subsystem logic is stored inside the `Subsystem.java` classes. The mode that the robot code is in can be changed by going to `Constants.java`.  
 
 ### Drive
-We use a swerve (REV Max Swerve) drivetrain with various different IO options like simulation and Spark Max motor controllers. We have some basic arcade drive, trajectory following, and turn angle commands. 
+We use a swerve ([REV Max Swerve](https://docs.revrobotics.com/ion-build-system/motion/maxswerve)) drivetrain with various different IO options like simulation and Spark Max motor controllers. We have some basic arcade drive, trajectory following, and turn angle commands. 
 
 #### Path Planner
 We use [Path Planner](https://pathplanner.dev/) to create and follow our autos. We also use it to generate trajectories on the fly to go to setpoints on the field. Currently, we are also working on implementing path finding as well. We also plan to use [Choreo](https://sleipnirgroup.github.io/Choreo/) to create better paths in the future. 
@@ -44,4 +44,7 @@ Last thing. If you want to see what the simulated vision system sees, navigate t
 > In simulation, it will most likely look something like this `http://localhost:1182/?action=stream`
 
 Awesome right!
+
+## Sources
+Much of our code has come from various example projects from across the internet. Since we use Advantage Kit, we looked mainly at these repositories for inspiration: [Mechanical Advantage 2024 Kitbot Swerve Project](https://github.com/Mechanical-Advantage/RobotCode2024/tree/kitbot-swerve), [Advantage Kit Advanced Swerve Project](https://github.com/Mechanical-Advantage/AdvantageKit/tree/main/example_projects/advanced_swerve_drive/src/main), [Mechanical Advantage 2023 Robot Code](https://github.com/Mechanical-Advantage/RobotCode2023), [Our 2023 Virtual Robot Project](https://github.com/frc1257/virtual-robot), [Path Planner Example Project](https://github.com/mjansen4857/pathplanner/tree/main/examples/java), as well as [Photon Vision Example Project](https://github.com/PhotonVision/photonvision/tree/master/photonlib-java-examples). We hope these sources help you out as well!
 
