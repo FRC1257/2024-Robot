@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -76,8 +77,10 @@ public class VisionIOSim implements VisionIO {
         // inputs.stdDeviations = getEstimationStdDevs(inputs.estimate);
         List<PhotonTrackedTarget> tags = result.targets;
         inputs.targets = new Pose2d[tags.size()];
+        inputs.targets3d = new Pose3d[tags.size()];
         for (int i = 0; i < tags.size(); i++) {
             inputs.targets[i] = photonEstimator.getFieldTags().getTagPose(tags.get(i).getFiducialId()).get().toPose2d();
+            inputs.targets3d[i] = photonEstimator.getFieldTags().getTagPose(tags.get(i).getFiducialId()).get();
         }
     }
 

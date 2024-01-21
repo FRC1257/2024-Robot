@@ -9,6 +9,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
@@ -19,6 +20,7 @@ public interface VisionIO {
     public int tagCount = 0;
     public double timestamp = 0;
     public Pose2d[] targets = new Pose2d[0];
+    public Pose3d[] targets3d = new Pose3d[0];
   }
 
   /** Updates the set of loggable inputs. */

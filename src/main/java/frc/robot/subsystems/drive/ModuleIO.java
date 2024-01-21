@@ -13,8 +13,9 @@
 
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface ModuleIO {
   @AutoLog
@@ -30,6 +31,7 @@ public interface ModuleIO {
     public double turnAppliedVolts = 0.0;
     public double[] turnCurrentAmps = new double[] {};
 
+    public double[] odometryTimestamps = new double[] {};
     public double[] odometryDrivePositionsRad = new double[] {};
     public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
   }

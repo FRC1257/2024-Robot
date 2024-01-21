@@ -195,7 +195,7 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX()));
             
-    driver.leftTrigger().whileTrue(
+    driver.a().whileTrue(
         DriveCommands.joystickSpeakerPoint(
             drive,
             () -> -driver.getLeftY(),
@@ -211,8 +211,8 @@ public class RobotContainer {
                 drive)
                 .ignoringDisable(true)); */
 
-    driver.a().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(90))));
-    driver.b().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(0))));
+    // driver.a().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(90))));
+    // driver.b().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(0))));
 
     // Add a button to run pathfinding commands to SmartDashboard
     SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(

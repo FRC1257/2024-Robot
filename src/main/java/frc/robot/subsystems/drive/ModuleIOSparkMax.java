@@ -46,6 +46,7 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final RelativeEncoder driveEncoder;
   private final RelativeEncoder turnRelativeEncoder;
   private final AnalogInput turnAbsoluteEncoder;
+  private final Queue<Double> timestampQueue;
   private final Queue<Double> drivePositionQueue;
   private final Queue<Double> turnPositionQueue;
 
@@ -120,6 +121,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
     turnSparkMax.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, (int) (1000.0 / Module.ODOMETRY_FREQUENCY));
+    timestampQueue = SparkMaxOdometryThread.getInstance().makeTimestampQueue();
     drivePositionQueue =
         SparkMaxOdometryThread.getInstance().registerSignal(driveEncoder::getPosition);
     turnPositionQueue =
@@ -146,14 +148,17 @@ public class ModuleIOSparkMax implements ModuleIO {
     inputs.turnAppliedVolts = turnSparkMax.getAppliedOutput() * turnSparkMax.getBusVoltage();
     inputs.turnCurrentAmps = new double[] {turnSparkMax.getOutputCurrent()};
 
+    inputs.odometryTimestamps =
+        timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
     inputs.odometryDrivePositionsRad =
         drivePositionQueue.stream()
-            .mapToDouble((Double value) -> value)
+            .mapToDouble((Double value) -> Units.rotationsToRadians(value))
             .toArray();
     inputs.odometryTurnPositions =
         turnPositionQueue.stream()
-            .map((Double value) -> value)
+            .map((Double value) -> Rotation2d.fromRotations(value))
             .toArray(Rotation2d[]::new);
+    timestampQueue.clear();
     drivePositionQueue.clear();
     turnPositionQueue.clear();
   }

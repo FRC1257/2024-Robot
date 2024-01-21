@@ -26,6 +26,7 @@ public class GyroIOReal implements GyroIO {
     private double resetYaw;
 
     private final Queue<Double> yawPositionQueue;
+    private final Queue<Double> yawTimestampQueue;
     private final ADXRS450_Gyro gyro;
 
     private GyroIOReal() {
@@ -39,6 +40,9 @@ public class GyroIOReal implements GyroIO {
         yawPositionQueue =
           SparkMaxOdometryThread.getInstance()
               .registerSignal(() -> getYawAngle());
+        yawTimestampQueue =
+            SparkMaxOdometryThread.getInstance()
+                .makeTimestampQueue();
     }
 
     @Override
@@ -49,10 +53,13 @@ public class GyroIOReal implements GyroIO {
         inputs.pitchPosition = Rotation2d.fromDegrees(getPitchAngle());
         inputs.yawVelocityRadPerSec = Units.degreesToRadians(getYawAngleVelocity());
 
+        inputs.odometryYawTimestamps =
+            yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryYawPositions =
             yawPositionQueue.stream()
                 .map((Double value) -> Rotation2d.fromDegrees(value))
                 .toArray(Rotation2d[]::new);
+        yawTimestampQueue.clear();
         yawPositionQueue.clear();
     }
 

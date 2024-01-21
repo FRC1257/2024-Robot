@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -19,7 +20,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.math.Matrix;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -33,6 +33,7 @@ import edu.wpi.first.math.Matrix;
  */
 public final class Constants {
   public static final Mode currentMode = Mode.SIM;
+  public static final boolean tuningMode = true;
 
   public static enum Mode {
     /** Running on a real robot. */
