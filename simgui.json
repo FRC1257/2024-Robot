@@ -82,7 +82,8 @@
           "string[]##v_/CameraPublisher/Front_Camera-processed/streams": {
             "open": true
           }
-        }
+        },
+        "open": true
       },
       "Shuffleboard": {
         "open": true
@@ -99,7 +100,13 @@
     }
   },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
     "Connections": {
+      "open": true
+    },
+    "Server": {
       "open": true
     },
     "visible": true
