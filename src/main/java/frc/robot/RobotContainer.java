@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.commands.GoToPose;
 import frc.robot.commands.TurnAngleCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -201,7 +202,9 @@ public class RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX()));
 
-    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driver.x().onTrue(new GoToPose(drive, new Pose2d(2, 7.8, new Rotation2d(90))));
+
     /* driver
         .b()
         .onTrue(

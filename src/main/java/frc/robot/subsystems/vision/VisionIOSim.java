@@ -25,15 +25,18 @@ import static frc.robot.Constants.Vision.*;
 
 public class VisionIOSim implements VisionIO {
     private final PhotonCamera camera;
+    private final PhotonCamera backCamera;
     private final PhotonPoseEstimator photonEstimator;
     private double lastEstTimestamp = 0;
 
     // Simulation
     private PhotonCameraSim cameraSim;
+    private PhotonCameraSim backCameraSim;
     private VisionSystemSim visionSim;
 
     public VisionIOSim() {
         camera = new PhotonCamera(kCameraName);
+        backCamera = new PhotonCamera(kBackCameraName);
         photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, kRobotToCam);
         photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
@@ -51,8 +54,10 @@ public class VisionIOSim implements VisionIO {
         // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
         // targets.
         cameraSim = new PhotonCameraSim(camera, cameraProp);
+        backCameraSim = new PhotonCameraSim(backCamera, cameraProp);
         // Add the simulated camera to view the targets on this simulated field.
         visionSim.addCamera(cameraSim, kRobotToCam);
+        visionSim.addCamera(backCameraSim, kBackRobotToCam);
 
         cameraSim.enableDrawWireframe(true);
     }

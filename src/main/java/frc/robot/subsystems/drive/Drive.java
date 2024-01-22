@@ -18,6 +18,7 @@ import static frc.robot.Constants.DriveConstants.kPathConstraints;
 import static frc.robot.Constants.DriveConstants.kTrackWidthX;
 import static frc.robot.Constants.DriveConstants.kTrackWidthY;
 
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -26,6 +27,8 @@ import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindHolonomic;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -49,6 +52,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.MakeTrajectories;
 
 import static edu.wpi.first.units.Units.Volts;
 
@@ -363,6 +367,25 @@ public class Drive extends SubsystemBase {
         0.0, // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate. Optional
         this // Reference to drive subsystem to set requirements
     );
+  }
+
+  public Command runTrajectory(PathPlannerPath path) {
+    return AutoBuilder.followPath(path);
+  }
+
+  public Command goToThaPose(Pose2d endPose) {
+    List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+      getPose(),
+      endPose
+    );
+
+    // Create the path using the bezier points created above
+    PathPlannerPath path = new PathPlannerPath(
+      bezierPoints,
+      kPathConstraints, // The constraints for this path. If using a differential drivetrain, the angular constraints have no effect.
+      new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+    );
+    return AutoBuilder.followPath(path);
   }
 
 }
