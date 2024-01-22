@@ -7,17 +7,33 @@ package frc.robot;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.PathPlannerLogging;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.SpinAuto;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.commands.DriveCommands;
+import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.commands.GoToPose;
+import frc.robot.commands.TurnAngleCommand;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.DriveIO;
-import frc.robot.subsystems.drive.DriveIOCIM;
-import frc.robot.subsystems.drive.DriveIOSim;
-import frc.robot.subsystems.drive.DriveIOTalon;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOReal;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
@@ -35,11 +51,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
+import java.util.List;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -59,9 +78,10 @@ public class RobotContainer {
   private final CommandSnailController operator = new CommandSnailController(1);
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto Choices");
+  private final LoggedDashboardChooser<Command> autoChooser;
 
-  private boolean isBlue = true;
+  // Field
+  private final Field2d field;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -70,34 +90,93 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       // Real robot, instantiate hardware IO implementations
       case REAL:
-        drive = new Drive(new DriveIOTalon(), new VisionIOPhoton(), new Pose2d());
+        drive = new Drive(
+            new GyroIOPigeon2(false),
+            new ModuleIOSparkMax(0),
+            new ModuleIOSparkMax(1),
+            new ModuleIOSparkMax(2),
+            new ModuleIOSparkMax(3),
+            new VisionIOPhoton());
         break;
 
       // Sim robot, instantiate physics sim IO implementations
       case SIM:
-        drive = new Drive(new DriveIOSim(), new VisionIOSim(), new Pose2d());
-        break;
-      case TEST:
-        drive = new Drive(new DriveIOCIM(), new VisionIOPhoton(), new Pose2d());
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new VisionIOSim());
         break;
 
       // Replayed robot, disable IO implementations
       default:
-        drive = new Drive(new DriveIO() {}, new VisionIO() {}, new Pose2d());
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new VisionIO() {
+            });
         break;
     }
 
     // Set up robot state manager
 
-    MechanismRoot2d root = mech.getRoot("elevator", 1, 0.5);
+    MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
     // add subsystem mechanisms
     SmartDashboard.putData("Arm Mechanism", mech);
 
-    isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
+    field = new Field2d();
+    SmartDashboard.putData("Field", field);
+
+    // Logging callback for current robot pose
+    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+      // Do whatever you want with the pose here
+      field.setRobotPose(pose);
+    });
+
+    // Logging callback for target robot pose
+    PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+      // Do whatever you want with the pose here
+      field.getObject("target pose").setPose(pose);
+    });
+
+    // Logging callback for the active path, this is sent as a list of poses
+    PathPlannerLogging.setLogActivePathCallback((poses) -> {
+      // Do whatever you want with the poses here
+      field.getObject("path").setPoses(poses);
+    });
 
     // Set up auto routines
-    autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
-    autoChooser.addOption("Spin", new SpinAuto(drive));
+    /*
+     * NamedCommands.registerCommand(
+     * "Run Flywheel",
+     * Commands.startEnd(
+     * () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop,
+     * flywheel)
+     * .withTimeout(5.0));
+     */
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+    // Set up feedforward characterization
+    autoChooser.addOption(
+        "Drive FF Characterization",
+        new FeedForwardCharacterization(
+            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    autoChooser.addOption("Drive Trajectory",
+        drive.getAuto("Forward And Spin"));
+
+    autoChooser.addOption("Drive Try Trajectory",
+        drive.getAuto("thinger"));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -110,17 +189,43 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Clear old buttons
-    CommandScheduler.getInstance().getActiveButtonLoop().clear();
     drive.setDefaultCommand(
-        new RunCommand(() -> drive.driveArcade(driver.getDriveForward(), driver.getDriveTurn()), drive));
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX()));
+            
+    driver.a().whileTrue(
+        DriveCommands.joystickSpeakerPoint(
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX()));
 
-    driver.rightBumper().onTrue(
-      new StartEndCommand(() -> drive.startSlowMode(), () -> drive.stopSlowMode(), drive)
-    );
+    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driver.x().onTrue(new GoToPose(drive, new Pose2d(2, 7.8, new Rotation2d(90))));
 
-    // cancel trajectory
-    driver.getY().onTrue(drive.endTrajectoryCommand());
+    /* driver
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                () -> drive.setPose(
+                    new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                drive)
+                .ignoringDisable(true)); */
+
+    // driver.a().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(90))));
+    // driver.b().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(0))));
+
+    // Add a button to run pathfinding commands to SmartDashboard
+    SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
+        new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)),
+        new PathConstraints(
+            4.0, 4.0,
+            Units.degreesToRadians(360), Units.degreesToRadians(540)),
+        0,
+        2.0));
+
   }
 
   /**

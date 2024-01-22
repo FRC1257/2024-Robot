@@ -1,0 +1,152 @@
+{
+  "version": "3.0.1",
+  "layout": [
+    {
+      "type": 1,
+      "legends": {
+        "left": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": []
+        },
+        "discrete": {
+          "fields": []
+        },
+        "right": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": []
+        }
+      },
+      "title": "Line Graph"
+    },
+    {
+      "type": 5,
+      "fields": [],
+      "listFields": [
+        [
+          {
+            "type": "Robot",
+            "key": "NT:/AdvantageKit/RealOutputs/Odometry/Robot",
+            "sourceTypeIndex": 1,
+            "sourceType": "Pose2d"
+          }
+        ]
+      ],
+      "options": {
+        "game": "2024 Field",
+        "unitDistance": "meters",
+        "unitRotation": "radians",
+        "origin": "right",
+        "size": 0.75,
+        "allianceBumpers": "auto",
+        "allianceOrigin": "blue",
+        "orientation": "blue left, red right"
+      },
+      "configHidden": false,
+      "title": "Odometry"
+    },
+    {
+      "type": 6,
+      "fields": [],
+      "listFields": [
+        [],
+        [
+          {
+            "type": "Robot",
+            "key": "NT:/AdvantageKit/RealOutputs/Odometry/Robot",
+            "sourceTypeIndex": 1,
+            "sourceType": "Pose2d"
+          }
+        ]
+      ],
+      "options": {
+        "field": "2024 Field",
+        "alliance": "blue",
+        "robot": "Crab Bot",
+        "unitDistance": "meters",
+        "unitRotation": "radians",
+        "cameraIndex": -1,
+        "fov": 50
+      },
+      "configHidden": false,
+      "title": "3D Field"
+    },
+    {
+      "type": 9,
+      "fields": [
+        {
+          "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured",
+          "sourceTypeIndex": 1,
+          "sourceType": "SwerveModuleState[]"
+        },
+        {
+          "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Setpoints",
+          "sourceTypeIndex": 1,
+          "sourceType": "SwerveModuleState[]"
+        },
+        {
+          "key": "NT:/AdvantageKit/RealOutputs/Odometry/Robot/rotation",
+          "sourceTypeIndex": 1,
+          "sourceType": "Rotation2d"
+        }
+      ],
+      "listFields": [],
+      "options": {
+        "maxSpeed": 4.5,
+        "rotationUnits": "radians",
+        "arrangement": "0,1,2,3",
+        "sizeLeftRight": 0.65,
+        "sizeFrontBack": 0.65,
+        "forwardDirection": "up"
+      },
+      "configHidden": false,
+      "title": "Swerve"
+    },
+    {
+      "type": 8,
+      "fields": [],
+      "listFields": [],
+      "options": {
+        "ids": [
+          0,
+          1,
+          2
+        ],
+        "layouts": [
+          "Xbox Controller (White)",
+          "None",
+          "None"
+        ]
+      },
+      "configHidden": false,
+      "title": "Joysticks"
+    },
+    {
+      "type": 7,
+      "fields": [],
+      "listFields": [],
+      "options": {},
+      "configHidden": false,
+      "title": "Video"
+    },
+    {
+      "type": 10,
+      "fields": [
+        null,
+        null,
+        null
+      ],
+      "listFields": [],
+      "options": {},
+      "configHidden": false,
+      "title": "Mechanism"
+    }
+  ]
+}

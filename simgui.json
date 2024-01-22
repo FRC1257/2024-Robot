@@ -17,6 +17,7 @@
       "/SmartDashboard/Drive": "Subsystem",
       "/SmartDashboard/Elevator": "Subsystem",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Pathfind to Pickup Pos": "Command",
       "/SmartDashboard/PivotArm": "Subsystem",
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
     },
@@ -46,6 +47,11 @@
         "window": {
           "visible": true
         }
+      },
+      "/SmartDashboard/Pathfind to Pickup Pos": {
+        "window": {
+          "visible": true
+        }
       }
     }
   },
@@ -68,16 +74,24 @@
         },
         "Vision": {
           "open": true
-        },
-        "open": true
+        }
       },
-      "FMSInfo": {
+      "CameraPublisher": {
+        "Front_Camera-processed": {
+          "open": true,
+          "string[]##v_/CameraPublisher/Front_Camera-processed/streams": {
+            "open": true
+          }
+        },
         "open": true
       },
       "Shuffleboard": {
         "open": true
       },
       "SmartDashboard": {
+        "Pathfind to Pickup Pos": {
+          "open": true
+        },
         "open": true
       },
       "photonvision": {
@@ -86,6 +100,15 @@
     }
   },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
     "visible": true
   }
 }
