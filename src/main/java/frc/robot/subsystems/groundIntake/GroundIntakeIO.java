@@ -4,7 +4,16 @@ import org.littletonrobotics.junction.AutoLog;
 public interface GroundIntakeIO {
     @AutoLog
     public static class GroundIntakeIOInputs {
-        
+        /** 
+         * Some of these may be unnecessary if no
+         * NEOs are used.
+         */
+        public double appliedVoltage = 0.0;
+        public double[] currentAmps = new double[] {};
+        public double[] tempCelcius = new double[] {};
+        public double encoderPosition = 0.0;
+        public double angle = 0.0;
+        public double angleRadPerSec = 0.0;
     }
     /** updates inputs from robot */
     public void updateInputs(GroundIntakeIOInputs inputs);
