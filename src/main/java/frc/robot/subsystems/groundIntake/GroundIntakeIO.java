@@ -14,6 +14,7 @@ public interface GroundIntakeIO {
         public double encoderPosition = 0.0;
         public double angle = 0.0;
         public double angleRadPerSec = 0.0;
+        // tests
     }
 
     /** Min/max angles for extension **ADD VALUES** */
