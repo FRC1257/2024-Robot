@@ -15,28 +15,42 @@ public interface GroundIntakeIO {
         public double angle = 0.0;
         public double angleRadPerSec = 0.0;
     }
+
+    /** Min/max angles for extension **ADD VALUES** */
+    public double GROUND_INTAKE_MIN_ANGLE = 0.0;
+    public double GROUND_INTAKE_MAX_ANGLE = 0.0;
     /** updates inputs from robot */
-    public void updateInputs(GroundIntakeIOInputs inputs);
+    public default void updateInputs(GroundIntakeIOInputs inputs) {}
     /** sets voltage to run motor if necessary */
-    public void setVoltage(double voltage);
+    public default void setVoltage(double voltage) {}
+    /** returns true if ground intake is at setpoint */
+    public default boolean atSetpoint() {
+        return false;
+    }
+    /** sets ground intake to setpoint */
+    public default void goToSetpoint(double setpoint) {
+    }
+    /** sets brake mode */
+    public default void setBrake(boolean brake) {
+    }
     /** starts PID */
-    public void runPID(double setpoint);
+    public default void runPID(double setpoint) {}
     /** sets PIDFF target */
-    public void setPIDFF(double FF);
+    public default void setPIDFF(double FF) {}
     /** various PID get and set commands */ 
-    public void setP(double P);
+    public default void setP(double P) {}
 
-    public void setI(double I);
+    public default void setI(double I) {}
 
-    public void setD(double D);
+    public default void setD(double D) {}
 
-    public void setFF(double FF);
+    public default void setFF(double FF) {}
 
-    public double getP();
+    public default double getP() { return 0.0; }
 
-    public double getI();
+    public default double getI() { return 0.0; }
 
-    public double getD();
+    public default double getD() { return 0.0; }
 
-    public double getFF();
+    public default double getFF() { return 0.0; }
 }
