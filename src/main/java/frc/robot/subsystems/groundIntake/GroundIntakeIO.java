@@ -27,6 +27,8 @@ public interface GroundIntakeIO {
     public default boolean atSetpoint() {
         return false;
     }
+    /** Outputs to shuffleboard. It's here due to the sensor */
+    public default void breakBeamSensor() {}
     /** sets ground intake to setpoint */
     public default void goToSetpoint(double setpoint) {
     }
@@ -35,8 +37,8 @@ public interface GroundIntakeIO {
     }
     /** starts PID */
     public default void runPID(double setpoint) {}
-    /** sets PIDFF target */
-    public default void setPIDFF(double FF) {}
+    /** sets all PID targets */
+    public default void setPIDConstants(double P, double I, double D, double FF) {}
     /** various PID get and set commands */ 
     public default void setP(double P) {}
 
