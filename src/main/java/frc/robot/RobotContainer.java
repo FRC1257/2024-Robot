@@ -204,6 +204,10 @@ public class RobotContainer {
 
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driver.x().onTrue(new GoToPose(drive, new Pose2d(2, 7.8, new Rotation2d(90))));
+    driver.leftBumper().whileTrue(new StartEndCommand(
+      () -> DriveCommands.startSlowMode(),
+      () -> DriveCommands.stopSlowMode()
+    ));
 
     /* driver
         .b()

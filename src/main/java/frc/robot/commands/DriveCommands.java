@@ -178,4 +178,12 @@ public class DriveCommands {
         slowMode = 1;
       }
     }
+
+    public static void startSlowMode() {
+      slowMode = kSlowModeConstant;
+    }
+
+    public static void stopSlowMode() {
+      slowMode = 1;
+    }
 }
