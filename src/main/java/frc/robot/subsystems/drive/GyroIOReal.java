@@ -29,7 +29,7 @@ public class GyroIOReal implements GyroIO {
     private final Queue<Double> yawTimestampQueue;
     private final ADXRS450_Gyro gyro;
 
-    private GyroIOReal() {
+    public GyroIOReal() {
         navx = new AHRS();
         resetRoll = 0;
         resetPitch = 0;
