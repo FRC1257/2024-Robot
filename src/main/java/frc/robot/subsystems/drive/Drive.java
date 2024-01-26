@@ -73,6 +73,9 @@ public class Drive extends SubsystemBase {
   private final VisionIO visionIO;
   private final VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
 
+  // SwerveDriveKinematics class provides the tools required to use joysticks to move the robot
+  //wherever it wants to go. Note that this class handles both Inverse and Forward Kinematics for swerve
+
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = new Rotation2d();
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
@@ -82,6 +85,10 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
+
+  // PoseEstimator combines odometry data & vision data in order to approximate the robots 
+  // position on the field
+
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
@@ -126,7 +133,7 @@ public class Drive extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    // Configure SysId
+    // Configure SysId : Used to characterize and constrain specific constants 
     sysId =
         new SysIdRoutine(
             new SysIdRoutine.Config(

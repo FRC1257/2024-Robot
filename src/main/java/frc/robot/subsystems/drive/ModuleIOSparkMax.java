@@ -13,18 +13,28 @@
 
 package frc.robot.subsystems.drive;
 
+import static frc.robot.Constants.ModuleConstants.kDrivingEncoderPositionFactor;
+import static frc.robot.Constants.ModuleConstants.kDrivingEncoderVelocityFactor;
+import static frc.robot.Constants.ModuleConstants.kDrivingMotorCurrentLimit;
+import static frc.robot.Constants.ModuleConstants.kDrivingMotorIdleMode;
+import static frc.robot.Constants.ModuleConstants.kTurningEncoderInverted;
+import static frc.robot.Constants.ModuleConstants.kTurningEncoderPositionFactor;
+import static frc.robot.Constants.ModuleConstants.kTurningEncoderVelocityFactor;
+import static frc.robot.Constants.ModuleConstants.kTurningMotorCurrentLimit;
+import static frc.robot.Constants.ModuleConstants.kTurningMotorIdleMode;
+
+import java.util.Queue;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
-import java.util.Queue;
-
-import static frc.robot.Constants.ModuleConstants.*;
 
 /**
  * Module IO implementation for SparkMax drive motor controller, SparkMax turn motor controller (NEO
@@ -52,6 +62,9 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   private final boolean isTurnMotorInverted = true;
   private final Rotation2d absoluteEncoderOffset;
+
+  // Constructor Instantiates modules based on an integer index between [0,3]
+  // invalid indices will result in a runtime exception
 
   public ModuleIOSparkMax(int index) {
     switch (index) {
