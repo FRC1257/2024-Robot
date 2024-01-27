@@ -167,13 +167,14 @@ public final class Constants {
   }
 
   public static class Vision {
-    public static final String kCameraName = "Front_Camera";
-    public static final String kBackCameraName = "Back_Camera";
+    public static final String kRaspberryCameraName = "Front_Camera";
+    public static final String kOrangeCameraName = "Orange_tag";
+    public static final String kNoteCameraName = "Note_Camera";
     // Cam mounted facing forward, half a meter forward of center, half a meter up
     // from center.
-    public static final Transform3d kRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),
+    public static final Transform3d kRaspberryRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),
         new Rotation3d(0, 0, 0));
-    public static final Transform3d kBackRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),
+    public static final Transform3d kOrangeRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),
         new Rotation3d(0, 0, 135));
 
     // The layout of the AprilTags on the field
