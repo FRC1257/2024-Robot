@@ -32,7 +32,7 @@ import edu.wpi.first.math.util.Units;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.SIM;
+  public static final Mode currentMode = Mode.REAL;
   public static final boolean tuningMode = true;
   public static final boolean useVision = true;
 

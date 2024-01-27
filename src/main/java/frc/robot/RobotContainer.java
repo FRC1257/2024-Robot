@@ -92,11 +92,11 @@ public class RobotContainer {
       case REAL:
         drive = new Drive(
             new GyroIOReal(),
-            new ModuleIOSparkMax(0),
-            new ModuleIOSparkMax(1),
-            new ModuleIOSparkMax(2),
-            new ModuleIOSparkMax(3),
-            new VisionIOPhoton());
+            new ModuleIOSparkMax(0), //Front Left
+            new ModuleIOSparkMax(1), //Front Right
+            new ModuleIOSparkMax(2), //Back left
+            new ModuleIOSparkMax(3), //Back right
+            new VisionIOSim()); 
         break;
 
       // Sim robot, instantiate physics sim IO implementations
