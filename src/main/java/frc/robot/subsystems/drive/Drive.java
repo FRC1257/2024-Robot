@@ -55,6 +55,7 @@ import frc.robot.util.LocalADStarAK;
 import frc.robot.util.MakeTrajectories;
 
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.useVision;
 
 public class Drive extends SubsystemBase {
   // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
@@ -153,9 +154,11 @@ public class Drive extends SubsystemBase {
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
 
-    visionIO.updateInputs(visionInputs, getPose());
-    Logger.processInputs("Vision", visionInputs);
-    poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp, visionIO.getEstimationStdDevs(getPose()));
+    if (!useVision) {
+      visionIO.updateInputs(visionInputs, getPose());
+      Logger.processInputs("Vision", visionInputs);
+      poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp, visionIO.getEstimationStdDevs(getPose()));
+    }
 
     for (var module : modules) {
       module.periodic();
