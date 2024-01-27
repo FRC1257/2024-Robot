@@ -31,6 +31,9 @@ public class VisionIOPhoton implements VisionIO {
     private final PhotonCamera noteCamera;
 
     private double lastEstTimestamp = 0;
+
+    private PhotonPipelineResult latestRaspberryResult;
+    private PhotonPipelineResult latestOrangeResult;
     
     public VisionIOPhoton() {
         raspberryCamera = new PhotonCamera(kRaspberryCameraName);
@@ -52,42 +55,42 @@ public class VisionIOPhoton implements VisionIO {
         raspberryEstimator.setReferencePose(currentEstimate);
         orangeEstimator.setReferencePose(currentEstimate);
         
-        var front_result = getLatestResult(raspberryCamera);
-        var back_result = getLatestResult(orangeCamera);
+        latestRaspberryResult = getLatestResult(raspberryCamera);
+        latestOrangeResult = getLatestResult(orangeCamera);
         inputs.estimate = currentEstimate;
 
         // add code to check if the closest target is in front or back
-        if (front_result.hasTargets() && back_result.hasTargets()) {
-            double front_ambiguity = front_result.getBestTarget().getPoseAmbiguity();
-            double back_ambiguity = back_result.getBestTarget().getPoseAmbiguity();
+        if (latestRaspberryResult.hasTargets() && latestOrangeResult.hasTargets()) {
+            double front_ambiguity = latestRaspberryResult.getBestTarget().getPoseAmbiguity();
+            double back_ambiguity = latestOrangeResult.getBestTarget().getPoseAmbiguity();
             if (front_ambiguity < back_ambiguity) {
                 raspberryEstimator.update().ifPresent(est -> {
                     inputs.estimate = est.estimatedPose.toPose2d();
                 });
-                lastEstTimestamp = front_result.getTimestampSeconds();
+                lastEstTimestamp = latestRaspberryResult.getTimestampSeconds();
             } else {
                 orangeEstimator.update().ifPresent(est -> {
                     inputs.estimate = est.estimatedPose.toPose2d();
                 });
-                lastEstTimestamp = back_result.getTimestampSeconds();
+                lastEstTimestamp = latestOrangeResult.getTimestampSeconds();
             }
         }
-        else if (front_result.hasTargets()) {
+        else if (latestRaspberryResult.hasTargets()) {
             raspberryEstimator.update().ifPresent(est -> {
                 inputs.estimate = est.estimatedPose.toPose2d();
             });
-            lastEstTimestamp = front_result.getTimestampSeconds();
-        } else if (back_result.hasTargets()) {
+            lastEstTimestamp = latestRaspberryResult.getTimestampSeconds();
+        } else if (latestOrangeResult.hasTargets()) {
             orangeEstimator.update().ifPresent(est -> {
                 inputs.estimate = est.estimatedPose.toPose2d();
             });
-            lastEstTimestamp = back_result.getTimestampSeconds();
+            lastEstTimestamp = latestOrangeResult.getTimestampSeconds();
         }
-        inputs.tagCount = front_result.getTargets().size() + back_result.getTargets().size();
+        inputs.tagCount = latestRaspberryResult.getTargets().size() + latestOrangeResult.getTargets().size();
         inputs.timestamp = lastEstTimestamp;
         // inputs.stdDeviations = getEstimationStdDevs(inputs.estimate);
-        List<PhotonTrackedTarget> front_tags = front_result.targets;
-        List<PhotonTrackedTarget> back_tags = back_result.targets;
+        List<PhotonTrackedTarget> front_tags = latestRaspberryResult.targets;
+        List<PhotonTrackedTarget> back_tags = latestOrangeResult.targets;
 
         inputs.targets = new Pose2d[front_tags.size() + back_tags.size()];
         inputs.targets3d = new Pose3d[front_tags.size() + back_tags.size()];
@@ -132,25 +135,24 @@ public class VisionIOPhoton implements VisionIO {
         Optional<EstimatedRobotPose> raspberryEst = raspberryEstimator.update();
 
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
+        double latestTimestamp = latestRaspberryResult.getTimestampSeconds();
 
         if (orangeEst.isPresent() && raspberryEst.isPresent()) {
-            var front_result = getLatestResult(raspberryCamera);
-            var back_result = getLatestResult(orangeCamera);
-
-            double orangeAmbiguity = front_result.getBestTarget().getPoseAmbiguity();
-            double raspberryAmbiguity = back_result.getBestTarget().getPoseAmbiguity();
+            double orangeAmbiguity = latestRaspberryResult.getBestTarget().getPoseAmbiguity();
+            double raspberryAmbiguity = latestOrangeResult.getBestTarget().getPoseAmbiguity();
             if (orangeAmbiguity < raspberryAmbiguity) {
                 visionEst = orangeEst;
+                latestTimestamp = latestOrangeResult.getTimestampSeconds();
             } else {
                 visionEst = raspberryEst;
             }
         } else if (orangeEst.isPresent()) {
             visionEst = orangeEst;
+            latestTimestamp = latestOrangeResult.getTimestampSeconds();
         } else if (raspberryEst.isPresent()) {
             visionEst = raspberryEst;
         }
-
-        double latestTimestamp = raspberryCamera.getLatestResult().getTimestampSeconds();
+        
         boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
         
         if (newResult) lastEstTimestamp = latestTimestamp;
@@ -189,13 +191,13 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
-        if (getLatestResult(raspberryCamera).hasTargets() && getLatestResult(orangeCamera).hasTargets())
-            if (getLatestResult(raspberryCamera).getBestTarget().getPoseAmbiguity() < getLatestResult(orangeCamera).getBestTarget().getPoseAmbiguity())
+        if (latestRaspberryResult.hasTargets() && latestOrangeResult.hasTargets())
+            if (latestRaspberryResult.getBestTarget().getPoseAmbiguity() < latestOrangeResult.getBestTarget().getPoseAmbiguity())
                 return getEstimationStdDevs(estimatedPose, raspberryCamera, orangeEstimator);
             else return getEstimationStdDevs(estimatedPose, orangeCamera, orangeEstimator);
-        else if (getLatestResult(raspberryCamera).hasTargets())
+        else if (latestRaspberryResult.hasTargets())
             return getEstimationStdDevs(estimatedPose, raspberryCamera, orangeEstimator);
-        else if (getLatestResult(orangeCamera).hasTargets())
+        else if (latestOrangeResult.hasTargets())
             return getEstimationStdDevs(estimatedPose, orangeCamera, orangeEstimator);
         else return getEstimationStdDevs(estimatedPose, raspberryCamera, orangeEstimator);
     }
