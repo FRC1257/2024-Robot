@@ -97,7 +97,7 @@ public class Module {
         double adjustSpeedSetpoint = speedSetpoint * Math.cos(io.getTurnPositionError(angleSetpoint.getRadians()));
 
         // Run drive controller
-        double velocityRadPerSec = adjustSpeedSetpoint / WHEEL_RADIUS;
+        double velocityRadPerSec = adjustSpeedSetpoint;
 
         io.setDriveVelocity(velocityRadPerSec);
       }

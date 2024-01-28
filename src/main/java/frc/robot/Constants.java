@@ -20,6 +20,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -32,7 +33,9 @@ import edu.wpi.first.math.util.Units;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.REAL;
+  public static final Mode mode = Mode.REAL;
+
+  public static final Mode currentMode = getRobotMode();
   public static final boolean tuningMode = true;
   public static final boolean useVision = true;
 
@@ -48,6 +51,25 @@ public final class Constants {
 
     /** Replaying from a log file. */
     REPLAY
+  }
+
+  public static Mode getRobotMode() {
+    if (RobotBase.isReal()) {
+      return Mode.REAL;
+    }
+    if (RobotBase.isSimulation()) {
+      switch (mode) {
+        case REAL:
+          System.out.println("WARNING: Running in real mode while in simulation");
+        case SIM:
+          return Mode.SIM;
+        case TEST:
+          return Mode.TEST;
+        case REPLAY:
+          return Mode.REPLAY;
+      }
+    }
+    return Mode.REAL;
   }
 
   public static final class DriveConstants {

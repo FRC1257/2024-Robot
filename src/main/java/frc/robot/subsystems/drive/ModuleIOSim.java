@@ -21,6 +21,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
+import static frc.robot.Constants.ModuleConstants.*;
 /**
  * Physics sim implementation of module IO.
  *
@@ -34,7 +35,7 @@ public class ModuleIOSim implements ModuleIO {
   private DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), 6.75, 0.025);
   private DCMotorSim turnSim = new DCMotorSim(DCMotor.getNEO(1), 150.0 / 7.0, 0.004);
 
-  private final Rotation2d turnAbsoluteInitPosition = new Rotation2d(Math.random() * 2.0 * Math.PI);
+  private final Rotation2d turnAbsoluteInitPosition = new Rotation2d(); // new Rotation2d(Math.random() * 2.0 * Math.PI);
   private double driveAppliedVolts = 0.0;
   private double turnAppliedVolts = 0.0;
 
@@ -78,6 +79,7 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
+    velocityRadPerSec *= 2/kWheelDiameterMeters;
     setDriveVoltage(driveFeedforward.calculate(velocityRadPerSec) + driveFeedback.calculate(driveSim.getAngularVelocityRadPerSec(), velocityRadPerSec));
   }
 
