@@ -50,4 +50,16 @@ public interface ModuleIO {
 
   /** Enable or disable brake mode on the turn motor. */
   public default void setTurnBrakeMode(boolean enable) {}
+
+  public default void setDrivePIDFF(double p, double i, double d, double ff) {}
+
+  public default void setTurnPIDFF(double p, double i, double d, double ff) {}
+
+  public default void setDriveVelocity(double velocityRadPerSec) {}
+
+  public default void setTurnPosition(double angle) {}
+
+  public default double getTurnPositionError(double angle) {
+    return 0.0;
+  }
 }

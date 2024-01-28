@@ -131,6 +131,7 @@ public class DriveCommands {
         Drive drive,
         DoubleSupplier xSupplier,
         DoubleSupplier ySupplier) {
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
         return Commands.run(
             () -> { 
                 Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
