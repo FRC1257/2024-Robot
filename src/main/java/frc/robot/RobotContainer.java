@@ -203,7 +203,7 @@ public class RobotContainer {
             () -> -driver.getLeftX()));
 
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    driver.x().onTrue(new GoToPose(drive, new Pose2d(2, 7.8, new Rotation2d(90))));
+    driver.x().onTrue(drive.goToPose(new Pose2d(1.9, 7.715, Rotation2d.fromDegrees(-90))));
 
     /* driver
         .b()

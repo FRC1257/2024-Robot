@@ -18,6 +18,7 @@ import static frc.robot.Constants.DriveConstants.kPathConstraints;
 import static frc.robot.Constants.DriveConstants.kTrackWidthX;
 import static frc.robot.Constants.DriveConstants.kTrackWidthY;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -47,6 +48,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.vision.VisionIO;
@@ -116,6 +118,7 @@ public class Drive extends SubsystemBase {
         this);
 
     Pathfinding.setPathfinder(new LocalADStarAK());
+    Pathfinding.ensureInitialized();
 
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
@@ -350,7 +353,7 @@ public class Drive extends SubsystemBase {
   }
 
   public Command goToPose(Pose2d target_pose) {
-    return AutoBuilder.pathfindToPose(target_pose, kPathConstraints, 0.0, 0.0);
+    return AutoBuilder.pathfindToPose(target_pose, kPathConstraints, 0.0, 1);
   }
 
   public Command getAuto(String nameString) {
