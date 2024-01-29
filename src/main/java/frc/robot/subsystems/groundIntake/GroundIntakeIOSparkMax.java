@@ -9,6 +9,8 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import static frc.robot.Constants.*;
+
 /** Need to import Constants files/classes */
 
 public class GroundIntakeIOSparkMax implements GroundIntakeIO {
