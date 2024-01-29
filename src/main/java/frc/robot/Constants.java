@@ -154,4 +154,54 @@ public final class Constants {
   // https://www.revrobotics.com/rev-11-1271/
 
   public final static int NEO_CURRENT_LIMIT = 80; // amps
+
+  
+  public static class PivotArm {
+    // PID constants
+    public static double[] PIVOT_ARM_PID = new double[] { 0.25, 0, 0, 0 };
+    public static double PIVOT_ARM_PID_TOLERANCE = 1;
+    public static double PIVOT_ARM_PID_MAX_OUTPUT = 1;
+
+    public static double POSITION_CONVERSION_FACTOR = 1;
+
+    // Setpoints between -1 and 1
+    public static double PIVOT_ARM_SETPOINT_UP = 135;
+    public static double PIVOT_ARM_SETPOINT_MID = 175;
+    // public static double PIVOT_ARM_SETPOINT_INTAKE = 0; // also used for low
+    // score
+    public static double PIVOT_ARM_SETPOINT_HOLD = 10;
+    public static final double PIVOT_ARM_SETPOINT_BOTTOM = 0;
+    public static final double PIVOT_ARM_SETPOINT_TOP = 170;
+
+    public static class PivotArmPhysicalConstants {
+      public static final double PIVOT_ARM_TOLERANCE = 3;
+      public static final double PIVOT_ARM_STOP_BUFFER = 5;
+    }
+
+    public static class PivotArmSimConstants {
+      public static final int kMotorPort = 2;
+      public static final int kEncoderAChannel = 2;
+      public static final int kEncoderBChannel = 3;
+      public static final int kJoystickPort = 0;
+
+      public static final String kArmPositionKey = "ArmPosition";
+      public static final String kArmPKey = "ArmP";
+
+      // The P gain for the PID controller that drives this arm.
+      public static final double kDefaultArmKp = 50.0;
+      public static final double kDefaultArmSetpointDegrees = 75.0;
+
+      // distance per pulse = (angle per revolution) / (pulses per revolution)
+      // = (2 * PI rads) / (4096 pulses)
+      public static final double kArmEncoderDistPerPulse = 2.0 * Math.PI / 4096;
+
+      public static final double kArmReduction = 200;
+      public static final double kArmMass = 5.0; // Kilograms
+      public static final double kArmLength = Units.inchesToMeters(20);
+      public static final double kMinAngleRads = Units.degreesToRadians(-175);
+      public static final double kMaxAngleRads = Units.degreesToRadians(255);
+      public static double kEncoderDistancePerPulse;
+    }
+  }
+
 }
