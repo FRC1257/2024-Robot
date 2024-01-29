@@ -157,28 +157,26 @@ public final class Constants {
 
   
   public static class PivotArm {
-    // PID constants
-    public static double[] PIVOT_ARM_PID = new double[] { 0.25, 0, 0, 0 };
-    public static double PIVOT_ARM_PID_TOLERANCE = 1;
-    public static double PIVOT_ARM_PID_MAX_OUTPUT = 1;
+    // CHANGE CONSTANTS, THESE ARE TEMPORARY
+    public static final int PIVOT_ARM_ID = 0;
+    public static final int LEFT_SLAVE_ID = 1;
+    public static final int RIGHT_SLAVE_FRONT_ID = 2;
+    public static final int RIGHT_SLAVE_BACK_ID = 3;
 
-    public static double POSITION_CONVERSION_FACTOR = 1;
+    public static final double POSITION_CONVERSION_FACTOR = 12.57;
+    public static final double PIVOT_ARM_ROTATION_DIAM_M = 1.257;
 
-    // Setpoints between -1 and 1
-    public static double PIVOT_ARM_SETPOINT_UP = 135;
-    public static double PIVOT_ARM_SETPOINT_MID = 175;
-    // public static double PIVOT_ARM_SETPOINT_INTAKE = 0; // also used for low
-    // score
-    public static double PIVOT_ARM_SETPOINT_HOLD = 10;
-    public static final double PIVOT_ARM_SETPOINT_BOTTOM = 0;
-    public static final double PIVOT_ARM_SETPOINT_TOP = 170;
+    public static final double PIVOT_ARM_GEARBOX_REDUCTION = 12.57;
 
-    public static class PivotArmPhysicalConstants {
-      public static final double PIVOT_ARM_TOLERANCE = 3;
-      public static final double PIVOT_ARM_STOP_BUFFER = 5;
-    }
+    public static final double[] PIVOT_ARM_PID_REAL = { 12, 5, 7 };
+    public static final double PIVOT_ARM_PID_TOLERANCE = .1257;
+
+    public static final double PIVOT_ARM_MAX_ANGLE = 150.0;
+    public static final double PIVOT_ARM_MIN_ANGLE = -30.0;
 
     public static class PivotArmSimConstants {
+      public static final double[] kPivotSimPID = { 12, 5, 7 };
+
       public static final int kMotorPort = 2;
       public static final int kEncoderAChannel = 2;
       public static final int kEncoderBChannel = 3;

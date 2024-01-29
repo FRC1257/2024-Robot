@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.RobotContainer;
 
 import static frc.robot.Constants.PivotArm.*;
-import static frc.robot.Constants.PivotArm.PIVOT_ARM_PID;
 
 public class PivotArm extends SubsystemBase {
     private final PivotArmIOInputsAutoLogged inputs = new PivotArmIOInputsAutoLogged();
@@ -27,10 +26,9 @@ public class PivotArm extends SubsystemBase {
         PID
     }
 
-    private LoggedDashboardNumber p = new LoggedDashboardNumber("PivotArm/P", PIVOT_ARM_PID[0]);
-    private LoggedDashboardNumber i = new LoggedDashboardNumber("PivotArm/I", PIVOT_ARM_PID[1]);
-    private LoggedDashboardNumber d = new LoggedDashboardNumber("PivotArm/D", PIVOT_ARM_PID[2]);
-    private LoggedDashboardNumber ff = new LoggedDashboardNumber("PivotArm/FF", PIVOT_ARM_PID[3]);
+    private LoggedDashboardNumber logP;
+    private LoggedDashboardNumber logI;
+    private LoggedDashboardNumber logD;
 
 
     private State state = State.MANUAL;
@@ -44,37 +42,38 @@ public class PivotArm extends SubsystemBase {
     public PivotArm(PivotArmIO io) {
         this.io = io;
         SmartDashboard.putData(getName(), this);
+
+        logP = new LoggedDashboardNumber("PivotArm/P", io.getP());
+        logI = new LoggedDashboardNumber("PivotArm/I", io.getI());
+        logD = new LoggedDashboardNumber("PivotArm/D", io.getD());
     }
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.getInstance().processInputs("PivotArm", inputs);
+        Logger.processInputs("PivotArm", inputs);
 
-        armMechanism.setAngle(inputs.angle);
+        armMechanism.setAngle(inputs.angleRads);
 
         // Update the PID constants if they have changed
-        if (p.get() != io.getP()) 
-            io.setP(p.get());
+        if (logP.get() != io.getP()) 
+            io.setP(logP.get());
         
-        if (i.get() != io.getI())
-            io.setI(i.get());
+        if (logI.get() != io.getI())
+            io.setI(logI.get());
         
-        if (d.get() != io.getD())
-            io.setD(d.get());
-        
-        if (ff.get() != io.getFF())
-            io.setFF(ff.get());
+        if (logD.get() != io.getD())
+            io.setD(logD.get());
         
         // Log Inputs
-        Logger.getInstance().processInputs("PivotArm", inputs);
+        Logger.processInputs("PivotArm", inputs);
     }
 
     public void setVoltage(double motorVolts) {
         // limit the arm if its past the limit
-        if (io.getAngle() > io.PIVOT_ARM_MAX_ANGLE && motorVolts > 0) {
+        if (io.getAngle() > PIVOT_ARM_MAX_ANGLE && motorVolts > 0) {
             motorVolts = 0;
-        } else if (io.getAngle() < io.PIVOT_ARM_MIN_ANGLE && motorVolts < 0) {
+        } else if (io.getAngle() < PIVOT_ARM_MIN_ANGLE && motorVolts < 0) {
             motorVolts = 0;
         }
         

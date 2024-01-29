@@ -2,25 +2,26 @@ package frc.robot.subsystems.pivotArm;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.Constants.PivotArm;
 
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import static frc.robot.Constants.ElectricalLayout.*;
-import static frc.robot.Constants.PivotArm;
+import static frc.robot.Constants.PivotArm.*;
 import static frc.robot.Constants.NEO_CURRENT_LIMIT;
-import static frc.robot.Constants.PivotArm.PivotArmPhysicalConstants.*;
 
 public class PivotArmIOSparkMax implements PivotArmIO {
     // Motor and Encoders
-    private CANSparkMax pivotMotor;
-    private SparkMaxPIDController pidController;
+    private CANSparkMax pivotMotor, leftSlave, rightSlaveFront, rightSlaveBack;
+    private SparkPIDController pidController;
     private RelativeEncoder encoder;
     private DutyCycleEncoder absoluteEncoder;
 
@@ -28,16 +29,32 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
     public PivotArmIOSparkMax() {
         pivotMotor = new CANSparkMax(PIVOT_ARM_ID, MotorType.kBrushless);
+        leftSlave = new CANSparkMax(LEFT_SLAVE_ID, MotorType.kBrushless);
+        rightSlaveFront = new CANSparkMax(RIGHT_SLAVE_FRONT_ID, MotorType.kBrushless);
+        rightSlaveBack = new CANSparkMax(RIGHT_SLAVE_BACK_ID, MotorType.kBrushless);
+
         pivotMotor.restoreFactoryDefaults();
-        pivotMotor.setIdleMode(IdleMode.kBrake);
-        pivotMotor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
+        leftSlave.restoreFactoryDefaults();
+        rightSlaveFront.restoreFactoryDefaults();
+        rightSlaveBack.restoreFactoryDefaults();
+        
+        pivotMotor.setInverted(false);
+        leftSlave.setInverted(false);
+        rightSlaveFront.setInverted(true);
+        rightSlaveBack.setInverted(true);
 
-        pidController = pivotMotor.getPIDController();
-        pidController.setOutputRange(-1, 1);
+        leftSlave.follow(pivotMotor);
+        rightSlaveFront.follow(pivotMotor);
+        rightSlaveBack.follow(pivotMotor);
 
-        encoder = pivotMotor.getEncoder();
-        encoder.setPositionConversionFactor(PivotArm.POSITION_CONVERSION_FACTOR);
-        encoder.setVelocityConversionFactor(PivotArm.POSITION_CONVERSION_FACTOR / 60);
+        pivotMotor.enableVoltageCompensation(12.0);
+        pivotMotor.setSmartCurrentLimit(30);
+        pivotMotor.burnFlash();
+
+        configurePID();
+
+        encoder.setPositionConversionFactor(POSITION_CONVERSION_FACTOR);
+        encoder.setVelocityConversionFactor(POSITION_CONVERSION_FACTOR / 60);
         encoder.setPosition(0.6);
 
         absoluteEncoder = new DutyCycleEncoder(0);
@@ -47,19 +64,28 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         encoder.setPosition(absoluteEncoder.getDistance() * 28.45 + 0.6);
     }
 
-    @Override
-    public void setPIDConstants(double p, double i, double d, double ff) {
-        pidController.setP(p);
-        pidController.setI(i);
-        pidController.setD(d);
-        pidController.setFF(ff);
+    private void configureEncoders() {
+        encoder = pivotMotor.getEncoder();
+
+        encoder.setPositionConversionFactor(Math.PI * PIVOT_ARM_ROTATION_DIAM_M / PIVOT_ARM_GEARBOX_REDUCTION);
+        encoder.setVelocityConversionFactor(Math.PI * PIVOT_ARM_ROTATION_DIAM_M / PIVOT_ARM_GEARBOX_REDUCTION / 60.0);
+
+        encoder.setPosition(0);
+    }
+
+    private void configurePID() {
+        pidController = pivotMotor.getPIDController();
+        pidController.setOutputRange(PIVOT_ARM_MIN_ANGLE, PIVOT_ARM_MAX_ANGLE);
+        pidController.setP(PIVOT_ARM_PID_REAL[0]);
+        pidController.setI(PIVOT_ARM_PID_REAL[1]);
+        pidController.setD(PIVOT_ARM_PID_REAL[2]);
     }
 
     /** Updates the set of loggable inputs. */
     @Override
     public void updateInputs(PivotArmIOInputs inputs) {
-        inputs.angle = encoder.getPosition();
-        inputs.angleRadsPerSec = encoder.getVelocity();
+        inputs.angleRads = encoder.getPosition();
+        inputs.angVelocityRadsPerSec = encoder.getVelocity();
         inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
         inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
         inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
@@ -91,7 +117,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
     @Override
     public boolean atSetpoint() {
-        return Math.abs(encoder.getPosition() - setpoint) < PivotArm.PIVOT_ARM_PID_TOLERANCE;
+        return Math.abs(encoder.getPosition() - setpoint) < PIVOT_ARM_PID_TOLERANCE;
     }
 
     @Override
@@ -110,11 +136,6 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     }
 
     @Override
-    public void setFF(double ff) {
-        pidController.setFF(ff);
-    }
-
-    @Override
     public double getP() {
         return pidController.getP();
     }
@@ -127,11 +148,6 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     @Override
     public double getD() {
         return pidController.getD();
-    }
-
-    @Override
-    public double getFF() {
-        return pidController.getFF();
     }
 
 }
