@@ -78,9 +78,9 @@ public class Module {
 
     // On first cycle, reset relative turn encoder
     // Wait until absolute angle is nonzero in case it wasn't initialized yet
-    if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
-      turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
-    }
+   // if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
+     // turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
+    //}
 
     // Run closed loop turn control
     if (angleSetpoint != null) {
@@ -94,12 +94,12 @@ public class Module {
         // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
-        double adjustSpeedSetpoint = speedSetpoint * Math.cos(io.getTurnPositionError(angleSetpoint.getRadians()));
+        // double adjustSpeedSetpoint = speedSetpoint * Math.cos(io.getTurnPositionError(angleSetpoint.getRadians()));
 
         // Run drive controller
-        double velocityRadPerSec = adjustSpeedSetpoint;
+        // double velocityRadPerSec = adjustSpeedSetpoint;
 
-        io.setDriveVelocity(velocityRadPerSec);
+        io.setDriveVelocity(speedSetpoint);
       }
     }
 
@@ -157,7 +157,7 @@ public class Module {
   /** Returns the current turn angle of the module. */
   public Rotation2d getAngle() {
     if (turnRelativeOffset == null) {
-      return new Rotation2d();
+      return inputs.turnPosition;
     } else {
       return inputs.turnPosition.plus(turnRelativeOffset);
     }
@@ -165,12 +165,12 @@ public class Module {
 
   /** Returns the current drive position of the module in meters. */
   public double getPositionMeters() {
-    return inputs.drivePositionRad * WHEEL_RADIUS;
+    return inputs.drivePositionRad;
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
   public double getVelocityMetersPerSec() {
-    return inputs.driveVelocityRadPerSec * WHEEL_RADIUS;
+    return inputs.driveVelocityRadPerSec;
   }
 
   /** Returns the module position (turn angle and drive position). */

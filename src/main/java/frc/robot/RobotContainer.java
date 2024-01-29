@@ -195,6 +195,13 @@ public class RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX()));
+
+    driver.leftBumper().whileTrue(DriveCommands.joystickDriveRobotRelative(
+      drive,
+      () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX()
+      ));
             
     driver.a().whileTrue(
         DriveCommands.joystickSpeakerPoint(
@@ -204,6 +211,8 @@ public class RobotContainer {
 
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driver.x().onTrue(drive.goToPose(new Pose2d(1.9, 7.715, Rotation2d.fromDegrees(-90))));
+    // driver.b().onTrue(drive.goToPose(new Pose2d(15.331, 1, Rotation2d.fromDegrees(-60))));
+    driver.b().onTrue(new InstantCommand(() -> drive.stopWithX(), drive));
 
     /* driver
         .b()
