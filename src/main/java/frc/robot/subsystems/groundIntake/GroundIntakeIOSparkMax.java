@@ -3,7 +3,7 @@ package frc.robot.subsystems.groundIntake;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkBase; 
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
