@@ -2,7 +2,7 @@ package frc.robot.subsystems.groundIntake;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GroundIntakeIOSim implements GroundIntakeIO {
-    private CANSparkMax groundIntakeMotor;
+    private PWMSparkMax groundIntakeMotor;
     private SparkPIDController pidController;
     private RelativeEncoder encoder;
     private DutyCycleEncoder absoluteEncoder;
@@ -22,7 +22,7 @@ public class GroundIntakeIOSim implements GroundIntakeIO {
 
     public GroundIntakeIOSim() {
         /** ID needs to be assigned from constants */
-        groundIntakeMotor = new CANSparkMax(0, CANSparkMax.MotorType.kBrushless);
+        groundIntakeMotor = new PWMSparkMax(0, PWMSparkMax.MotorType.kBrushless);
         groundIntakeMotor.restoreFactoryDefaults();
         groundIntakeMotor.setIdleMode(IdleMode.kBrake);
         /** Current limit should be added to Constants.java when known */
