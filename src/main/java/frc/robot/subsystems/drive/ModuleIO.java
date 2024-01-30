@@ -62,4 +62,8 @@ public interface ModuleIO {
   public default double getTurnPositionError(double angle) {
     return 0.0;
   }
+
+  public default double getAbsoluteEncoderOffset() {
+    return 0.0;
+  }
 }

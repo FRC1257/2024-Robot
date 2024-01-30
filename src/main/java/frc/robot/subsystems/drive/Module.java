@@ -37,7 +37,7 @@ public class Module {
   //private final SimpleMotorFeedforward driveFeedforward;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
-  private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
+  
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
   public Module(ModuleIO io, int index) {
@@ -76,12 +76,6 @@ public class Module {
   public void periodic() {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
-    // On first cycle, reset relative turn encoder
-    // Wait until absolute angle is nonzero in case it wasn't initialized yet
-   // if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
-     // turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
-    //}
-
     // Run closed loop turn control
     if (angleSetpoint != null) {
       io.setTurnPosition(angleSetpoint.getRadians());
@@ -108,18 +102,20 @@ public class Module {
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
       double positionMeters = inputs.odometryDrivePositionsRad[i] * WHEEL_RADIUS;
-      Rotation2d angle =
-          inputs.odometryTurnPositions[i].plus(
-              turnRelativeOffset != null ? turnRelativeOffset : new Rotation2d());
+      Rotation2d angle = inputs.odometryTurnPositions[i];
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
   }
 
   /** Runs the module with the specified setpoint state. Returns the optimized state. */
   public SwerveModuleState runSetpoint(SwerveModuleState state) {
-    // Optimize state based on current angle
-    // Controllers run in "periodic" when the setpoint is not null
-    var optimizedState = SwerveModuleState.optimize(state, getAngle());
+    // Apply chassis angular offset to the desired state.
+    SwerveModuleState correctedDesiredState = new SwerveModuleState();
+    correctedDesiredState.speedMetersPerSecond = state.speedMetersPerSecond;
+    correctedDesiredState.angle = state.angle.plus(Rotation2d.fromRadians(io.getAbsoluteEncoderOffset()));
+
+    // Optimize the reference state to avoid spinning further than 90 degrees.
+    SwerveModuleState optimizedState = SwerveModuleState.optimize(correctedDesiredState, inputs.turnAbsolutePosition);
 
     // Update setpoints, controllers run in "periodic"
     angleSetpoint = optimizedState.angle;
@@ -156,11 +152,7 @@ public class Module {
 
   /** Returns the current turn angle of the module. */
   public Rotation2d getAngle() {
-    if (turnRelativeOffset == null) {
-      return inputs.turnPosition;
-    } else {
-      return inputs.turnPosition.plus(turnRelativeOffset);
-    }
+    return inputs.turnPosition;
   }
 
   /** Returns the current drive position of the module in meters. */
