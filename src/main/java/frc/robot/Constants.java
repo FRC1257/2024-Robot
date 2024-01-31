@@ -187,7 +187,6 @@ public final class Constants {
   }
 
   public static final class GroundIntake {
-    public static double[] GROUND_INTAKE_PID = new double[] { 0.0, 0.0, 0.0, 0.0 };
     public static class GroundIntakeSimConstants {
       public static final int kMotorPort = 0;
       public static final int kBreakBeamSensorChannel = 0;
