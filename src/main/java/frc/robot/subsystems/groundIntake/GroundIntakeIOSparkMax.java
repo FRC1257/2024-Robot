@@ -37,16 +37,12 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
         inputs.appliedVoltage = groundIntakeMotor.getAppliedOutput() * groundIntakeMotor.getBusVoltage();
         inputs.currentAmps = new double[] {groundIntakeMotor.getOutputCurrent()};
         inputs.tempCelcius = new double[] {groundIntakeMotor.getMotorTemperature()};
+        inputs.breakBeamSensor = breakBeamSensor.get();
     }
     /** sets voltage to run motor if necessary */
     @Override
     public void setVoltage(double voltage) {
         groundIntakeMotor.setVoltage(voltage);
-    }
-    /** Gets break beam state */
-    @Override
-    public void breakBeamSensor() {
-        SmartDashboard.putBoolean("Ground Intake Break Beam", breakBeamSensor.get());
     }
     /** sets brake mode to stop */
     @Override

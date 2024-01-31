@@ -40,13 +40,7 @@ public class GroundIntakeIOSim implements GroundIntakeIO {
     public void setVoltage(double voltage) {
         groundIntakeMotor.setVoltage(voltage);
     }
-   
-    /** Gets break beam state */
-    @Override
-    public void breakBeamSensor() {
-        SmartDashboard.putBoolean("Ground Intake Break Beam", breakBeamSensor.get());
-    }
- 
+
     @Override
     public void setBrake(boolean brake) {
         groundIntakeMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);

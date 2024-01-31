@@ -3,11 +3,11 @@ package frc.robot.subsystems.groundIntake;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.GroundIntake.*;
-import static frc.robot.Constants.GroundIntake.GROUND_INTAKE_PID;
 
 
 public class GroundIntake extends SubsystemBase {
@@ -27,7 +27,7 @@ public class GroundIntake extends SubsystemBase {
         io.setVoltage(voltage);
     }
     public void breakBeamSensor() {
-        // io.breakBeamSensor(); Not sure how to implement this method
+        DigitalInput breakBeamSensor = new DigitalInput(0);
         SmartDashboard.putBoolean("Ground Intake Break Beam", breakBeamSensor.get());
     }
     public void setBrake(boolean brake) {
