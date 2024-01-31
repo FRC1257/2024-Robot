@@ -5,13 +5,18 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.GroundIntake.*;
 
+import java.util.function.DoubleSupplier;
+
 
 public class GroundIntake extends SubsystemBase {
-    private final GroundIntakeIO io;
+    private final static GroundIntakeIO io;
     GroundIntakeIOInputsAutoLogged inputs = new GroundIntakeIOInputsAutoLogged();
     
     public GroundIntake (GroundIntakeIO io) {
@@ -23,14 +28,22 @@ public class GroundIntake extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Ground Intake", inputs);
     }
-    public void setVoltage(double voltage) {
+
+    public static void setVoltage(double voltage) {
         io.setVoltage(voltage);
     }
-    public void breakBeamSensor() {
-        DigitalInput breakBeamSensor = new DigitalInput(0);
-        SmartDashboard.putBoolean("Ground Intake Break Beam", breakBeamSensor.get());
-    }
+
     public void setBrake(boolean brake) {
         io.setBrake(brake);
+    }
+
+
+    public Command IntakeLoopCommand(double voltage) {
+        return new FunctionalCommand(
+            () -> setVoltage(voltage),
+            interrupted -> setVoltage(0.0),
+            stop -> {},
+            this
+        );
     }
 }
