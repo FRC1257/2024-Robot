@@ -1,6 +1,7 @@
 package frc.robot.subsystems.pivotArm;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.subsystems.pivotArm.PivotArm;
 
 import static frc.robot.Constants.PivotArm.PivotArmSimConstants.*;
 
@@ -24,7 +26,7 @@ public class PivotArmIOSim implements PivotArmIO {
     // from here https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/armsimulation/subsystems/Arm.java
       // The P gain for the PID controller that drives this arm.
   private double m_armSetpointDegrees = kDefaultArmSetpointDegrees;
-
+    
   // The arm gearbox represents a gearbox containing two Vex 775pro motors.
   private final DCMotor m_armGearbox = DCMotor.getVex775Pro(2);
 

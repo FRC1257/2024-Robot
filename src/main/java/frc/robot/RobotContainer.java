@@ -12,6 +12,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.SpinAuto;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmIO;
+import frc.robot.subsystems.pivotArm.PivotArmIOSim;
+import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
+import frc.robot.Constants.PivotArm.PivotArmSimConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCIM;
@@ -41,6 +46,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
 
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a "declarative" paradigm, very little robot logic should
@@ -51,7 +57,7 @@ import java.io.File;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-
+  private final PivotArm pivot;
   private Mechanism2d mech = new Mechanism2d(3, 3);
 
   // Controllers
@@ -71,19 +77,23 @@ public class RobotContainer {
       // Real robot, instantiate hardware IO implementations
       case REAL:
         drive = new Drive(new DriveIOTalon(), new VisionIOPhoton(), new Pose2d());
+        pivot = new PivotArm(new PivotArmIOSparkMax());
         break;
 
       // Sim robot, instantiate physics sim IO implementations
       case SIM:
         drive = new Drive(new DriveIOSim(), new VisionIOSim(), new Pose2d());
+        pivot = new PivotArm(new PivotArmIOSim());
         break;
       case TEST:
         drive = new Drive(new DriveIOCIM(), new VisionIOPhoton(), new Pose2d());
+        pivot = new PivotArm(new PivotArmIOSim());
         break;
 
       // Replayed robot, disable IO implementations
       default:
         drive = new Drive(new DriveIO() {}, new VisionIO() {}, new Pose2d());
+        pivot = new PivotArm(new PivotArmIO() {});
         break;
     }
 

@@ -15,7 +15,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.RobotContainer;
-
+import frc.robot.Constants.PivotArm.PivotArmSimConstants;
 import static frc.robot.Constants.PivotArm.*;
 
 public class PivotArm extends SubsystemBase {
@@ -42,10 +42,11 @@ public class PivotArm extends SubsystemBase {
     public PivotArm(PivotArmIO io) {
         this.io = io;
         SmartDashboard.putData(getName(), this);
-
+        setMechanism(getArmMechanism());
         logP = new LoggedDashboardNumber("PivotArm/P", io.getP());
         logI = new LoggedDashboardNumber("PivotArm/I", io.getI());
         logD = new LoggedDashboardNumber("PivotArm/D", io.getD());
+        
     }
 
     @Override
