@@ -47,7 +47,14 @@ public final class Constants {
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
-
+  public static class BuildConstants {
+    public static int DIRTY = 1;
+    public static String MAVEN_NAME = "Snail";
+    public static String BUILD_DATE = "12/57";
+    public static String GIT_SHA = "Snail";
+    public static String GIT_DATE = "Snail";
+    public static String GIT_BRANCH = "PivotArm";
+  }
   public static class Drivetrain {
     // drivetrain constants
     public static double DRIVE_TRACK_WIDTH_M = 0.86;// 0.66; // m
