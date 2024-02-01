@@ -200,7 +200,25 @@ public final class Constants {
     public final static int DRIVE_FRONT_RIGHT = 2;
     public final static int DRIVE_BACK_LEFT = 3;
     public final static int DRIVE_BACK_RIGHT = 4;
+
+    // Trap Arm
+    public final static int TRAP_PIVOT_ID = 5;
+    public final static int TRAP_CLAW_ID = 6;
   };
+
+  // CHANGE CONSTANTS
+  public static class TrapPivot {
+    public static class TrapPivotSim {
+      public final static double[] TRAP_PIVOT_PID_SIM = { 0.1257, 0.1257, 0.1257 };
+
+    }
+
+    public static class TrapPivotReal {
+      public final static double[] TRAP_PIVOT_PID_REAL = { 0.1257, 0.1257, 0.1257 };
+      public final static double TRAP_PIVOT_ROTATION_DIAM_M = 1.257;
+      public final static double TRAP_PIVOT_GEARBOX_REDUCTION = 12.57;
+    }
+  }
 
   public static double PI = 3.141592653589793238462643;
   public static double UPDATE_PERIOD = 0.010; // seconds

@@ -1,5 +1,5 @@
 package frc.robot.subsystems.trapPivot;
 
-public class TrapPivotIOSim {
+public class TrapPivotIOSim implements TrapPivotIO {
     
 }
