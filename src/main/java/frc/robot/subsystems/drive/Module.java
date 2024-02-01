@@ -109,13 +109,8 @@ public class Module {
 
   /** Runs the module with the specified setpoint state. Returns the optimized state. */
   public SwerveModuleState runSetpoint(SwerveModuleState state) {
-    // Apply chassis angular offset to the desired state.
-    SwerveModuleState correctedDesiredState = new SwerveModuleState();
-    correctedDesiredState.speedMetersPerSecond = state.speedMetersPerSecond;
-    correctedDesiredState.angle = state.angle.plus(Rotation2d.fromRadians(io.getAbsoluteEncoderOffset()));
-
     // Optimize the reference state to avoid spinning further than 90 degrees.
-    SwerveModuleState optimizedState = SwerveModuleState.optimize(correctedDesiredState, inputs.turnAbsolutePosition);
+    SwerveModuleState optimizedState = SwerveModuleState.optimize(state, inputs.turnAbsolutePosition);
 
     // Update setpoints, controllers run in "periodic"
     angleSetpoint = optimizedState.angle;

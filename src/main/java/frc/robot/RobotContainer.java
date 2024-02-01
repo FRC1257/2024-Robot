@@ -190,7 +190,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
+        DriveCommands.joystickDriveRobotRelative(
             drive,
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
