@@ -118,14 +118,26 @@ public final class Constants {
     public static final double APRILTAG_POWER_CAP = 0.75;
   };
   public static class Shooter {
-    public static class ShooterSimConstants{
-      //i dunno what to put in here
-    }
+       public static final double RIGHT_MOTOR_MIN_SPEED;
+       public static final double RIGHT_MOTOR_MAX_SPEED;
+       public static final double LEFT_MOTOR_MIN_SPEED;
+       public static final double LEFT_MOTOR_MAX_SPEED;
+
+    public static class ShooterSimConstants{ 
+       public static final double RIGHT_MOTOR_MIN_SPEED;
+       public static final double RIGHT_MOTOR_MAX_SPEED;
+       public static final double LEFT_MOTOR_MIN_SPEED;
+       public static final double LEFT_MOTOR_MAX_SPEED;
+
+       public static final double rightEncoder = 0.0;
+       public static final double leftEncoder = 0.0;
+
     public static class ShooterPhysicalConstants {
-       //i dunno what to put in here
-       public static final double maxSpeed;
-       public static final double minSpeed;
-       public static final int SHOOTER_MOTOR_ID = 1257;
+       public static final double RIGHT_MOTOR_MIN_SPEED;
+       public static final double RIGHT_MOTOR_MAX_SPEED;
+       public static final double LEFT_MOTOR_MIN_SPEED;
+       public static final double LEFT_MOTOR_MAX_SPEED;
+
     }
   }
 
