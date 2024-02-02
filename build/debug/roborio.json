@@ -1,0 +1,9 @@
+[
+  {
+    "type": "java",
+    "name": "frcJava",
+    "port": 8349,
+    "target": "10.12.57.2",
+    "project": "MAXSwerve-Java-Template"
+  }
+]
