@@ -13,12 +13,12 @@
 
 package frc.robot.subsystems.drive;
 
+import static frc.robot.Constants.useVision;
 import static frc.robot.Constants.DriveConstants.kMaxSpeedMetersPerSecond;
 import static frc.robot.Constants.DriveConstants.kPathConstraints;
 import static frc.robot.Constants.DriveConstants.kTrackWidthX;
 import static frc.robot.Constants.DriveConstants.kTrackWidthY;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,11 +29,8 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindHolonomic;
 import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -46,18 +43,12 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
-import frc.robot.util.LocalADStarAK;
-import frc.robot.util.MakeTrajectories;
-
-import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.Constants.useVision;
+import edu.wpi.first.units.Voltage;
 
 public class Drive extends SubsystemBase {
   // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
@@ -146,7 +137,22 @@ public class Drive extends SubsystemBase {
                 },
                 null,
                 this));
+
+    SysIdRoutine turnRoutine = 
+        new SysIdRoutine(
+            new SysIdRoutine.Config(null,null,null,
+                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (voltage) -> {
+                  for (int i = 0; i < 4; i++) {
+                    modules[i].setTurnVoltage(voltage.in(Voltage));
+                  }
+                },
+                null,
+                this));
   }
+
+    
 
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
@@ -269,6 +275,7 @@ public class Drive extends SubsystemBase {
     return driveVelocityAverage / 4.0;
   }
 
+
   /** Returns the module states (turn angles and driveZ velocities) for all of the modules. */
   @AutoLogOutput(key = "SwerveStates/Measured")
   private SwerveModuleState[] getModuleStates() {
@@ -316,6 +323,10 @@ public class Drive extends SubsystemBase {
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return sysId.quasistatic(direction);
+  }
+
+  public Command TurnQuasistatic(SysIdRoutine.Direction direction) {
+    return turnRoutine.quasistatic(direction);
   }
 
   /** Returns a command to run a dynamic test in the specified direction. */
