@@ -96,7 +96,7 @@ public class RobotContainer {
             new ModuleIOSparkMax(1), //Front Right
             new ModuleIOSparkMax(2), //Back left
             new ModuleIOSparkMax(3), //Back right
-            new VisionIOSim()); 
+            new VisionIOPhoton()); 
         break;
 
       // Sim robot, instantiate physics sim IO implementations
