@@ -13,18 +13,22 @@
 
 package frc.robot.subsystems.drive;
 
+import static frc.robot.Constants.ModuleConstants.kDrivingD;
+import static frc.robot.Constants.ModuleConstants.kDrivingFF;
+import static frc.robot.Constants.ModuleConstants.kDrivingI;
+import static frc.robot.Constants.ModuleConstants.kDrivingP;
+import static frc.robot.Constants.ModuleConstants.kTurningD;
+import static frc.robot.Constants.ModuleConstants.kTurningFF;
+import static frc.robot.Constants.ModuleConstants.kTurningI;
+import static frc.robot.Constants.ModuleConstants.kTurningP;
+import static frc.robot.Constants.ModuleConstants.kWheelDiameterMeters;
+
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
-import org.littletonrobotics.junction.Logger;
-
-import static frc.robot.Constants.ModuleConstants.*;
 
 public class Module {
   private static final double WHEEL_RADIUS = kWheelDiameterMeters / 2;
@@ -197,5 +201,9 @@ public class Module {
   /** Returns the drive velocity in radians/sec. */
   public double getCharacterizationVelocity() {
     return inputs.driveVelocityRadPerSec;
+  }
+
+  public void setTurnVoltage(double voltage) {
+    setTurnVoltage(voltage);
   }
 }

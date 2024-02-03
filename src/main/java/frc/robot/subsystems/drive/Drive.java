@@ -145,7 +145,7 @@ public class Drive extends SubsystemBase {
             new SysIdRoutine.Mechanism(
                 (voltage) -> {
                   for (int i = 0; i < 4; i++) {
-                    modules[i].setTurnVoltage(Voltage);
+                    modules[i].setTurnVoltage(voltage.in(Voltage));
                   }
                 },
                 null,
@@ -323,6 +323,10 @@ public class Drive extends SubsystemBase {
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return sysId.quasistatic(direction);
+  }
+
+  public Command TurnQuasistatic(SysIdRoutine.Direction direction) {
+    return turnRoutine.quasistatic(direction);
   }
 
   /** Returns a command to run a dynamic test in the specified direction. */
