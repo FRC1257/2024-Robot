@@ -18,6 +18,7 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
     private CANSparkMax groundIntakeMotor;
 
     private DigitalInput breakBeamSensor;
+    private boolean intook;
 
     public GroundIntakeIOSparkMax() {
         /** ID needs to be assigned from constants */
@@ -48,5 +49,10 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
     @Override
     public void setBrake(boolean brake) {
         groundIntakeMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+    }
+
+    @Override
+    public boolean isIntaked(){
+        return intook;
     }
 }

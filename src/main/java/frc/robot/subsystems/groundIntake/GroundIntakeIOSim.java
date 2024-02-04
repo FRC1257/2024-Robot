@@ -2,16 +2,18 @@ package frc.robot.subsystems.groundIntake;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.IdleMode;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.motorcontrol.CANSparkMax;
 
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GroundIntakeIOSim implements GroundIntakeIO {
-    private PWMSparkMax groundIntakeMotor;
+    //replace with DCMOTORSIM
+    private CANSparkMax groundIntakeMotor;
   
     private DigitalInput breakBeamSensor;
+    private boolean intook;
 
     public GroundIntakeIOSim() {
         /** ID needs to be assigned from constants */
@@ -44,5 +46,10 @@ public class GroundIntakeIOSim implements GroundIntakeIO {
     @Override
     public void setBrake(boolean brake) {
         groundIntakeMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+    }
+    
+    @Override
+    public boolean isIntaked(){
+        return intook;
     }
 }

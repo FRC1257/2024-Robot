@@ -12,11 +12,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.GroundIntake.*;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 
 public class GroundIntake extends SubsystemBase {
-    private final static GroundIntakeIO io;
+    private final GroundIntakeIO io;
     GroundIntakeIOInputsAutoLogged inputs = new GroundIntakeIOInputsAutoLogged();
     
     public GroundIntake (GroundIntakeIO io) {
@@ -29,7 +30,7 @@ public class GroundIntake extends SubsystemBase {
         Logger.processInputs("Ground Intake", inputs);
     }
 
-    public static void setVoltage(double voltage) {
+    public void setVoltage(double voltage) {
         io.setVoltage(voltage);
     }
 
@@ -37,13 +38,20 @@ public class GroundIntake extends SubsystemBase {
         io.setBrake(brake);
     }
 
+    public boolean isIntaked(){
+        return io.isIntaked();
+    }
 
+    //replace with whatever you want
     public Command IntakeLoopCommand(double voltage) {
         return new FunctionalCommand(
+            () -> {},
             () -> setVoltage(voltage),
-            interrupted -> setVoltage(0.0),
-            stop -> {},
+            (stop) -> setVoltage(0.0),
+            this::isIntaked,
             this
         );
     }
+    
+
 }

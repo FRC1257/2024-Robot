@@ -19,6 +19,7 @@ public interface GroundIntakeIO {
     /** sets voltage to run motor if necessary */
     public default void setVoltage(double voltage) {}
     /** sets brake mode */
-    public default void setBrake(boolean brake) {
-    }
+    public default void setBrake(boolean brake) {}
+
+    public default boolean isIntaked() {return true;}
 }
