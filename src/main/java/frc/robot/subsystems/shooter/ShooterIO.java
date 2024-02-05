@@ -1,29 +1,61 @@
-//this is shooterIO.java
-package frc.robot.subsystems.shooterMotor;
+package frc.robot.subsystems.shooter;
+
+import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
-    @AutoLog
-    public static class ShooterIOInputs {
-        //inputs for the logger
-        public double speed = 0.0;
-        public boolean gamePiece = false;
-        public double encoderPosition = 0.0;
-        public double appliedVolts = 0.0;
-        public double[] currentAmps = new double[] {};
-        public double[] tempCelsius = new double[] {};
+  @AutoLog
+  class ShooterIOInputs {
+    public double leftFlywheelPositionRotations = 0.0;
+    public double leftFlywheelVelocityRPM = 0.0;
+    public double leftFlywheelAppliedVolts = 0.0;
+    public double leftFlywheelOutputCurrent = 0.0;
 
-    }
+    public double rightFlywheelPositionRotations = 0.0;
+    public double rightFlywheelVelocityRPM = 0.0;
+    public double rightFlywheelAppliedVolts = 0.0;
+    public double rightFlywheelOutputCurrent = 0.0;
 
-public double RIGHTMOTOR_MAX_SPEED = -1000;
-public double RIGHTMOTOR_MIN_SPEED = 1000;
+    public double feederVelocityRPM = 0.0;
+    public double feederAppliedVolts = 0.0;
+    public double feederOutputCurrent = 0.0;
+  }
 
-public double LEFTMOTOR_MAX_SPEED = 1000;
-public double LEFTMOTOR_MIN_SPEED = -1000;
+  /** Update inputs */
+  default void updateInputs(ShooterIOInputs inputs) {}
 
-    public default void updateInputs() {}
-    public default void setVoltage(double shooterVolts) {} 
-    public default void setBrake(boolean brake) {}
-    public default void setRPIDConstants(double p, double i, double d, double ff);
-    public default void setLPIDConstants(double p, double i, double d, double ff);  
+  default void setLeftRPM(double rpm) {}
 
+  default void setRightRPM(double rpm) {}
+
+  default void setRPM(double leftRpm, double rightRpm) {
+    setLeftRPM(leftRpm);
+    setRightRPM(rightRpm);
+  }
+
+  default void setFeederVoltage(double volts) {}
+
+  default void setLeftBrakeMode(boolean enabled) {}
+
+  default void setRightBrakeMode(boolean enabled) {}
+
+  default void setShooterBrakeMode(boolean enabled) {
+    setLeftBrakeMode(enabled);
+    setRightBrakeMode(enabled);
+  }
+
+  default void setFeederBrakeMode(boolean enabled) {}
+
+  default void setLeftCharacterizationVoltage(double volts) {}
+
+  default void setRightCharacterizationVoltage(double volts) {}
+
+  default void setLeftPID(double p, double i, double d) {}
+
+  default void setLeftFF(double s, double v, double a) {}
+
+  default void setRightPID(double p, double i, double d) {}
+
+  default void setRightFF(double s, double v, double a) {}
+
+  default void stop() {}
 }
