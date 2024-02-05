@@ -44,10 +44,14 @@ public interface PivotArmIO {
 
     public default void setD(double d) {}
 
+    public default void setFF(double ff) {}
+
     public default double getP() { return 0.0; }
 
     public default double getI() { return 0.0; }
 
     public default double getD() { return 0.0; }
+
+    public default double getFF() { return 0.0; }
 
 }

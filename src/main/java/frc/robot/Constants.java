@@ -181,7 +181,7 @@ public final class Constants {
     public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(0.0);
 
     public static class PivotArmSimConstants {
-      public static final double[] kPivotSimPID = {2, 0, 0, 0};
+      public static final double[] kPivotSimPID = {15, 0, 0, 0};
 
       public static final int kMotorPort = 2;
       public static final int kEncoderAChannel = 2;

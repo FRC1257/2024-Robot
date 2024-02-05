@@ -1,25 +1,12 @@
 package frc.robot.subsystems.pivotArm;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.subsystems.pivotArm.PivotArm;
-
 import static frc.robot.Constants.PivotArm.PivotArmSimConstants.*;
 
 public class PivotArmIOSim implements PivotArmIO {
@@ -32,6 +19,7 @@ public class PivotArmIOSim implements PivotArmIO {
 
     // Standard classes for controlling our arm
     private final ProfiledPIDController m_controller;
+    private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(kArmMass, kArmLength);
     private final Encoder m_encoder;
 
     // Simulation classes help us simulate what's going on, including gravity.
@@ -46,7 +34,7 @@ public class PivotArmIOSim implements PivotArmIO {
             kArmLength,
             kMinAngleRads,
             kMaxAngleRads,
-            false, // change this to true later
+            true, // change this to true later
             0.1);
 
     private final EncoderSim m_encoderSim;
@@ -78,7 +66,7 @@ public class PivotArmIOSim implements PivotArmIO {
         m_controller.setGoal(setpoint);
         // With the setpoint value we run PID control like normal
         double pidOutput = m_controller.calculate(getAngle());
-        double feedforwardOutput = 0; // m_feedforward.calculate(m_controller.getSetpoint().velocity);
+        double feedforwardOutput = m_feedforward.calculate(m_controller.getSetpoint().velocity);
 
         sim.setInputVoltage(feedforwardOutput + pidOutput);
     }
@@ -108,6 +96,11 @@ public class PivotArmIOSim implements PivotArmIO {
         m_controller.setD(d);
     }
 
+   /*  @Override
+    public void setFF(double ff) {
+        m_controller.setFF(ff);
+    }
+*/
     @Override
     public double getP() {
         return m_controller.getP();
