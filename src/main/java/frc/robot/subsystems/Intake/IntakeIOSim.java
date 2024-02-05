@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class IntakeIOSim implements IntakeIO {
     private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.0, 0.01);
-    private PIDController controller = new PIDController(1.0, 0.0, 0.0);
+    private PIDController controller = new PIDController(IntakeIO.getP(), IntakeIO.getI(), IntakeIO.getD());
 
     private double appliedVoltage = 0.0;
     private double desiredSpeed;
