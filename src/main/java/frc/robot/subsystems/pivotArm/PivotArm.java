@@ -20,7 +20,7 @@ import static frc.robot.Constants.PivotArm.*;
 
 public class PivotArm extends SubsystemBase {
     private final PivotArmIOInputsAutoLogged inputs = new PivotArmIOInputsAutoLogged();
-
+    
     public enum State {
         MANUAL,
         PID
@@ -37,18 +37,21 @@ public class PivotArm extends SubsystemBase {
     private final PivotArmIO io;
 
     // Create a Mechanism2d visualization of the arm
-    private MechanismLigament2d armMechanism;
+    private MechanismLigament2d armMechanism = getArmMechanism();
 
     public PivotArm(PivotArmIO io) {
         this.io = io;
+       
         SmartDashboard.putData(getName(), this);
-        setMechanism(getArmMechanism());
+    
         logP = new LoggedDashboardNumber("PivotArm/P", io.getP());
         logI = new LoggedDashboardNumber("PivotArm/I", io.getI());
         logD = new LoggedDashboardNumber("PivotArm/D", io.getD());
         
     }
+    public void PivotManualPIDCommand (double volts) {
 
+    }
     @Override
     public void periodic() {
         io.updateInputs(inputs);
@@ -96,17 +99,6 @@ public class PivotArm extends SubsystemBase {
     public boolean atSetpoint() {
         return Math.abs(io.getAngle() - setpoint) < PIVOT_ARM_PID_TOLERANCE;
     }
-
-    public Command PIDCommand(double setpoint) {
-        return new FunctionalCommand(
-            () -> setPID(setpoint), 
-            () -> runPID(), 
-            (stop) -> move(0), 
-            this::atSetpoint, 
-            this
-        );
-    }
-
     public void setMechanism(MechanismLigament2d mechanism) {
         armMechanism = mechanism;
     }
@@ -118,6 +110,16 @@ public class PivotArm extends SubsystemBase {
     public MechanismLigament2d getArmMechanism() {
         return new MechanismLigament2d("Pivot Arm", 2, 0, 5, new Color8Bit(Color.kAqua));
     }
+    public Command PIDCommand(double setpoint) {
+        return new FunctionalCommand(
+            () -> setPID(setpoint), 
+            () -> runPID(), 
+            (stop) -> move(0), 
+            this::atSetpoint, 
+            this
+        );
+    }
+
     
 }
 

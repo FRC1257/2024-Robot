@@ -41,8 +41,11 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
 
@@ -59,7 +62,7 @@ public class RobotContainer {
   private final Drive drive;
   private final PivotArm pivot;
   private Mechanism2d mech = new Mechanism2d(3, 3);
-
+  
   // Controllers
   private final CommandSnailController driver = new CommandSnailController(0);
   private final CommandSnailController operator = new CommandSnailController(1);
@@ -102,17 +105,30 @@ public class RobotContainer {
     MechanismRoot2d root = mech.getRoot("elevator", 1, 0.5);
     // add subsystem mechanisms
     SmartDashboard.putData("Arm Mechanism", mech);
-
+    
+    setMechanism(getArmMechanism(), pivot);
     isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
 
     // Set up auto routines
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
     autoChooser.addOption("Spin", new SpinAuto(drive));
-
+    
     // Configure the button bindings
     configureButtonBindings();
   }
+   public void setMechanism(MechanismLigament2d mechanism, PivotArm pivot) {
+        this.pivot.setMechanism(mechanism);
+    }
 
+    public MechanismLigament2d append(MechanismLigament2d mechanism, PivotArm pivot) {
+        return this.pivot.getArmMechanism().append(mechanism);
+    }
+
+    public MechanismLigament2d getArmMechanism() {
+        return new MechanismLigament2d("Pivot Arm", 2, 0, 5, new Color8Bit(Color.kAqua));
+    }
+   
+    
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -131,6 +147,13 @@ public class RobotContainer {
 
     // cancel trajectory
     driver.getY().onTrue(drive.endTrajectoryCommand());
+    pivot.setDefaultCommand(
+        new RunCommand(() -> pivot.move(operator.getLeftY()), pivot));
+    // these are triggers that run the subsystem's command
+    operator.getB().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
+    operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
+
+   
   }
 
   /**

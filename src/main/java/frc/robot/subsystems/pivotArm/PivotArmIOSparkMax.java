@@ -10,6 +10,7 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants.PivotArm;
 
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -65,7 +66,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     }
 
     private void configureEncoders() {
-        encoder = pivotMotor.getEncoder();
+        absoluteEncoder = pivotMotor.getAbsoluteEncoder();
 
         encoder.setPositionConversionFactor(Math.PI * PIVOT_ARM_ROTATION_DIAM_M / PIVOT_ARM_GEARBOX_REDUCTION);
         encoder.setVelocityConversionFactor(Math.PI * PIVOT_ARM_ROTATION_DIAM_M / PIVOT_ARM_GEARBOX_REDUCTION / 60.0);
