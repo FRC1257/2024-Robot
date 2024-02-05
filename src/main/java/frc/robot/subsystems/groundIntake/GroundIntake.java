@@ -43,6 +43,7 @@ public class GroundIntake extends SubsystemBase {
     }
 
     //replace with whatever you want
+    // Dependence on pivot angle and shooter break beam
     public Command IntakeLoopCommand(double voltage) {
         return new FunctionalCommand(
             () -> {},
@@ -53,5 +54,14 @@ public class GroundIntake extends SubsystemBase {
         );
     }
     
+    public Command EjectLoopCommand(double voltage) {
+        return new FunctionalCommand(
+            () -> {},
+            () -> setVoltage(-voltage),
+            (stop) -> setVoltage(0.0),
+            this::isIntaked,
+            this
+        );
+    }
 
 }
