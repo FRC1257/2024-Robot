@@ -52,6 +52,7 @@ public class Intake extends SubsystemBase {
             this
         );
     }
+
     /**
      * Make sure that the isIntaked variable is in direct 
      * correlation to the break beam sensor for both commands 
@@ -62,6 +63,26 @@ public class Intake extends SubsystemBase {
             () -> setVoltage(-voltage), // Needs to spin the other way
             (stop) -> setVoltage(0.0),
             this::isIntaked,
+            this
+        );
+    }
+
+    public Command IntakeSpeedCommand(DoubleSupplier speed) {
+        return new FunctionalCommand(
+            () -> {},
+            () -> io.setSpeed(speed.getAsDouble()),
+            (stop) -> io.stop(),
+            () -> false,
+            this
+        );
+    }
+
+    public Command IntakeManualCommand(DoubleSupplier voltage) {
+        return new FunctionalCommand(
+            () -> {},
+            () -> io.setVoltage(voltage.getAsDouble()),
+            (stop) -> io.stop(),
+            () -> false,
             this
         );
     }

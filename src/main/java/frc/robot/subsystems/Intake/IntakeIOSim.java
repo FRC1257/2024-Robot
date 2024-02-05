@@ -1,55 +1,85 @@
 package frc.robot.subsystems.Intake;
 
-import com.revrobotics.CANSparkBase;
-import com.revrobotics.CANSparkBase.IdleMode;
-import edu.wpi.first.wpilibj.motorcontrol.CANSparkMax;
-
-
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class IntakeIOSim implements IntakeIO {
-    //replace with DCMOTORSIM
-    private CANSparkMax IntakeMotor;
-  
+    private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.0, 0.01);
+    private PIDController controller = new PIDController(1.0, 0.0, 0.0);
 
-    private boolean intook;
+    private double appliedVoltage = 0.0;
+    private double desiredSpeed;
 
-    public IntakeIOSim() {
-        /** ID needs to be assigned from constants */
-        IntakeMotor = new PWMSparkMax(0, PWMSparkMax.MotorType.kBrushless);
-        IntakeMotor.restoreFactoryDefaults();
-        IntakeMotor.setIdleMode(IdleMode.kBrake);
-        /** Current limit should be added to Constants.java when known */
-        IntakeMotor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
-       
-        /** ID needs to be assigned from constants */
-        breakBeamSensor = new DigitalInput(0);
-    }
-    
-    /** Min/max angles for extension **ADD VALUES** */
-    public double INTAKE_MIN_ANGLE = 0.0;
-    public double INTAKE_MAX_ANGLE = 0.0;
-    /** updates inputs from robot */
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        inputs.appliedVoltage = IntakeMotor.getAppliedOutput() * IntakeMotor.getBusVoltage();
-        inputs.currentAmps = new double[] {IntakeMotor.getOutputCurrent()};
-        inputs.tempCelcius = new double[] {IntakeMotor.getMotorTemperature()};
+        sim.update(0.02);
+        inputs.velocityRadsPerSec = sim.getAngularVelocityRadPerSec();
+        inputs.appliedVoltage = appliedVoltage;
+        inputs.currentAmps = new double[] { sim.getCurrentDrawAmps() };
+        inputs.tempCelcius = new double[] { 60 };
+        inputs.speedSetpoint = desiredSpeed;
+        inputs.breakBeam = true;
     }
-    /** sets voltage to run motor if necessary */
+
     @Override
-    public void setVoltage(double voltage) {
-        IntakeMotor.setVoltage(voltage);
+    public void setVoltage(double volts) {
+        appliedVoltage = volts;
+        sim.setInputVoltage(volts);
+    }
+
+    @Override
+    public void stop() {
+        appliedVoltage = 0.0;
+        sim.setInputVoltage(0.0);
+    }
+
+    @Override
+    public void setSpeed(double speed) {
+        desiredSpeed = speed;
+        setVoltage(controller.calculate(sim.getAngularVelocityRadPerSec(), speed));
+    }
+
+    @Override
+    public void setP(double p) {
+        controller.setP(p);
+    }
+
+    @Override
+    public void setI(double i) {
+        controller.setI(i);
+    }
+
+    @Override
+    public void setD(double d) {
+        controller.setD(d);
+    }
+
+    @Override
+    public double getP() {
+        return controller.getP();
+    }
+
+    @Override
+    public double getI() {
+        return controller.getI();
+    }
+
+    @Override
+    public double getD() {
+        return controller.getD();
+    }
+
+    @Override
+    public void setPIDConstants(double p, double i, double d) {
+        controller.setP(p);
+        controller.setI(i);
+        controller.setD(d);
     }
 
     @Override
     public void setBrake(boolean brake) {
-        IntakeMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        // Not implemented
     }
-    
-    @Override
-    public boolean isIntaked(){
-        return intook;
-    }
+
 }

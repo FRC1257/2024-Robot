@@ -229,6 +229,8 @@ public final class Constants {
 
     // PLACEHOLDER Intake
     public final static int INTAKE_MOTOR = 0;
+
+    public final static int INTAKE_BREAK_BEAM = 0;
   };
 
   public static double PI = 3.141592653589793238462643;
