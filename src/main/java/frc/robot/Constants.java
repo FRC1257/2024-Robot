@@ -227,6 +227,7 @@ public final class Constants {
       public final static double[] TRAP_PIVOT_PID_SIM = { 0.1257, 0.1257, 0.1257 };
       public final static double MAX_VELOCITY = 2.45;
       public final static double MAX_ACCELERATION = 2.45;      
+      public final static double PID_TOLERANCE = 0.001;
     }
 
     public static class TrapPivotReal {
