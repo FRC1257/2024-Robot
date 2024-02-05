@@ -1,4 +1,4 @@
-package frc.robot.subsystems.groundIntake;
+package frc.robot.subsystems.Intake;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -13,40 +13,40 @@ import static frc.robot.Constants.*;
 
 /** Need to import Constants files/classes */
 
-public class GroundIntakeIOSparkMax implements GroundIntakeIO {
+public class IntakeIOSparkMax implements IntakeIO {
     
-    private CANSparkMax groundIntakeMotor;
+    private CANSparkMax IntakeMotor;
 
 
     private boolean intook;
 
-    public GroundIntakeIOSparkMax() {
+    public IntakeIOSparkMax() {
         /** ID needs to be assigned from constants */
-        groundIntakeMotor = new CANSparkMax(0, CANSparkMax.MotorType.kBrushless);
-        groundIntakeMotor.restoreFactoryDefaults();
-        groundIntakeMotor.setIdleMode(IdleMode.kBrake);
+        IntakeMotor = new CANSparkMax(0, CANSparkMax.MotorType.kBrushless);
+        IntakeMotor.restoreFactoryDefaults();
+        IntakeMotor.setIdleMode(IdleMode.kBrake);
         /** Current limit should be added to Constants.java when known */
-        groundIntakeMotor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
+        IntakeMotor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
 
  
     }
     
     /** updates inputs from robot */
     @Override
-    public void updateInputs(GroundIntakeIOInputs inputs) {
-        inputs.appliedVoltage = groundIntakeMotor.getAppliedOutput() * groundIntakeMotor.getBusVoltage();
-        inputs.currentAmps = new double[] {groundIntakeMotor.getOutputCurrent()};
-        inputs.tempCelcius = new double[] {groundIntakeMotor.getMotorTemperature()};
+    public void updateInputs(IntakeIOInputs inputs) {
+        inputs.appliedVoltage = IntakeMotor.getAppliedOutput() * IntakeMotor.getBusVoltage();
+        inputs.currentAmps = new double[] {IntakeMotor.getOutputCurrent()};
+        inputs.tempCelcius = new double[] {IntakeMotor.getMotorTemperature()};
     }
     /** sets voltage to run motor if necessary */
     @Override
     public void setVoltage(double voltage) {
-        groundIntakeMotor.setVoltage(voltage);
+        IntakeMotor.setVoltage(voltage);
     }
     /** sets brake mode to stop */
     @Override
     public void setBrake(boolean brake) {
-        groundIntakeMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        IntakeMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
     @Override

@@ -1,9 +1,9 @@
-package frc.robot.subsystems.groundIntake;
+package frc.robot.subsystems.Intake;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface GroundIntakeIO {
+public interface IntakeIO {
     @AutoLog
-    public static class GroundIntakeIOInputs {
+    public static class IntakeIOInputs {
         /** 
          * Some of these may be unnecessary if no
          * NEOs are used.
@@ -14,7 +14,7 @@ public interface GroundIntakeIO {
     }
 
     /** updates inputs from robot */
-    public default void updateInputs(GroundIntakeIOInputs inputs) {}
+    public default void updateInputs(IntakeIOInputs inputs) {}
     /** sets voltage to run motor if necessary */
     public default void setVoltage(double voltage) {}
     /** sets brake mode */

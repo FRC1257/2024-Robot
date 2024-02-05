@@ -1,4 +1,4 @@
-package frc.robot.subsystems.groundIntake;
+package frc.robot.subsystems.Intake;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import org.littletonrobotics.junction.Logger;
@@ -10,24 +10,23 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import static frc.robot.Constants.GroundIntake.*;
-
+import static frc.robot.Constants.Intake.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 
-public class GroundIntake extends SubsystemBase {
-    private final GroundIntakeIO io;
-    GroundIntakeIOInputsAutoLogged inputs = new GroundIntakeIOInputsAutoLogged();
+public class Intake extends SubsystemBase {
+    private final IntakeIO io;
+    IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
     
-    public GroundIntake (GroundIntakeIO io) {
+    public Intake (IntakeIO io) {
         this.io = io;
         SmartDashboard.putData(getName(), this);
     }
 
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Ground Intake", inputs);
+        Logger.processInputs("Intake", inputs);
     }
 
     public void setVoltage(double voltage) {
