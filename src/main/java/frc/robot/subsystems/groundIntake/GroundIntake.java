@@ -53,11 +53,14 @@ public class GroundIntake extends SubsystemBase {
             this
         );
     }
-    
+    /**
+     * Make sure that the isIntaked variable is in direct 
+     * correlation to the break beam sensor for both commands 
+     */ 
     public Command EjectLoopCommand(double voltage) {
         return new FunctionalCommand(
             () -> {},
-            () -> setVoltage(-voltage),
+            () -> setVoltage(-voltage), // Needs to spin the other way
             (stop) -> setVoltage(0.0),
             this::isIntaked,
             this
