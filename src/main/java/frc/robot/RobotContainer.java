@@ -220,10 +220,8 @@ public class RobotContainer {
     // driver.b().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(0))));
 
     intake.setDefaultCommand(
-        driveCommands.joystickButtonIntake(
-            intake,
-            () -> operator.geta(),
-            () -> operator.getb(),
+        intake.IntakeManualCommand(
+          () -> operator.getRightX() * 12
         )
       );
 

@@ -54,13 +54,12 @@ public class Intake extends SubsystemBase {
     }
 
     /**
-     * Make sure that the isIntaked variable is in direct 
-     * correlation to the break beam sensor for both commands 
+     * Same dependence as IntakeLoopCommand
      */ 
     public Command EjectLoopCommand(double voltage) {
         return new FunctionalCommand(
             () -> {},
-            () -> setVoltage(-voltage), // Needs to spin the other way
+            () -> setVoltage(-voltage), // Spins the other way
             (stop) -> setVoltage(0.0),
             this::isIntaked,
             this

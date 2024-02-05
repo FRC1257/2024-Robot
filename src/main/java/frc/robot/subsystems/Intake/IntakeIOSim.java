@@ -82,4 +82,9 @@ public class IntakeIOSim implements IntakeIO {
         // Not implemented
     }
 
+    @Override
+    public boolean isIntaked() {
+        return breakBeam.get();
+    }
+
 }

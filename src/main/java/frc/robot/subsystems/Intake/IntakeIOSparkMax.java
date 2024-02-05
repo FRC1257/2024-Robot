@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.ElectricalLayout;
 
 /** Need to import Constants files/classes */
+// 
 
 public class IntakeIOSparkMax implements IntakeIO {
 
@@ -64,7 +65,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     @Override
     public boolean isIntaked() {
-        return intakeState;
+        return breakBeam.get();
     }
 
     @Override

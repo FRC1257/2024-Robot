@@ -20,7 +20,9 @@ public interface IntakeIO {
     public default void updateInputs(IntakeIOInputs inputs) {}
     /** sets voltage to run motor if necessary */
     public default void setVoltage(double voltage) {}
+    /** sets velocity setpoint */
     public default void setPIDConstants(double p, double i, double d) {}
+    
     public default void stop() {
         setVoltage(0.0);
     }
