@@ -1,4 +1,5 @@
 package frc.robot.subsystems.shooter;
+import static frc.robot.subsystems.shooter.ShooterConstants;
 
 import org.littletonrobotics.junction.AutoLog;
 

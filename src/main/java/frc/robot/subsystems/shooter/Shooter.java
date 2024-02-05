@@ -1,6 +1,6 @@
 package frc.robot.subsystems.shooter;
 
-import static frc.robot.subsystems.Constants.ShooterConstants.*;
+iimport static frc.robot.subsystems.shooter.ShooterConstants;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;

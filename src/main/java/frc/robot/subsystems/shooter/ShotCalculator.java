@@ -1,3 +1,4 @@
+
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,6 +15,8 @@ import org.littletonrobotics.junction.Logger;
  * <br>
  * Units in meters, radians, and m/s
  */
+
+
 @ExtensionMethod({GeomUtil.class})
 public class ShotCalculator {
   public record ShotData(
@@ -21,7 +24,7 @@ public class ShotCalculator {
       double radialFeedforward, // ff value due to radial velocity of robot to speaker
       Rotation2d goalHeading) {} // heading of robot to match tangential velocity
 
-  /** In theory we will aim at different locations inside speaker */
+  // In theory we will aim at different locations inside speaker 
   public static ShotData calculate(
       Translation2d speaker, Translation2d robot, Translation2d linearFieldVelocity) {
     // Calculate radial and tangential velocity from speaker
