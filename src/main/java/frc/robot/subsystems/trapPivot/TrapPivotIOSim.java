@@ -61,6 +61,11 @@ public class TrapPivotIOSim implements TrapPivotIO {
     }
 
     @Override
+    public void setVelocity(double velocity) {
+        
+    }
+
+    @Override
     public void goToSetpoint(double setpoint) {
         pidController.setGoal(setpoint);
         // With the setpoint value we run PID control like normal

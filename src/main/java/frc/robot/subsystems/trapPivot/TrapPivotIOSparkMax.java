@@ -2,10 +2,12 @@ package frc.robot.subsystems.trapPivot;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
@@ -16,8 +18,7 @@ public class TrapPivotIOSparkMax implements TrapPivotIO {
     // Standard WPILib classes for motor stuff
     private CANSparkMax pivotMotor;
     private SparkPIDController pidController;
-    private RelativeEncoder encoder;
-    private DutyCycleEncoder absoluteEncoder;
+    private SparkAbsoluteEncoder encoder;
 
     private double setpoint = 0; // PID setpoint
 
@@ -36,16 +37,10 @@ public class TrapPivotIOSparkMax implements TrapPivotIO {
     }
 
     private void configureEncoders() {
-        encoder = pivotMotor.getEncoder();
+        encoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
-        encoder.setPositionConversionFactor(Math.PI * TRAP_PIVOT_ROTATION_DIAM_M / TRAP_PIVOT_GEARBOX_REDUCTION);
-        encoder.setVelocityConversionFactor(Math.PI * TRAP_PIVOT_ROTATION_DIAM_M / TRAP_PIVOT_GEARBOX_REDUCTION / 60.0);
-
-        absoluteEncoder = new DutyCycleEncoder(0);
-        absoluteEncoder.setDistancePerRotation(360.0 / 1024.0);
-        absoluteEncoder.setDutyCycleRange(1 / 1024.0, 1023.0 / 1024.0);
-
-        encoder.setPosition(absoluteEncoder.getDistance() * 28.45 + 0.6);
+        encoder.setPositionConversionFactor(Math.PI * 2 / TRAP_PIVOT_GEARBOX_REDUCTION);
+        encoder.setVelocityConversionFactor(Math.PI * 2 / TRAP_PIVOT_GEARBOX_REDUCTION / 60.0);
     }
 
     private void configurePID() {
@@ -75,7 +70,7 @@ public class TrapPivotIOSparkMax implements TrapPivotIO {
     }
 
     @Override
-    public double getAngle() {
+    public double getAngleRads() {
         return encoder.getPosition();
     }
 
@@ -92,7 +87,7 @@ public class TrapPivotIOSparkMax implements TrapPivotIO {
 
     @Override
     public boolean atSetpoint() {
-        return Math.abs(getAngle() - setpoint) <= PID_TOLERANCE;
+        return Math.abs(getAngleRads() - setpoint) <= PID_TOLERANCE;
     }
 
     @Override

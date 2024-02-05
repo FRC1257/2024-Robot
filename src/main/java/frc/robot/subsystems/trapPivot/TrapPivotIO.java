@@ -18,9 +18,9 @@ public interface TrapPivotIO {
     // Motor functions
     public default void setVoltage(double volts) {} // Sets motor voltage
 
-    public default void setVelocity(double velocity) {}
+    public default void setVelocity(double velocity) {} // Sets velocity of motor in radians per second
 
-    public default double getAngle() { return 0; }
+    public default double getAngleRads() { return 0; } // Gets angle of motor in radians
 
     public default void setBrake(boolean brake) {} // Sets motor to brake if true, coast if false
 
