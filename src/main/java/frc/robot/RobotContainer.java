@@ -73,6 +73,8 @@ public class RobotContainer {
 
   private Mechanism2d mech = new Mechanism2d(3, 3);
 
+  private Intake intake;
+
   // Controllers
   private final CommandSnailController driver = new CommandSnailController(0);
   private final CommandSnailController operator = new CommandSnailController(1);
@@ -216,6 +218,14 @@ public class RobotContainer {
 
     // driver.a().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(90))));
     // driver.b().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(0))));
+
+    intake.setDefaultCommand(
+        driveCommands.joystickButtonIntake(
+            intake,
+            () -> operator.geta(),
+            () -> operator.getb(),
+        )
+      );
 
     // Add a button to run pathfinding commands to SmartDashboard
     SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(

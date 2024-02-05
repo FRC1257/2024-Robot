@@ -21,7 +21,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     private DigitalInput breakBeam;
 
-    private boolean intook;
+    private boolean intakeState;
     private double desiredSpeed;
 
     public IntakeIOSparkMax() {
@@ -64,7 +64,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     @Override
     public boolean isIntaked() {
-        return intook;
+        return intakeState;
     }
 
     @Override
