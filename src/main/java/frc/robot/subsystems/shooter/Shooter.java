@@ -1,3 +1,4 @@
+package frc.robot.subsystems.shooter;
 
 import static frc.robot.subsystems.superstructure.SuperstructureConstants.ShooterConstants.*;
 
