@@ -17,7 +17,7 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
     
     private CANSparkMax groundIntakeMotor;
 
-    private DigitalInput breakBeamSensor;
+
     private boolean intook;
 
     public GroundIntakeIOSparkMax() {
@@ -28,8 +28,7 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
         /** Current limit should be added to Constants.java when known */
         groundIntakeMotor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
 
-        /** ID needs to be assigned from constants */
-        breakBeamSensor = new DigitalInput(0);
+ 
     }
     
     /** updates inputs from robot */
@@ -38,7 +37,6 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
         inputs.appliedVoltage = groundIntakeMotor.getAppliedOutput() * groundIntakeMotor.getBusVoltage();
         inputs.currentAmps = new double[] {groundIntakeMotor.getOutputCurrent()};
         inputs.tempCelcius = new double[] {groundIntakeMotor.getMotorTemperature()};
-        inputs.breakBeamSensor = breakBeamSensor.get();
     }
     /** sets voltage to run motor if necessary */
     @Override

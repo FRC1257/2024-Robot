@@ -12,7 +12,7 @@ public class GroundIntakeIOSim implements GroundIntakeIO {
     //replace with DCMOTORSIM
     private CANSparkMax groundIntakeMotor;
   
-    private DigitalInput breakBeamSensor;
+
     private boolean intook;
 
     public GroundIntakeIOSim() {

@@ -11,7 +11,6 @@ public interface GroundIntakeIO {
         public double appliedVoltage = 0.0;
         public double[] currentAmps = new double[] {};
         public double[] tempCelcius = new double[] {};
-        public boolean breakBeamSensor = false;
     }
 
     /** updates inputs from robot */
