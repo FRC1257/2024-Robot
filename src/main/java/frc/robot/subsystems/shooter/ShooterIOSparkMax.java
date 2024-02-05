@@ -1,6 +1,6 @@
 package frc.robot.subsystems.shooter;
 
-import static frc.robot.subsystems.superstructure.SuperstructureConstants.ShooterConstants.*;
+import static frc.robot.subsystems.Constants.ShooterConstants.*;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
