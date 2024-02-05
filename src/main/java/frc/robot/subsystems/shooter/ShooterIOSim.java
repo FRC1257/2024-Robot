@@ -1,3 +1,4 @@
+package frc.robot.subsystems.shooter;
 
 import static frc.robot.subsystems.superstructure.SuperstructureConstants.ShooterConstants.*;
 
@@ -122,6 +123,10 @@ public class ShooterIOSim implements ShooterIO {
 
   @Override
   public void stop() {
+    setRPM(0.0, 0.0);
+    setFeederVoltage(0.0);
+  }
+}
     setRPM(0.0, 0.0);
     setFeederVoltage(0.0);
   }
