@@ -3,35 +3,23 @@ package frc.robot.subsystems.pivotArm;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.RobotContainer;
-import frc.robot.Constants.PivotArm.PivotArmSimConstants;
 import static frc.robot.Constants.PivotArm.*;
 
 public class PivotArm extends SubsystemBase {
     private final PivotArmIOInputsAutoLogged inputs = new PivotArmIOInputsAutoLogged();
-    
-    public enum State {
-        MANUAL,
-        PID
-    }
 
     private LoggedDashboardNumber logP;
     private LoggedDashboardNumber logI;
     private LoggedDashboardNumber logD;
 
-
-    private State state = State.MANUAL;
     private double setpoint = 0;
 
     private final PivotArmIO io;
@@ -57,7 +45,7 @@ public class PivotArm extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("PivotArm", inputs);
 
-        armMechanism.setAngle(inputs.angleRads);
+        armMechanism.setAngle(Units.radiansToDegrees(inputs.angleRads));
 
         // Update the PID constants if they have changed
         if (logP.get() != io.getP()) 
@@ -120,6 +108,5 @@ public class PivotArm extends SubsystemBase {
         );
     }
 
-    
 }
 

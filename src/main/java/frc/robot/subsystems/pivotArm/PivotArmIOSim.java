@@ -23,41 +23,40 @@ import frc.robot.subsystems.pivotArm.PivotArm;
 import static frc.robot.Constants.PivotArm.PivotArmSimConstants.*;
 
 public class PivotArmIOSim implements PivotArmIO {
-    // from here https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/armsimulation/subsystems/Arm.java
-      // The P gain for the PID controller that drives this arm.
-  private double m_armSetpointDegrees = kDefaultArmSetpointDegrees;
-    
-  // The arm gearbox represents a gearbox containing two Vex 775pro motors.
-  private final DCMotor m_armGearbox = DCMotor.getVex775Pro(2);
+    // from here
+    // https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/armsimulation/subsystems/Arm.java
+    // The P gain for the PID controller that drives this arm.
 
-  // Standard classes for controlling our arm
-  private final ProfiledPIDController m_controller;
-  private final Encoder m_encoder;
-  private final PWMSparkMax motor = new PWMSparkMax(kMotorPort);
+    // The arm gearbox represents a gearbox containing two Vex 775pro motors.
+    private final DCMotor m_armGearbox = DCMotor.getNEO(4);
 
-  // Simulation classes help us simulate what's going on, including gravity.
-  // This arm sim represents an arm that can travel from -75 degrees (rotated down front)
-  // to 255 degrees (rotated down in the back).
+    // Standard classes for controlling our arm
+    private final ProfiledPIDController m_controller;
+    private final Encoder m_encoder;
 
-  private SingleJointedArmSim sim = new SingleJointedArmSim(
-    m_armGearbox,
-    kArmReduction,
-    SingleJointedArmSim.estimateMOI(kArmLength, kArmMass),
-    kArmLength,
-    kMinAngleRads,
-    kMaxAngleRads,
-    false,
-    0
-  );
+    // Simulation classes help us simulate what's going on, including gravity.
+    // This arm sim represents an arm that can travel from -75 degrees (rotated down
+    // front)
+    // to 255 degrees (rotated down in the back).
 
-  private final EncoderSim m_encoderSim;
-    
+    private SingleJointedArmSim sim = new SingleJointedArmSim(
+            m_armGearbox,
+            kArmReduction,
+            SingleJointedArmSim.estimateMOI(kArmLength, kArmMass),
+            kArmLength,
+            kMinAngleRads,
+            kMaxAngleRads,
+            false, // change this to true later
+            0.1);
+
+    private final EncoderSim m_encoderSim;
+
     public PivotArmIOSim() {
-      m_encoder = new Encoder(kEncoderAChannel, kEncoderBChannel);
-      m_encoderSim = new EncoderSim(m_encoder);
-      m_encoderSim.setDistancePerPulse(kArmEncoderDistPerPulse);
-      m_controller = new ProfiledPIDController(kPivotSimPID[0], kPivotSimPID[1], kPivotSimPID[2],
-  new TrapezoidProfile.Constraints(2.45, 2.45));
+        m_encoder = new Encoder(kEncoderAChannel, kEncoderBChannel);
+        m_encoderSim = new EncoderSim(m_encoder);
+        m_encoderSim.setDistancePerPulse(kArmEncoderDistPerPulse);
+        m_controller = new ProfiledPIDController(kPivotSimPID[0], kPivotSimPID[1], kPivotSimPID[2],
+                new TrapezoidProfile.Constraints(2.45, 2.45));
     }
 
     @Override
@@ -65,7 +64,8 @@ public class PivotArmIOSim implements PivotArmIO {
         sim.update(0.02);
         inputs.angleRads = getAngle();
         inputs.angVelocityRadsPerSec = sim.getVelocityRadPerSec();
-        inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
+        inputs.currentAmps = new double[] { sim.getCurrentDrawAmps() };
+        inputs.setpointAngleRads = m_controller.getSetpoint().position;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class PivotArmIOSim implements PivotArmIO {
     public void goToSetpoint(double setpoint) {
         m_controller.setGoal(setpoint);
         // With the setpoint value we run PID control like normal
-        double pidOutput = m_controller.calculate(m_encoder.getDistance());
+        double pidOutput = m_controller.calculate(getAngle());
         double feedforwardOutput = 0; // m_feedforward.calculate(m_controller.getSetpoint().velocity);
 
         sim.setInputVoltage(feedforwardOutput + pidOutput);
@@ -85,7 +85,7 @@ public class PivotArmIOSim implements PivotArmIO {
 
     @Override
     public double getAngle() {
-        return Units.radiansToDegrees(sim.getAngleRads()) - 36;
+        return sim.getAngleRads();
     }
 
     @Override
@@ -122,5 +122,5 @@ public class PivotArmIOSim implements PivotArmIO {
     public double getD() {
         return m_controller.getD();
     }
-    
+
 }

@@ -1,30 +1,20 @@
 package frc.robot.subsystems.pivotArm;
 
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import static frc.robot.Constants.PivotArm.*;
 
-import com.revrobotics.CANSparkLowLevel;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.robot.Constants.PivotArm;
-
-
-import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import static frc.robot.Constants.ElectricalLayout.*;
-import static frc.robot.Constants.PivotArm.*;
-import static frc.robot.Constants.NEO_CURRENT_LIMIT;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder;
+import com.revrobotics.SparkPIDController;
 
 public class PivotArmIOSparkMax implements PivotArmIO {
     // Motor and Encoders
     private CANSparkMax pivotMotor, leftSlave, rightSlaveFront, rightSlaveBack;
     private SparkPIDController pidController;
-    private RelativeEncoder encoder;
-    private DutyCycleEncoder absoluteEncoder;
+    
+    private AbsoluteEncoder absoluteEncoder;
 
     private double setpoint = 0;
 
@@ -54,24 +44,10 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
         configurePID();
 
-        encoder.setPositionConversionFactor(POSITION_CONVERSION_FACTOR);
-        encoder.setVelocityConversionFactor(POSITION_CONVERSION_FACTOR / 60);
-        encoder.setPosition(0.6);
-
-        absoluteEncoder = new DutyCycleEncoder(0);
-        absoluteEncoder.setDistancePerRotation(360.0 / 1024.0);
-        absoluteEncoder.setDutyCycleRange(1 / 1024.0, 1023.0 / 1024.0);
-
-        encoder.setPosition(absoluteEncoder.getDistance() * 28.45 + 0.6);
-    }
-
-    private void configureEncoders() {
-        absoluteEncoder = pivotMotor.getAbsoluteEncoder();
-
-        encoder.setPositionConversionFactor(Math.PI * PIVOT_ARM_ROTATION_DIAM_M / PIVOT_ARM_GEARBOX_REDUCTION);
-        encoder.setVelocityConversionFactor(Math.PI * PIVOT_ARM_ROTATION_DIAM_M / PIVOT_ARM_GEARBOX_REDUCTION / 60.0);
-
-        encoder.setPosition(0);
+        absoluteEncoder = pivotMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+        absoluteEncoder.setPositionConversionFactor(POSITION_CONVERSION_FACTOR);
+        absoluteEncoder.setVelocityConversionFactor(POSITION_CONVERSION_FACTOR / 60.0);
+        
     }
 
     private void configurePID() {
@@ -85,11 +61,12 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     /** Updates the set of loggable inputs. */
     @Override
     public void updateInputs(PivotArmIOInputs inputs) {
-        inputs.angleRads = encoder.getPosition();
-        inputs.angVelocityRadsPerSec = encoder.getVelocity();
+        inputs.angleRads = absoluteEncoder.getPosition();
+        inputs.angVelocityRadsPerSec = absoluteEncoder.getVelocity();
         inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
         inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
         inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
+        inputs.setpointAngleRads = setpoint;
     }
 
     /** Run open loop at the specified voltage. */
@@ -101,7 +78,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     /** Returns the current distance measurement. */
     @Override
     public double getAngle() {
-        return encoder.getPosition();
+        return absoluteEncoder.getPosition();
     }
 
     /** Go to Setpoint */
@@ -118,7 +95,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
     @Override
     public boolean atSetpoint() {
-        return Math.abs(encoder.getPosition() - setpoint) < PIVOT_ARM_PID_TOLERANCE;
+        return Math.abs(absoluteEncoder.getPosition() - setpoint) < PIVOT_ARM_PID_TOLERANCE;
     }
 
     @Override

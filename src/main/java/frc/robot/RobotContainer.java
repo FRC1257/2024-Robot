@@ -102,11 +102,12 @@ public class RobotContainer {
 
     // Set up robot state manager
 
-    MechanismRoot2d root = mech.getRoot("elevator", 1, 0.5);
+    MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
+    pivot.setMechanism(root.append(pivot.getArmMechanism()));
+
     // add subsystem mechanisms
     SmartDashboard.putData("Arm Mechanism", mech);
     
-    setMechanism(getArmMechanism(), pivot);
     isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
 
     // Set up auto routines
@@ -116,18 +117,6 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
   }
-   public void setMechanism(MechanismLigament2d mechanism, PivotArm pivot) {
-        this.pivot.setMechanism(mechanism);
-    }
-
-    public MechanismLigament2d append(MechanismLigament2d mechanism, PivotArm pivot) {
-        return this.pivot.getArmMechanism().append(mechanism);
-    }
-
-    public MechanismLigament2d getArmMechanism() {
-        return new MechanismLigament2d("Pivot Arm", 2, 0, 5, new Color8Bit(Color.kAqua));
-    }
-   
     
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -140,6 +129,8 @@ public class RobotContainer {
     CommandScheduler.getInstance().getActiveButtonLoop().clear();
     drive.setDefaultCommand(
         new RunCommand(() -> drive.driveArcade(driver.getDriveForward(), driver.getDriveTurn()), drive));
+    pivot.setDefaultCommand(
+        new RunCommand(() -> pivot.move(operator.getLeftY()), pivot));
 
     driver.rightBumper().onTrue(
       new StartEndCommand(() -> drive.startSlowMode(), () -> drive.stopSlowMode(), drive)
@@ -147,13 +138,10 @@ public class RobotContainer {
 
     // cancel trajectory
     driver.getY().onTrue(drive.endTrajectoryCommand());
-    pivot.setDefaultCommand(
-        new RunCommand(() -> pivot.move(operator.getLeftY()), pivot));
+    
     // these are triggers that run the subsystem's command
     operator.getB().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
     operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
-
-   
   }
 
   /**

@@ -8,6 +8,7 @@ public interface PivotArmIO {
         public double angleRads = 0.0;
         public double angVelocityRadsPerSec = 0.0;
         public double appliedVolts = 0.0;
+        public double setpointAngleRads = 0.0;
         public double[] currentAmps = new double[] {};
         public double[] tempCelsius = new double[] {};
     }

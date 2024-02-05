@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -13,7 +14,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.math.Matrix;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -27,6 +27,7 @@ import edu.wpi.first.math.Matrix;
  */
 public final class Constants {
   public static final Mode currentMode = Mode.SIM;
+  public static final boolean tuning = true;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -173,39 +174,31 @@ public final class Constants {
     public static final double POSITION_CONVERSION_FACTOR = 1;
     public static final double PIVOT_ARM_ROTATION_DIAM_M = 1;
 
-    public static final double PIVOT_ARM_GEARBOX_REDUCTION = 12.57;
-
     public static final double[] PIVOT_ARM_PID_REAL = {0.25, 0, 0, 0};
-    public static final double PIVOT_ARM_PID_TOLERANCE = 1;
+    public static final double PIVOT_ARM_PID_TOLERANCE = Units.degreesToRadians(1);
 
-    public static final double PIVOT_ARM_MAX_ANGLE = 170.0;
-    public static final double PIVOT_ARM_MIN_ANGLE = 0.0;
+    public static final double PIVOT_ARM_MAX_ANGLE = Units.degreesToRadians(105.0);
+    public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(0.0);
 
     public static class PivotArmSimConstants {
-      public static final double[] kPivotSimPID = {0.25, 0, 0, 0};
+      public static final double[] kPivotSimPID = {2, 0, 0, 0};
 
       public static final int kMotorPort = 2;
       public static final int kEncoderAChannel = 2;
       public static final int kEncoderBChannel = 3;
-      public static final int kJoystickPort = 0;
-
-      public static final String kArmPositionKey = "ArmPosition";
-      public static final String kArmPKey = "ArmP";
 
       // The P gain for the PID controller that drives this arm.
-      public static final double kDefaultArmKp = 50.0;
-      public static final double kDefaultArmSetpointDegrees = 75.0;
+      public static final double kDefaultArmSetpointDegrees = Units.degreesToRadians(75.0);
 
       // distance per pulse = (angle per revolution) / (pulses per revolution)
       // = (2 * PI rads) / (4096 pulses)
-      public static final double kArmEncoderDistPerPulse = 2.0 * Math.PI / 4096;
+      public static final double kArmEncoderDistPerPulse = 1 / 4096;
 
       public static final double kArmReduction = 200;
-      public static final double kArmMass = 5.0; // Kilograms
+      public static final double kArmMass = 10.0; // Kilograms
       public static final double kArmLength = Units.inchesToMeters(20);
       public static final double kMinAngleRads = Units.degreesToRadians(-175);
       public static final double kMaxAngleRads = Units.degreesToRadians(255);
-      public static double kEncoderDistancePerPulse;
     }
   }
 
