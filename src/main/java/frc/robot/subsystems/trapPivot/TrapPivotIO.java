@@ -13,17 +13,21 @@ public interface TrapPivotIO {
         public double[] tempCelsius = new double[] {}; // Temperatures of pivot motors
     }
 
-    public default void updateInputs() {} // Runs periodically and updates inputs
+    public default void updateInputs(TrapPivotIOInputs inputs) {} // Runs periodically
 
     // Motor functions
-    public default void setVoltage() {} // Sets motor voltage
+    public default void setVoltage(double volts) {} // Sets motor voltage
 
-    public default void getAngle() {} // Returns angle of arm
+    public default void setVelocity(double velocity) {}
 
-    public default void getAngVelocity() {} // Returns angular velocity of arm
+    public default double getAngle() { return 0; }
+
+    public default void setBrake(boolean brake) {} // Sets motor to brake if true, coast if false
 
     // PID functions
     public default void goToSetpoint(double setpoint) {} // Goes to a setpoint using PID
+
+    public default boolean atSetpoint() { return false; }
 
     public default double getP() { return 0; } // Returns P constant
 

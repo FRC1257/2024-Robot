@@ -206,15 +206,35 @@ public final class Constants {
     public final static int TRAP_CLAW_ID = 6;
   };
 
-  // CHANGE CONSTANTS
+  // CHANGE CONSTANTS RIGHT NOW YOU STUPID IDIOT
   public static class TrapPivot {
     public static class TrapPivotSim {
-      public final static double[] TRAP_PIVOT_PID_SIM = { 0.1257, 0.1257, 0.1257 };
+      // Trap pivot measurements
+      public final static int TRAP_PIVOT_ID = 8;
+      public final static double DEFAULT_ARM_SETPOINT_DEGREES = 125.7;
+      public final static double TRAP_ARM_REDUCTION = 12.57;
+      public final static double ARM_LENGTH_M = 1.257;
+      public final static double ARM_MASS_KG = 0.1257;
+      public final static double MIN_ANGLE_RADS = -125.7;
+      public final static double MAX_ANGLE_RADS = 125.7;
 
+      // Encoder constants
+      public final static int ENCODER_A_CHANNEL = 0;
+      public final static int ENCODER_B_CHANNEL = 1;
+      public final static double DISTANCE_PER_PULSE = 12.57;
+
+      // PID constants
+      public final static double[] TRAP_PIVOT_PID_SIM = { 0.1257, 0.1257, 0.1257 };
+      public final static double MAX_VELOCITY = 2.45;
+      public final static double MAX_ACCELERATION = 2.45;      
     }
 
     public static class TrapPivotReal {
+      // PID constants
       public final static double[] TRAP_PIVOT_PID_REAL = { 0.1257, 0.1257, 0.1257 };
+      public final static double PID_TOLERANCE = 0.001;
+
+      // Trap arm measurements
       public final static double TRAP_PIVOT_ROTATION_DIAM_M = 1.257;
       public final static double TRAP_PIVOT_GEARBOX_REDUCTION = 12.57;
     }
