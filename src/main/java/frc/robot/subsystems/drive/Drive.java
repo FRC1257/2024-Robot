@@ -42,13 +42,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.LocalADStarAK;
@@ -82,6 +85,15 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+
+  private SwerveDrivePoseEstimator poseEstimatorNoQueues =
+      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+
+    // Odometry class for tracking robot pose
+  private SwerveDriveOdometry odometry = new SwerveDriveOdometry(
+      kinematics,
+      rawGyroRotation,
+      lastModulePositions);
 
   public Drive(
       GyroIO gyroIO,
@@ -221,6 +233,17 @@ public class Drive extends SubsystemBase {
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
+
+    SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+    for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+      modulePositions[moduleIndex] = modules[moduleIndex].getPosition();
+    }
+    poseEstimatorNoQueues.update(new, modulePositions);
+
+    odometry.update(rawGyroRotation, modulePositions);
+
+    Logger.recordOutput("OdomPoseEsWacky", poseEstimatorNoQueues.getEstimatedPosition());
+    Logger.recordOutput("Odomoety ", odometry.getPoseMeters());
   }
 
   /**
