@@ -34,6 +34,8 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
   public static final Mode mode = Mode.REAL;
+  public static final Drivers driver = Drivers.PROGRAMMERS;
+  public static final Operators operator = Operators.PROGRAMMERS;
 
   public static final Mode currentMode = getRobotMode();
   public static final boolean tuningMode = true;
@@ -51,6 +53,16 @@ public final class Constants {
 
     /** Replaying from a log file. */
     REPLAY
+  }
+
+  public static enum Drivers {
+    MAUI,
+    PROGRAMMERS
+  }
+
+  public static enum Operators {
+    ERICK,
+    PROGRAMMERS
   }
 
   public static Mode getRobotMode() {

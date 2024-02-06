@@ -27,6 +27,9 @@ public class FieldConstants {
 
   public static Translation2d ampCenter =
       new Translation2d(Units.inchesToMeters(72.455), Units.inchesToMeters(322.996));
+  public static Pose2d ampPose = new Pose2d(ampCenter, Rotation2d.fromDegrees(-90));
+
+  public static Pose2d pickupPose = new Pose2d(15.331, 1, Rotation2d.fromDegrees(-60));
 
   /** Staging locations for each note */
   public static final class StagingLocations {
