@@ -30,7 +30,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindHolonomic;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -43,11 +45,13 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
+import frc.robot.util.LocalADStarAK;
 import edu.wpi.first.units.Voltage;
 
 public class Drive extends SubsystemBase {
@@ -62,7 +66,7 @@ public class Drive extends SubsystemBase {
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
-  private final SysIdRoutine sysId;
+  //private final SysIdRoutine sysId;
 
   private final VisionIO visionIO;
   private final VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
@@ -121,7 +125,8 @@ public class Drive extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    // Configure SysId
+    // Configure SysId // COmmented out until fixed
+    /* 
     sysId =
         new SysIdRoutine(
             new SysIdRoutine.Config(
@@ -149,7 +154,7 @@ public class Drive extends SubsystemBase {
                   }
                 },
                 null,
-                this));
+                this)); */
   }
 
     
@@ -321,18 +326,19 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return sysId.quasistatic(direction);
-  }
+  //public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    //return sysId.quasistatic(direction);
+  //}
 
-  public Command TurnQuasistatic(SysIdRoutine.Direction direction) {
-    return turnRoutine.quasistatic(direction);
-  }
+  //public Command TurnQuasistatic(SysIdRoutine.Direction direction) {
+    //return turnRoutine.quasistatic(direction);
+  //}
 
   /** Returns a command to run a dynamic test in the specified direction. */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return sysId.dynamic(direction);
-  }
+  // Command sysIdDynamic(SysIdRoutine.Direction direction) {
+   // return sysId.dynamic(direction);
+  //}
+  
   
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
