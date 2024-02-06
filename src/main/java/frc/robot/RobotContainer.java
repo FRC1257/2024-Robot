@@ -176,11 +176,12 @@ public class RobotContainer {
             () -> -driver.getRightX()
       ));
             
-    driver.a().whileTrue(
+    /* driver.a().whileTrue(
         DriveCommands.joystickSpeakerPoint(
             drive,
             () -> -driver.getLeftY(),
-            () -> -driver.getLeftX()));
+            () -> -driver.getLeftX())); */
+    driver.a().onTrue(drive.turnQuasistatic(SysIdRoutine.Direction.kForward));
 
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driver.x().onTrue(drive.goToPose(new Pose2d(1.9, 7.715, Rotation2d.fromDegrees(-90))));

@@ -142,6 +142,16 @@ public class Module {
     speedSetpoint = null;
   }
 
+  public void runCharacterization(double driveVolts, double angleVolts) {
+    // Closed loop turn control
+    angleSetpoint = null;
+    speedSetpoint = null;
+
+    // Open loop drive control
+    io.setDriveVoltage(driveVolts);
+    io.setTurnVoltage(angleVolts);
+  }
+
   /** Disables all outputs to motors. */
   public void stop() {
     io.setTurnVoltage(0.0);

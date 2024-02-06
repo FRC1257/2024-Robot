@@ -13,14 +13,7 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.Constants.DriveConstants.kFrontLeftDrivingCanId;
-import static frc.robot.Constants.DriveConstants.kFrontLeftTurningCanId;
-import static frc.robot.Constants.DriveConstants.kFrontRightDrivingCanId;
-import static frc.robot.Constants.DriveConstants.kFrontRightTurningCanId;
-import static frc.robot.Constants.DriveConstants.kRearLeftDrivingCanId;
-import static frc.robot.Constants.DriveConstants.kRearLeftTurningCanId;
-import static frc.robot.Constants.DriveConstants.kRearRightDrivingCanId;
-import static frc.robot.Constants.DriveConstants.kRearRightTurningCanId;
+import static frc.robot.Constants.DriveConstants.*;
 
 import java.util.Queue;
 
@@ -34,12 +27,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants.ModuleConstants;
-
 
 import static frc.robot.Constants.ModuleConstants.*;
 
@@ -72,8 +61,6 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   private final boolean isTurnMotorInverted = true;
   private final double absoluteEncoderOffset;
-
-
 
   public ModuleIOSparkMax(int index) {
     switch (index) {
@@ -117,7 +104,6 @@ public class ModuleIOSparkMax implements ModuleIO {
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
-    
 
     driveSparkMax.setCANTimeout(250);
     turnSparkMax.setCANTimeout(250);
@@ -240,15 +226,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   public Rotation2d getTurnPosition() {
     double angle = turnAbsoluteEncoder.getPosition() - absoluteEncoderOffset;
-
-    //DO NOT OFFSET THE ABSOLUTEENCODER POSITION
-
-  /*   if (angle < 0) {
-      angle += 2 * Math.PI;
-    }
-    if (angle > 2 * Math.PI) {
-      angle -= 2*Math.PI;
-    }*/
+    
     return Rotation2d.fromRadians(angle);
   }
 
