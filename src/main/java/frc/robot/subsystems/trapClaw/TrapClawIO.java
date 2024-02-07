@@ -14,6 +14,4 @@ public interface TrapClawIO {
     public default void updateInputs(TrapClawIOInputs inputs) {}
 
     public default void setVoltage(double volts) {}
-
-    public default double getVelocity() { return 0; }
 }

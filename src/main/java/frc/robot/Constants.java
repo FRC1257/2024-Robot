@@ -239,6 +239,13 @@ public final class Constants {
     }
   }
 
+  // CHANGE THESE CONSTANTS TOO YOU FUCKING IDIOT
+  public static class TrapClaw {
+    public final static double TRAP_CLAW_REDUCTION_REAL = 1;
+    public final static double TRAP_CLAW_REDUCTION_SIM = 1;
+    public final static double TRAP_CLAW_SPEED = 0.5;
+  }
+
   public static double PI = 3.141592653589793238462643;
   public static double UPDATE_PERIOD = 0.010; // seconds
   public final static int NEO_550_CURRENT_LIMIT = 25; // amps

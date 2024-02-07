@@ -34,6 +34,10 @@ import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.trapClaw.TrapClaw;
+import frc.robot.subsystems.trapClaw.TrapClawIO;
+import frc.robot.subsystems.trapClaw.TrapClawIOSim;
+import frc.robot.subsystems.trapClaw.TrapClawIOSparkMax;
 import frc.robot.subsystems.trapPivot.TrapPivot;
 import frc.robot.subsystems.trapPivot.TrapPivotIO;
 import frc.robot.subsystems.trapPivot.TrapPivotIOSim;
@@ -62,7 +66,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Filesystem;
 
-import static frc.robot.Constants.TrapPivot.*;
+import static frc.robot.Constants.TrapClaw.*;
 
 import java.io.File;
 import java.util.List;
@@ -78,6 +82,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final TrapPivot trapPivot;
+  private final TrapClaw trapClaw;
 
   private Mechanism2d mech = new Mechanism2d(3, 3);
 
@@ -106,6 +111,7 @@ public class RobotContainer {
             new ModuleIOSparkMax(3),
             new VisionIOPhoton());
         trapPivot = new TrapPivot(new TrapPivotIOSparkMax());
+        trapClaw = new TrapClaw(new TrapClawIOSparkMax());
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -119,6 +125,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new VisionIOSim());
         trapPivot = new TrapPivot(new TrapPivotIOSim());
+        trapClaw = new TrapClaw(new TrapClawIOSim());
         break;
 
       // Replayed robot, disable IO implementations
@@ -136,7 +143,8 @@ public class RobotContainer {
             },
             new VisionIO() {
             });
-        trapPivot = new TrapPivot(new TrapPivotIOSim()); // It isn't letting me instantiate just a TrapPivotIO
+        trapPivot = new TrapPivot(new TrapPivotIO() {});
+        trapClaw = new TrapClaw(new TrapClawIO() {});
         break;
     }
 
@@ -211,6 +219,9 @@ public class RobotContainer {
     trapPivot.setDefaultCommand(
       new RunCommand(() -> trapPivot.move(0), trapPivot)
     );
+    trapClaw.setDefaultCommand(
+      new RunCommand(() -> trapClaw.TurnWheelCommand(0))
+    );
             
     driver.a().whileTrue(
         DriveCommands.joystickSpeakerPoint(
@@ -223,6 +234,10 @@ public class RobotContainer {
 
     // Toggle between extending and retracting arm at the press of the right bumper
     operator.rightBumper().onTrue(trapPivot.ExtendRetractCommand());
+
+    // Intake into trap claw using x and eject using y
+    operator.x().whileTrue(trapClaw.TurnWheelCommand(-TRAP_CLAW_SPEED));
+    operator.y().whileTrue(trapClaw.TurnWheelCommand(TRAP_CLAW_SPEED));
 
     /* driver
         .b()

@@ -9,10 +9,7 @@ import static frc.robot.Constants.TrapPivot.TRAP_PIVOT_RETRACT_ANGLE_RADS;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
-
-import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -38,7 +35,7 @@ public class TrapPivot extends SubsystemBase {
     // Current PID setpoint
     private double setpoint = 0;
 
-    // IO interfact that interacts with motor
+    // IO interface that interacts with motor
     private final TrapPivotIO io;
 
     // Mechanism visualization of the arm

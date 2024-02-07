@@ -10,7 +10,7 @@ import static frc.robot.Constants.TrapPivot.TrapPivotSim.*;
 
 public class TrapPivotIOSim implements TrapPivotIO {
     // The arm gearbox represents a gearbox containing one Vex 775pro motor.
-    private final DCMotor gearbox = DCMotor.getVex775Pro(1);
+    private final DCMotor gearbox;
 
     // PID controller helps you move to a setpoint as quickly and smoothly as possible
     private final ProfiledPIDController pidController;
@@ -22,6 +22,7 @@ public class TrapPivotIOSim implements TrapPivotIO {
 
     // Configure simulation and PID controller
     public TrapPivotIOSim() {
+        gearbox = DCMotor.getNeo550(1);
         sim = new SingleJointedArmSim(
             gearbox,
             TRAP_PIVOT_REDUCTION_SIM,

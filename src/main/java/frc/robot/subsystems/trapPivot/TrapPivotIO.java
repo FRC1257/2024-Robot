@@ -2,8 +2,6 @@ package frc.robot.subsystems.trapPivot;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-
 public interface TrapPivotIO {
     // Inputs keep track of the state of the arm
     @AutoLog
@@ -25,7 +23,7 @@ public interface TrapPivotIO {
 
     public default void setBrake(boolean brake) {} // Sets motor to brake if true, coast if false
 
-    public default boolean isBrake() { return false; };
+    public default boolean isBrake() { return false; }; // Returns true if motor idle mode is brake, false if coast
 
     // PID functions
     public default void goToSetpoint(double setpoint) {} // Goes to a setpoint using PID
