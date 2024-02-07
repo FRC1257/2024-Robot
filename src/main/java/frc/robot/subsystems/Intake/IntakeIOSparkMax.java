@@ -22,7 +22,6 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     private DigitalInput breakBeam;
 
-    private boolean intakeState;
     private double desiredSpeed;
 
     public IntakeIOSparkMax() {

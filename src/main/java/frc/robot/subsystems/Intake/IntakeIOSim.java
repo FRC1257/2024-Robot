@@ -3,10 +3,13 @@ package frc.robot.subsystems.Intake;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import frc.robot.Constants.ElectricalLayout;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class IntakeIOSim implements IntakeIO {
     private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.0, 0.01);
     private PIDController controller = new PIDController(IntakeIO.getP(), IntakeIO.getI(), IntakeIO.getD());
+    private DigitalInput breakBeam;
 
     private double appliedVoltage = 0.0;
     private double desiredSpeed;
@@ -20,6 +23,7 @@ public class IntakeIOSim implements IntakeIO {
         inputs.tempCelcius = new double[] { 60 };
         inputs.speedSetpoint = desiredSpeed;
         inputs.breakBeam = true;
+        breakBeam = new DigitalInput(ElectricalLayout.INTAKE_BREAK_BEAM);
     }
 
     @Override
@@ -75,11 +79,6 @@ public class IntakeIOSim implements IntakeIO {
         controller.setP(p);
         controller.setI(i);
         controller.setD(d);
-    }
-
-    @Override
-    public void setBrake(boolean brake) {
-        // Not implemented
     }
 
     @Override
