@@ -19,14 +19,31 @@ public class Intake extends SubsystemBase {
     private final IntakeIO io;
     IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
     
+    private LoggedDashboardNumber logP;
+    private LoggedDashboardNumber logI;
+    private LoggedDashboardNumber logD;
     
     public Intake (IntakeIO io) {
         this.io = io;
         SmartDashboard.putData(getName(), this);
+
+        logP = new LoggedDashboardNumber("Intake/P", io.getP());
+        logI = new LoggedDashboardNumber("Intake/I", io.getI());
+        logD = new LoggedDashboardNumber("Intake/D", io.getD());
     }
 
     public void periodic() {
         io.updateInputs(inputs);
+        // Update PID constants to ensure they are up to date
+        if(logP.get() != io.getP()) {
+            io.setP(logP.get());
+        }
+        if(logI.get() != io.getI()) {
+            io.setI(logI.get());
+        }
+        if(logD.get() != io.getD()) {
+            io.setD(logD.get());
+        }
         Logger.processInputs("Intake", inputs);
     }
 
