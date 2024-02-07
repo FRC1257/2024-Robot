@@ -35,7 +35,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.vision.*;
-import frc.robot.subsystems.groundIntake.*;
+import frc.robot.subsystems.intake.*;
 import frc.robot.util.CommandSnailController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
