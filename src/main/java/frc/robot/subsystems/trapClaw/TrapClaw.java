@@ -24,12 +24,12 @@ public class TrapClaw extends SubsystemBase {
         Logger.processInputs(getName(), inputs);
     }
 
-    // Moves motor a set speed
+    // Moves motor a set speed (-1 <= speed <= 1)
     public void move(double speed) {
         io.setVoltage(speed * 12);
     }
 
-    // Command to turn wheel a set speed
+    // Command to turn wheel a set speed (-1 <= speed <= 1)
     public Command TurnWheelCommand(double speed) {
         return new FunctionalCommand(
             () -> {},
