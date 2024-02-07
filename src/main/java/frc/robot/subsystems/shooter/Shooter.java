@@ -1,17 +1,20 @@
 package frc.robot.subsystems.shooter;
 
-iimport static frc.robot.subsystems.shooter.ShooterConstants;
-
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
+
+import java.util.function.DoubleSupplier;
+
 public class Shooter extends SubsystemBase {
-  private static final LoggedTunableNumber feedVolts =
-      new LoggedTunableNumber("Shooter/FeedVolts", 6.0);
   private static final LoggedTunableNumber leftkP =
       new LoggedTunableNumber("Shooter/leftkP", leftFlywheelConstants.kP());
   private static final LoggedTunableNumber leftkI =
@@ -93,19 +96,11 @@ public class Shooter extends SubsystemBase {
     } else {
       if (!characterizing) {
         shooterIO.setRPM(leftSpeedRpm.get(), rightSpeedRpm.get());
-        double feederSetpointVolts = 0.0;
-        if (leftSpeedRpm.get() > 0 && rightSpeedRpm.get() > 0 && atSetpoint()) {
-          feederSetpointVolts = feedVolts.get();
-        } else {
-          feederSetpointVolts = 0;
-        }
-        shooterIO.setFeederVoltage(feederSetpointVolts);
       }
     }
 
     Logger.recordOutput("Shooter/LeftRPM", shooterInputs.leftFlywheelVelocityRPM);
     Logger.recordOutput("Shooter/RightRPM", shooterInputs.rightFlywheelVelocityRPM);
-    Logger.recordOutput("Shooter/FeederRPM", shooterInputs.feederVelocityRPM);
   }
 
   public void runLeftCharacterizationVolts(double volts) {
@@ -134,5 +129,12 @@ public class Shooter extends SubsystemBase {
             <= shooterTolerance.get()
         && Math.abs(shooterInputs.rightFlywheelVelocityRPM - rightSpeedRpm.get())
             <= shooterTolerance.get();
+  }
+
+  public Command runSpeed(double speed) {
+    return new RunCommand(
+      () -> shooterIO.setRPM(speed, speed),
+      this
+    );
   }
 }

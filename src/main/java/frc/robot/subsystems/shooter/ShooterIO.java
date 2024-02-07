@@ -1,5 +1,5 @@
 package frc.robot.subsystems.shooter;
-import static frc.robot.subsystems.shooter.ShooterConstants;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -15,10 +15,6 @@ public interface ShooterIO {
     public double rightFlywheelVelocityRPM = 0.0;
     public double rightFlywheelAppliedVolts = 0.0;
     public double rightFlywheelOutputCurrent = 0.0;
-
-    public double feederVelocityRPM = 0.0;
-    public double feederAppliedVolts = 0.0;
-    public double feederOutputCurrent = 0.0;
   }
 
   /** Update inputs */
@@ -33,8 +29,6 @@ public interface ShooterIO {
     setRightRPM(rightRpm);
   }
 
-  default void setFeederVoltage(double volts) {}
-
   default void setLeftBrakeMode(boolean enabled) {}
 
   default void setRightBrakeMode(boolean enabled) {}
@@ -43,8 +37,6 @@ public interface ShooterIO {
     setLeftBrakeMode(enabled);
     setRightBrakeMode(enabled);
   }
-
-  default void setFeederBrakeMode(boolean enabled) {}
 
   default void setLeftCharacterizationVoltage(double volts) {}
 

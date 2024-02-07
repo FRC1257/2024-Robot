@@ -1,6 +1,6 @@
 package frc.robot.subsystems.shooter;
 
-import static frc.robot.subsystems.shooter.ShooterConstants;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
@@ -11,7 +11,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 public class ShooterIOSparkMax implements ShooterIO {
   private CANSparkFlex leftMotor;
   private CANSparkFlex rightMotor;
-  private CANSparkFlex feederMotor;
 
   private RelativeEncoder leftEncoder;
   private RelativeEncoder rightEncoder;
@@ -24,14 +23,12 @@ public class ShooterIOSparkMax implements ShooterIO {
   public ShooterIOSparkMax() {
     leftMotor = new CANSparkFlex(leftFlywheelConstants.id(), CANSparkFlex.MotorType.kBrushless);
     rightMotor = new CANSparkFlex(rightFlywheelConstants.id(), CANSparkFlex.MotorType.kBrushless);
-    feederMotor = new CANSparkFlex(feederConstants.id(), CANSparkFlex.MotorType.kBrushless);
 
     leftEncoder = leftMotor.getEncoder();
     rightEncoder = rightMotor.getEncoder();
 
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
-    feederMotor.restoreFactoryDefaults();
 
     leftMotor.setInverted(leftFlywheelConstants.inverted());
     rightMotor.setInverted(rightFlywheelConstants.inverted());
@@ -40,12 +37,7 @@ public class ShooterIOSparkMax implements ShooterIO {
     leftMotor.enableVoltageCompensation(12.0);
     rightMotor.enableVoltageCompensation(12.0);
 
-    feederMotor.setInverted(feederConstants.inverted());
-    feederMotor.setSmartCurrentLimit(100);
-    feederMotor.enableVoltageCompensation(12.0);
-
     setShooterBrakeMode(false);
-    setFeederBrakeMode(false);
 
     leftEncoder.setPosition(0.0);
     rightEncoder.setPosition(0.0);
@@ -67,7 +59,6 @@ public class ShooterIOSparkMax implements ShooterIO {
 
     leftMotor.burnFlash();
     rightMotor.burnFlash();
-    feederMotor.burnFlash();
   }
 
   @Override
@@ -81,10 +72,6 @@ public class ShooterIOSparkMax implements ShooterIO {
     inputs.rightFlywheelVelocityRPM = rightEncoder.getVelocity();
     inputs.rightFlywheelAppliedVolts = rightMotor.getAppliedOutput();
     inputs.rightFlywheelOutputCurrent = rightMotor.getOutputCurrent();
-
-    inputs.feederVelocityRPM = feederMotor.getEncoder().getVelocity();
-    inputs.feederAppliedVolts = feederMotor.getAppliedOutput();
-    inputs.feederOutputCurrent = feederMotor.getOutputCurrent();
   }
 
   @Override
@@ -108,11 +95,6 @@ public class ShooterIOSparkMax implements ShooterIO {
   }
 
   @Override
-  public void setFeederVoltage(double volts) {
-    feederMotor.setVoltage(volts);
-  }
-
-  @Override
   public void setLeftCharacterizationVoltage(double volts) {
     leftMotor.setVoltage(volts);
   }
@@ -130,11 +112,6 @@ public class ShooterIOSparkMax implements ShooterIO {
   @Override
   public void setRightBrakeMode(boolean enabled) {
     rightMotor.setIdleMode(enabled ? CANSparkBase.IdleMode.kBrake : CANSparkBase.IdleMode.kCoast);
-  }
-
-  @Override
-  public void setFeederBrakeMode(boolean enabled) {
-    feederMotor.setIdleMode(enabled ? CANSparkBase.IdleMode.kBrake : CANSparkBase.IdleMode.kCoast);
   }
 
   @Override
@@ -164,6 +141,5 @@ public class ShooterIOSparkMax implements ShooterIO {
   @Override
   public void stop() {
     setRPM(0.0, 0.0);
-    setFeederVoltage(0.0);
   }
 }

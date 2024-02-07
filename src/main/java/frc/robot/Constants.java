@@ -27,6 +27,7 @@ import edu.wpi.first.math.Matrix;
  */
 public final class Constants {
   public static final Mode currentMode = Mode.SIM;
+  public static final boolean tuningMode = true;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -117,27 +118,29 @@ public final class Constants {
     public static final double TRACKED_TAG_AREA_DRIVE_KP = 0.2; // P (Proportional) constant of a PID loop
     public static final double APRILTAG_POWER_CAP = 0.75;
   };
+
   public static class Shooter {
-       public static final double RIGHT_MOTOR_MIN_SPEED;
-       public static final double RIGHT_MOTOR_MAX_SPEED;
-       public static final double LEFT_MOTOR_MIN_SPEED;
-       public static final double LEFT_MOTOR_MAX_SPEED;
+    public static final double RIGHT_MOTOR_MIN_SPEED = 0;
+    public static final double RIGHT_MOTOR_MAX_SPEED = 0;
+    public static final double LEFT_MOTOR_MIN_SPEED = 0;
+    public static final double LEFT_MOTOR_MAX_SPEED = 0;
 
-    public static class ShooterSimConstants{ 
-       public static final double RIGHT_MOTOR_MIN_SPEED;
-       public static final double RIGHT_MOTOR_MAX_SPEED;
-       public static final double LEFT_MOTOR_MIN_SPEED;
-       public static final double LEFT_MOTOR_MAX_SPEED;
+    public static class ShooterSimConstants {
+      public static final double RIGHT_MOTOR_MIN_SPEED = 0;
+      public static final double RIGHT_MOTOR_MAX_SPEED = 0;
+      public static final double LEFT_MOTOR_MIN_SPEED = 0;
+      public static final double LEFT_MOTOR_MAX_SPEED = 0;
 
-       public static final double rightEncoder = 0.0;
-       public static final double leftEncoder = 0.0;
+      public static final double rightEncoder = 0.0;
+      public static final double leftEncoder = 0.0;
 
-    public static class ShooterPhysicalConstants {
-       public static final double RIGHT_MOTOR_MIN_SPEED;
-       public static final double RIGHT_MOTOR_MAX_SPEED;
-       public static final double LEFT_MOTOR_MIN_SPEED;
-       public static final double LEFT_MOTOR_MAX_SPEED;
+      public static class ShooterPhysicalConstants {
+        public static final double RIGHT_MOTOR_MIN_SPEED = 0;
+        public static final double RIGHT_MOTOR_MAX_SPEED = 0;
+        public static final double LEFT_MOTOR_MIN_SPEED = 0;
+        public static final double LEFT_MOTOR_MAX_SPEED = 0;
 
+      }
     }
   }
 

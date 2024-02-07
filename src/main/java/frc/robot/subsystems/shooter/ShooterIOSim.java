@@ -1,6 +1,6 @@
 package frc.robot.subsystems.shooter;
 
-import static frc.robot.subsystems.shooter.ShooterConstants;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -14,7 +14,6 @@ public class ShooterIOSim implements ShooterIO {
       new FlywheelSim(DCMotor.getNeoVortex(1), flywheelReduction, 0.1);
   private final FlywheelSim rightSim =
       new FlywheelSim(DCMotor.getNeoVortex(1), flywheelReduction, 0.1);
-  private final FlywheelSim feederSim = new FlywheelSim(DCMotor.getAndymarkRs775_125(1), 1.0, 0.01);
 
   private final PIDController leftController =
       new PIDController(
@@ -31,7 +30,6 @@ public class ShooterIOSim implements ShooterIO {
 
   private double leftAppliedVolts = 0.0;
   private double rightAppliedVolts = 0.0;
-  private double feederAppliedVolts = 0.0;
 
   private Double leftSetpointRPM = null;
   private Double rightSetpointRPM = null;
@@ -40,7 +38,6 @@ public class ShooterIOSim implements ShooterIO {
   public void updateInputs(ShooterIOInputs inputs) {
     leftSim.update(0.02);
     rightSim.update(0.02);
-    feederSim.update(0.02);
     // control to setpoint
     if (leftSetpointRPM != null) {
       leftAppliedVolts =
@@ -66,10 +63,6 @@ public class ShooterIOSim implements ShooterIO {
     inputs.rightFlywheelVelocityRPM = rightSim.getAngularVelocityRPM();
     inputs.rightFlywheelAppliedVolts = rightAppliedVolts;
     inputs.rightFlywheelOutputCurrent = rightSim.getCurrentDrawAmps();
-
-    inputs.feederVelocityRPM = feederSim.getAngularVelocityRPM();
-    inputs.feederAppliedVolts = feederAppliedVolts;
-    inputs.feederOutputCurrent = feederSim.getCurrentDrawAmps();
   }
 
   @Override
@@ -80,11 +73,6 @@ public class ShooterIOSim implements ShooterIO {
   @Override
   public void setRightRPM(double rpm) {
     rightSetpointRPM = rpm;
-  }
-
-  @Override
-  public void setFeederVoltage(double volts) {
-    feederAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
   }
 
   @Override
@@ -124,10 +112,5 @@ public class ShooterIOSim implements ShooterIO {
   @Override
   public void stop() {
     setRPM(0.0, 0.0);
-    setFeederVoltage(0.0);
-  }
-}
-    setRPM(0.0, 0.0);
-    setFeederVoltage(0.0);
   }
 }
