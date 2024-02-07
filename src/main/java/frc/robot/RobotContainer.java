@@ -12,11 +12,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.SpinAuto;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.DriveIO;
-import frc.robot.subsystems.drive.DriveIOCIM;
-import frc.robot.subsystems.drive.DriveIOSim;
-import frc.robot.subsystems.drive.DriveIOTalon;
+import frc.robot.subsystems.shooter.*;
+import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
@@ -51,6 +48,7 @@ import java.io.File;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Shooter shooter;
 
   private Mechanism2d mech = new Mechanism2d(3, 3);
 
@@ -71,19 +69,23 @@ public class RobotContainer {
       // Real robot, instantiate hardware IO implementations
       case REAL:
         drive = new Drive(new DriveIOTalon(), new VisionIOPhoton(), new Pose2d());
+        shooter = new Shooter(new ShooterIOSparkMax());
         break;
 
       // Sim robot, instantiate physics sim IO implementations
       case SIM:
         drive = new Drive(new DriveIOSim(), new VisionIOSim(), new Pose2d());
+        shooter = new Shooter(new ShooterIOSim());
         break;
       case TEST:
         drive = new Drive(new DriveIOCIM(), new VisionIOPhoton(), new Pose2d());
+        shooter = new Shooter(new ShooterIOSim());
         break;
 
       // Replayed robot, disable IO implementations
       default:
         drive = new Drive(new DriveIO() {}, new VisionIO() {}, new Pose2d());
+        shooter = new Shooter(new ShooterIO(){});
         break;
     }
 

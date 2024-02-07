@@ -15,8 +15,8 @@ public class ShooterIOSparkMax implements ShooterIO {
   private RelativeEncoder leftEncoder;
   private RelativeEncoder rightEncoder;
 
-  private SparkPIDController leftController;
-  private SparkPIDController rightController;
+  private SparkPIDController leftController; //velocity pid controller (left)
+  private SparkPIDController rightController; //velocity pid controller (right)
   private SimpleMotorFeedforward leftFF = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
   private SimpleMotorFeedforward rightFF = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
 

@@ -16,12 +16,7 @@ public class ShooterConstants {
       switch (Constants.currentMode) {
         default -> new FlywheelConstants(1, false, 0.0, 0.0, 0.0, 0.33329, 0.00083, 0.0);
       };
-
-  public static FeederConstants feederConstants =
-      switch (Constants.currentMode) {
-        default -> new FeederConstants(3, false);
-      };
-
+      
   public record FlywheelConstants(
       int id,
       boolean inverted,
