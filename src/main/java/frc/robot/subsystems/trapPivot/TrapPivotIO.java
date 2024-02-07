@@ -2,15 +2,18 @@ package frc.robot.subsystems.trapPivot;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+
 public interface TrapPivotIO {
-    // Inputs 
+    // Inputs keep track of the state of the arm
     @AutoLog
     public static class TrapPivotIOInputs {
         public double angleRads = 0.0; // Arm angle
         public double angVelocityRadsPerSec = 0.0; // Angular velocity of arm
         public double appliedVolts = 0.0; // Volts applied to arm
-        public double[] currentAmps = new double[] {}; // Amps of pivot motors
+        public double[] currentAmps = new double[] {}; // Amp measurements of pivot motors
         public double[] tempCelsius = new double[] {}; // Temperatures of pivot motors
+        public double setpointAngleRads = 0.0; // Current target setpoint
     }
 
     public default void updateInputs(TrapPivotIOInputs inputs) {} // Runs periodically
@@ -18,16 +21,16 @@ public interface TrapPivotIO {
     // Motor functions
     public default void setVoltage(double volts) {} // Sets motor voltage
 
-    public default void setVelocity(double velocity) {} // Sets velocity of motor in radians per second
-
     public default double getAngleRads() { return 0; } // Gets angle of motor in radians
 
     public default void setBrake(boolean brake) {} // Sets motor to brake if true, coast if false
 
+    public default boolean isBrake() { return false; };
+
     // PID functions
     public default void goToSetpoint(double setpoint) {} // Goes to a setpoint using PID
 
-    public default boolean atSetpoint() { return false; }
+    public default boolean atSetpoint() { return false; } // Returns true if arm is close enough to setpoint
 
     public default double getP() { return 0; } // Returns P constant
 

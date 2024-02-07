@@ -34,6 +34,10 @@ import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.trapPivot.TrapPivot;
+import frc.robot.subsystems.trapPivot.TrapPivotIO;
+import frc.robot.subsystems.trapPivot.TrapPivotIOSim;
+import frc.robot.subsystems.trapPivot.TrapPivotIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
@@ -57,6 +61,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Filesystem;
+
+import static frc.robot.Constants.TrapPivot.*;
+
 import java.io.File;
 import java.util.List;
 
@@ -70,6 +77,7 @@ import java.util.List;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final TrapPivot trapPivot;
 
   private Mechanism2d mech = new Mechanism2d(3, 3);
 
@@ -97,6 +105,7 @@ public class RobotContainer {
             new ModuleIOSparkMax(2),
             new ModuleIOSparkMax(3),
             new VisionIOPhoton());
+        trapPivot = new TrapPivot(new TrapPivotIOSparkMax());
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -109,6 +118,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new VisionIOSim());
+        trapPivot = new TrapPivot(new TrapPivotIOSim());
         break;
 
       // Replayed robot, disable IO implementations
@@ -126,12 +136,15 @@ public class RobotContainer {
             },
             new VisionIO() {
             });
+        trapPivot = new TrapPivot(new TrapPivotIOSim()); // It isn't letting me instantiate just a TrapPivotIO
         break;
     }
 
     // Set up robot state manager
 
     MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
+    trapPivot.setMechanism(root.append(trapPivot.getMechanism()));
+
     // add subsystem mechanisms
     SmartDashboard.putData("Arm Mechanism", mech);
 
@@ -195,6 +208,9 @@ public class RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX()));
+    trapPivot.setDefaultCommand(
+      new RunCommand(() -> trapPivot.move(0), trapPivot)
+    );
             
     driver.a().whileTrue(
         DriveCommands.joystickSpeakerPoint(
@@ -204,6 +220,9 @@ public class RobotContainer {
 
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driver.x().onTrue(new GoToPose(drive, new Pose2d(2, 7.8, new Rotation2d(90))));
+
+    // Toggle between extending and retracting arm at the press of the right bumper
+    operator.rightBumper().onTrue(trapPivot.ExtendRetractCommand());
 
     /* driver
         .b()
