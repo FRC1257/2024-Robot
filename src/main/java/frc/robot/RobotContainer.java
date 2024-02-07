@@ -220,7 +220,7 @@ public class RobotContainer {
       new RunCommand(() -> trapPivot.move(0), trapPivot)
     );
     trapClaw.setDefaultCommand(
-      new RunCommand(() -> trapClaw.TurnWheelCommand(0))
+      trapClaw.TurnWheelCommand(0)
     );
             
     driver.a().whileTrue(
@@ -236,7 +236,6 @@ public class RobotContainer {
     operator.rightBumper().onTrue(trapPivot.ExtendRetractCommand());
 
     // Intake into trap claw using x and eject using y
-    operator.x().whileTrue(trapClaw.TurnWheelCommand(-TRAP_CLAW_SPEED));
     operator.y().whileTrue(trapClaw.TurnWheelCommand(TRAP_CLAW_SPEED));
 
     /* driver

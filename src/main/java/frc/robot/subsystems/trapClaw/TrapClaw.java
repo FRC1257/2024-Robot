@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class TrapClaw extends SubsystemBase {
     // IO interface to communicate with motor
     private TrapClawIO io;
-    private TrapClawIOInputsAutoLogged inputs;
+    private TrapClawIOInputsAutoLogged inputs = new TrapClawIOInputsAutoLogged();
 
     public TrapClaw(TrapClawIO io) {
         this.io = io;

@@ -19,6 +19,8 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pathfind to Pickup Pos": "Command",
       "/SmartDashboard/PivotArm": "Subsystem",
+      "/SmartDashboard/TrapClaw": "Subsystem",
+      "/SmartDashboard/TrapPivot": "Subsystem",
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
     },
     "windows": {

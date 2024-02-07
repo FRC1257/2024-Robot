@@ -1,11 +1,6 @@
 package frc.robot.subsystems.trapPivot;
 
-import static frc.robot.Constants.TrapPivot.TRAP_PIVOT_ANGLE_THRESHOLD;
-import static frc.robot.Constants.TrapPivot.TRAP_PIVOT_EXTEND_ANGLE_RADS;
-import static frc.robot.Constants.TrapPivot.TRAP_PIVOT_LENGTH_M;
-import static frc.robot.Constants.TrapPivot.TRAP_PIVOT_MAX_ANGLE_RADS;
-import static frc.robot.Constants.TrapPivot.TRAP_PIVOT_MIN_ANGLE_RADS;
-import static frc.robot.Constants.TrapPivot.TRAP_PIVOT_RETRACT_ANGLE_RADS;
+import static frc.robot.Constants.TrapPivot.*;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;

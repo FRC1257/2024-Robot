@@ -15,12 +15,13 @@ public class TrapClawIOSim implements TrapClawIO {
     // Instantiate gearbox and flywheel simulation
     public TrapClawIOSim() {
         gearbox = DCMotor.getNeo550(1);
-        sim = new FlywheelSim(gearbox, TRAP_CLAW_REDUCTION_SIM, 0.1);
+        sim = new FlywheelSim(gearbox, TRAP_CLAW_REDUCTION_SIM, 1);
     }
 
     // Updates inputs periodically based on state of simulation
     @Override
     public void updateInputs(TrapClawIOInputs inputs) {
+        sim.update(0.02);
         inputs.velocityRadsPerSec = sim.getAngularVelocityRadPerSec();
         inputs.currentAmps = new double[]{ sim.getCurrentDrawAmps() };
     }
