@@ -213,14 +213,10 @@ public final class Constants {
     public final static double TRAP_PIVOT_MASS_KG = 2;
     public final static double TRAP_PIVOT_MIN_ANGLE_RADS = -1;
     public final static double TRAP_PIVOT_MAX_ANGLE_RADS = 1;
+    public final static double TRAP_PIVOT_ANGLE_THRESHOLD = (TRAP_PIVOT_MIN_ANGLE_RADS + TRAP_PIVOT_MAX_ANGLE_RADS) / 2;
 
     // PID tolerance
     public final static double TRAP_PIVOT_PID_TOLERANCE = 0.1;
-
-    // Angle setpoints
-    public final static double TRAP_PIVOT_EXTEND_ANGLE_RADS = 1;
-    public final static double TRAP_PIVOT_RETRACT_ANGLE_RADS = 0;
-    public final static double TRAP_PIVOT_ANGLE_THRESHOLD = (TRAP_PIVOT_EXTEND_ANGLE_RADS + TRAP_PIVOT_RETRACT_ANGLE_RADS) / 2;
 
     public static class TrapPivotSim {
       // Trap pivot measurements
@@ -244,6 +240,11 @@ public final class Constants {
     public final static double TRAP_CLAW_REDUCTION_REAL = 1;
     public final static double TRAP_CLAW_REDUCTION_SIM = 1;
     public final static double TRAP_CLAW_SPEED = 0.5;
+
+    // Moment of inertia calculations
+    public final static double TRAP_CLAW_WHEEL_MASS_KG = 0.1;
+    public final static double TRAP_CLAW_WHEEL_RADIUS_M = 0.05;
+    public final static double TRAP_CLAW_MOI = 0.5 * TRAP_CLAW_WHEEL_MASS_KG * TRAP_CLAW_WHEEL_RADIUS_M * TRAP_CLAW_WHEEL_RADIUS_M;
   }
 
   public static double PI = 3.141592653589793238462643;

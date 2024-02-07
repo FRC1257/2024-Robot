@@ -121,9 +121,9 @@ public class TrapPivot extends SubsystemBase {
     // If the arm is extended, it should retract, and vice versa
     public void toggleSetpoint() {
         if(io.getAngleRads() > TRAP_PIVOT_ANGLE_THRESHOLD)
-            setSetpoint(TRAP_PIVOT_RETRACT_ANGLE_RADS);
+            setSetpoint(TRAP_PIVOT_MIN_ANGLE_RADS);
         else
-            setSetpoint(TRAP_PIVOT_EXTEND_ANGLE_RADS);
+            setSetpoint(TRAP_PIVOT_MAX_ANGLE_RADS);
     }
 
     // Command that extends or retracts the arm

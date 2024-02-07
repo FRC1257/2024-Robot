@@ -233,9 +233,10 @@ public class RobotContainer {
     driver.x().onTrue(new GoToPose(drive, new Pose2d(2, 7.8, new Rotation2d(90))));
 
     // Toggle between extending and retracting arm at the press of the right bumper
-    operator.rightBumper().onTrue(trapPivot.ExtendRetractCommand());
+    operator.a().onTrue(trapPivot.ExtendRetractCommand());
 
     // Intake into trap claw using x and eject using y
+    operator.x().whileTrue(trapClaw.TurnWheelCommand(-TRAP_CLAW_SPEED));
     operator.y().whileTrue(trapClaw.TurnWheelCommand(TRAP_CLAW_SPEED));
 
     /* driver

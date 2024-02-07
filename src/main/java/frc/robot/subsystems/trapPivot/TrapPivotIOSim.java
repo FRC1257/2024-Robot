@@ -20,6 +20,9 @@ public class TrapPivotIOSim implements TrapPivotIO {
     // to 255 degrees (rotated down in the back).
     private SingleJointedArmSim sim;
 
+    // Keeps track of volts applied to arm
+    private double appliedVolts = 0;
+
     // Configure simulation and PID controller
     public TrapPivotIOSim() {
         gearbox = DCMotor.getNeo550(1);
@@ -43,6 +46,7 @@ public class TrapPivotIOSim implements TrapPivotIO {
         sim.update(0.02);
         inputs.angleRads = sim.getAngleRads();
         inputs.angVelocityRadsPerSec = sim.getVelocityRadPerSec();
+        inputs.appliedVolts = appliedVolts;
         inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
         inputs.setpointAngleRads = pidController.getSetpoint().position;
     }
@@ -50,6 +54,7 @@ public class TrapPivotIOSim implements TrapPivotIO {
     @Override
     public void setVoltage(double volts) {
         sim.setInputVoltage(volts);
+        appliedVolts = volts;
     }
 
     @Override
