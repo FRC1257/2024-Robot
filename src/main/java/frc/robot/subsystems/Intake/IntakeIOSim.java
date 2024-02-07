@@ -5,6 +5,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants.ElectricalLayout;
 import edu.wpi.first.wpilibj.DigitalInput;
+import static frc.robot.Constants.Intake.IntakeSimConstants.*;
 
 public class IntakeIOSim implements IntakeIO {
     private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.0, 1);
@@ -12,6 +13,10 @@ public class IntakeIOSim implements IntakeIO {
 
     private double appliedVoltage = 0.0;
     private double desiredSpeed;
+
+    public IntakeIOSim() {
+        setPIDConstants(kIntakeP, kIntakeI, kIntakeD);
+    }
 
     @Override
     public void updateInputs(IntakeIOInputs inputs) {

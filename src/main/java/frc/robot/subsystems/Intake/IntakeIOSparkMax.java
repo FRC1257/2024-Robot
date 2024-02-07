@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Intake;
 
 import static frc.robot.Constants.NEO_CURRENT_LIMIT;
+import static frc.robot.Constants.Intake.IntakeSimConstants.*;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -26,6 +27,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     public IntakeIOSparkMax() {
         /** ID needs to be assigned from constants */
+        setPIDConstants(kIntakeP, kIntakeI, kIntakeD);
         IntakeMotor = new CANSparkMax(ElectricalLayout.INTAKE_MOTOR, CANSparkMax.MotorType.kBrushless);
         IntakeMotor.restoreFactoryDefaults();
         IntakeMotor.setIdleMode(IdleMode.kBrake);
