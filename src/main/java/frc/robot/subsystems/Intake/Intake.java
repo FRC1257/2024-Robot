@@ -19,6 +19,7 @@ public class Intake extends SubsystemBase {
     private final IntakeIO io;
     IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
     
+    
     public Intake (IntakeIO io) {
         this.io = io;
         SmartDashboard.putData(getName(), this);
@@ -85,5 +86,7 @@ public class Intake extends SubsystemBase {
             this
         );
     }
+
+
 
 }

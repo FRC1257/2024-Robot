@@ -7,9 +7,8 @@ import frc.robot.Constants.ElectricalLayout;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class IntakeIOSim implements IntakeIO {
-    private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.0, 0.01);
-    private PIDController controller = new PIDController(IntakeIO.getP(), IntakeIO.getI(), IntakeIO.getD());
-    private DigitalInput breakBeam;
+    private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.0, 1);
+    private PIDController controller = new PIDController(0, 0, 0);
 
     private double appliedVoltage = 0.0;
     private double desiredSpeed;
@@ -23,7 +22,6 @@ public class IntakeIOSim implements IntakeIO {
         inputs.tempCelcius = new double[] { 60 };
         inputs.speedSetpoint = desiredSpeed;
         inputs.breakBeam = true;
-        breakBeam = new DigitalInput(ElectricalLayout.INTAKE_BREAK_BEAM);
     }
 
     @Override
@@ -83,7 +81,7 @@ public class IntakeIOSim implements IntakeIO {
 
     @Override
     public boolean isIntaked() {
-        return breakBeam.get();
+        return false;
     }
 
 }

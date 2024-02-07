@@ -36,7 +36,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.vision.*;
-import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.Intake.*;
 import frc.robot.util.CommandSnailController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -100,6 +100,7 @@ public class RobotContainer {
             new ModuleIOSparkMax(2),
             new ModuleIOSparkMax(3),
             new VisionIOPhoton());
+        intake = new Intake(new IntakeIOSparkMax());
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -112,6 +113,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new VisionIOSim());
+            intake = new Intake(new IntakeIOSim());
         break;
 
       // Replayed robot, disable IO implementations
@@ -129,6 +131,7 @@ public class RobotContainer {
             },
             new VisionIO() {
             });
+        intake = new Intake(new IntakeIO(){});
         break;
     }
 
