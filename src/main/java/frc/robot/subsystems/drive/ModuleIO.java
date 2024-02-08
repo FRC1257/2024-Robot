@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public interface ModuleIO {
   @AutoLog
   public static class ModuleIOInputs {
+
     public double drivePositionRad = 0.0;
     public double driveVelocityRadPerSec = 0.0;
     public double driveAppliedVolts = 0.0;
