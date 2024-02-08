@@ -214,7 +214,8 @@ public final class Constants {
     public final static double TRAP_PIVOT_MIN_ANGLE_RADS = 0;
     public final static double TRAP_PIVOT_MAX_ANGLE_RADS = 2;
     public final static double TRAP_PIVOT_ANGLE_THRESHOLD = (TRAP_PIVOT_MIN_ANGLE_RADS + TRAP_PIVOT_MAX_ANGLE_RADS) / 2;
-
+    public final static double TRAP_PIVOT_SIMULATION_MAX_ANGLE_RADS = Math.PI;
+    public final static double TRAP_PIVOT_SIMULATION_MIN_ANGLE_RADS = 0;
     // PID tolerance
     public final static double TRAP_PIVOT_PID_TOLERANCE = 0.1;
 
