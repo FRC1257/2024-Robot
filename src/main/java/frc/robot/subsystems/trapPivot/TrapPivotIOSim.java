@@ -33,10 +33,10 @@ public class TrapPivotIOSim implements TrapPivotIO {
             TRAP_PIVOT_REDUCTION_SIM,
             SingleJointedArmSim.estimateMOI(TRAP_PIVOT_LENGTH_M, TRAP_PIVOT_MASS_KG),
             TRAP_PIVOT_LENGTH_M,
-            -224398,
-            24298,
+            TRAP_PIVOT_MIN_ANGLE_RADS,
+            TRAP_PIVOT_MAX_ANGLE_RADS,
             true,
-            0
+            TRAP_PIVOT_MAX_ANGLE_RADS
         );
         pidController = new ProfiledPIDController(TRAP_PIVOT_PID_SIM[0], TRAP_PIVOT_PID_SIM[1], TRAP_PIVOT_PID_SIM[2],
             new TrapezoidProfile.Constraints(TRAP_PIVOT_MAX_VELOCITY, TRAP_PIVOT_MAX_ACCELERATION));
