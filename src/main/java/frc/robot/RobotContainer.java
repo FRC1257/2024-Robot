@@ -121,6 +121,10 @@ public class RobotContainer {
       new StartEndCommand(() -> drive.startSlowMode(), () -> drive.stopSlowMode(), drive)
     );
 
+    shooter.setDefaultCommand(
+      shooter.runSpeed(0)
+    );
+
     // cancel trajectory
     driver.getY().onTrue(drive.endTrajectoryCommand());
 

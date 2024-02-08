@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class ShooterIOSim implements ShooterIO {
   private final FlywheelSim leftSim =
-      new FlywheelSim(DCMotor.getNeoVortex(1), flywheelReduction, 0.1);
+      new FlywheelSim(DCMotor.getNeoVortex(1), flywheelReduction, momentOfInertia);
   private final FlywheelSim rightSim =
-      new FlywheelSim(DCMotor.getNeoVortex(1), flywheelReduction, 0.1);
+      new FlywheelSim(DCMotor.getNeoVortex(1), flywheelReduction, momentOfInertia);
 
   private final PIDController leftController =
       new PIDController(
