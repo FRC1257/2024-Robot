@@ -46,7 +46,6 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
         inputs.tempCelcius = new double[] { GroundIntakeMotor.getMotorTemperature() };
         inputs.velocityRadsPerSec = GroundintakeEncoder.getVelocity();
         inputs.speedSetpoint = desiredSpeed;
-        inputs.breakBeam = breakBeam.get();
     }
 
     /** sets voltage to run motor if necessary */

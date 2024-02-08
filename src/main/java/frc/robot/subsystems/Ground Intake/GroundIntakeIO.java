@@ -11,7 +11,6 @@ public interface GroundIntakeIO {
         public double velocityRadsPerSec = 0.0;
         public double appliedVoltage = 0.0;
         public double speedSetpoint = 0.0;
-        public boolean breakBeam = false;
         public double[] currentAmps = new double[] {};
         public double[] tempCelcius = new double[] {};
     }

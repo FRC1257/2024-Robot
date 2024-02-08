@@ -26,7 +26,6 @@ public class GroundIntakeIOSim implements GroundIntakeIO {
         inputs.currentAmps = new double[] { sim.getCurrentDrawAmps() };
         inputs.tempCelcius = new double[] { 60 };
         inputs.speedSetpoint = desiredSpeed;
-        inputs.breakBeam = true;
     }
 
     @Override
