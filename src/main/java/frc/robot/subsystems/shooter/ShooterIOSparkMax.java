@@ -21,8 +21,8 @@ public class ShooterIOSparkMax implements ShooterIO {
   private SimpleMotorFeedforward rightFF = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
 
   public ShooterIOSparkMax() {
-    leftMotor = new CANSparkFlex(leftFlywheelConstants.id(), CANSparkFlex.MotorType.kBrushless);
-    rightMotor = new CANSparkFlex(rightFlywheelConstants.id(), CANSparkFlex.MotorType.kBrushless);
+    leftMotor = new CANSparkFlex(leftShooter.id(), CANSparkFlex.MotorType.kBrushless);
+    rightMotor = new CANSparkFlex(rightShooter.id(), CANSparkFlex.MotorType.kBrushless);
 
     leftEncoder = leftMotor.getEncoder();
     rightEncoder = rightMotor.getEncoder();
@@ -30,8 +30,8 @@ public class ShooterIOSparkMax implements ShooterIO {
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
 
-    leftMotor.setInverted(leftFlywheelConstants.inverted());
-    rightMotor.setInverted(rightFlywheelConstants.inverted());
+    leftMotor.setInverted(leftShooter.inverted());
+    rightMotor.setInverted(rightShooter.inverted());
     leftMotor.setSmartCurrentLimit(60);
     rightMotor.setSmartCurrentLimit(60);
     leftMotor.enableVoltageCompensation(12.0);
@@ -63,7 +63,7 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.leftFlywheelPositionRotations = leftEncoder.getPosition();
+    inputs.leftShooterPositionRotations = leftEncoder.getPosition();
     inputs.leftFlywheelVelocityRPM = leftEncoder.getVelocity();
     inputs.leftFlywheelAppliedVolts = leftMotor.getAppliedOutput();
     inputs.leftFlywheelOutputCurrent = leftMotor.getOutputCurrent();

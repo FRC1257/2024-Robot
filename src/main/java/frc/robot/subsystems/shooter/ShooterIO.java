@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
   @AutoLog
   class ShooterIOInputs {
-    public double leftFlywheelPositionRotations = 0.0;
+    public double leftShooterPositionRotations = 0.0;
     public double leftFlywheelVelocityRPM = 0.0;
     public double leftFlywheelAppliedVolts = 0.0;
     public double leftFlywheelOutputCurrent = 0.0;

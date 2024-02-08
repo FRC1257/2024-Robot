@@ -16,29 +16,29 @@ import java.util.function.DoubleSupplier;
 
 public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber leftkP =
-      new LoggedTunableNumber("Shooter/leftkP", leftFlywheelConstants.kP());
+      new LoggedTunableNumber("Shooter/leftkP", leftShooter.kP());
   private static final LoggedTunableNumber leftkI =
-      new LoggedTunableNumber("Shooter/leftkI", leftFlywheelConstants.kI());
+      new LoggedTunableNumber("Shooter/leftkI", leftShooter.kI());
   private static final LoggedTunableNumber leftkD =
-      new LoggedTunableNumber("Shooter/leftkD", leftFlywheelConstants.kD());
+      new LoggedTunableNumber("Shooter/leftkD", leftShooter.kD());
   private static final LoggedTunableNumber leftkS =
-      new LoggedTunableNumber("Shooter/leftkS", leftFlywheelConstants.kS());
+      new LoggedTunableNumber("Shooter/leftkS", leftShooter.kS());
   private static final LoggedTunableNumber leftkV =
-      new LoggedTunableNumber("Shooter/leftkV", leftFlywheelConstants.kV());
+      new LoggedTunableNumber("Shooter/leftkV", leftShooter.kV());
   private static final LoggedTunableNumber leftkA =
-      new LoggedTunableNumber("Shooter/leftkA", leftFlywheelConstants.kA());
+      new LoggedTunableNumber("Shooter/leftkA", leftShooter.kA());
   private static final LoggedTunableNumber rightkP =
-      new LoggedTunableNumber("Shooter/rightkP", rightFlywheelConstants.kP());
+      new LoggedTunableNumber("Shooter/rightkP", rightShooter.kP());
   private static final LoggedTunableNumber rightkI =
-      new LoggedTunableNumber("Shooter/rightkI", rightFlywheelConstants.kI());
+      new LoggedTunableNumber("Shooter/rightkI", rightShooter.kI());
   private static final LoggedTunableNumber rightkD =
-      new LoggedTunableNumber("Shooter/rightkD", rightFlywheelConstants.kD());
+      new LoggedTunableNumber("Shooter/rightkD", rightShooter.kD());
   private static final LoggedTunableNumber rightkS =
-      new LoggedTunableNumber("Shooter/rightkS", rightFlywheelConstants.kS());
+      new LoggedTunableNumber("Shooter/rightkS", rightShooter.kS());
   private static final LoggedTunableNumber rightkV =
-      new LoggedTunableNumber("Shooter/rightkV", rightFlywheelConstants.kV());
+      new LoggedTunableNumber("Shooter/rightkV", rightShooter.kV());
   private static final LoggedTunableNumber rightkA =
-      new LoggedTunableNumber("Shooter/rightkA", rightFlywheelConstants.kA());
+      new LoggedTunableNumber("Shooter/rightkA", rightShooter.kA());
   private static final LoggedTunableNumber shooterTolerance =
       new LoggedTunableNumber("Shooter/ToleranceRPM", shooterToleranceRPM);
   private final LoggedDashboardNumber leftSpeedRpm =

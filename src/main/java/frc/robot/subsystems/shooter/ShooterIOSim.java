@@ -17,16 +17,16 @@ public class ShooterIOSim implements ShooterIO {
 
   private final PIDController leftController =
       new PIDController(
-          leftFlywheelConstants.kP(), leftFlywheelConstants.kI(), leftFlywheelConstants.kD());
+          leftShooter.kP(), leftShooter.kI(), leftShooter.kD());
   private final PIDController rightController =
       new PIDController(
-          rightFlywheelConstants.kP(), rightFlywheelConstants.kI(), rightFlywheelConstants.kD());
+          rightShooter.kP(), rightShooter.kI(), rightShooter.kD());
   private SimpleMotorFeedforward leftFF =
       new SimpleMotorFeedforward(
-          leftFlywheelConstants.kS(), leftFlywheelConstants.kV(), leftFlywheelConstants.kA());
+          leftShooter.kS(), leftShooter.kV(), leftShooter.kA());
   private SimpleMotorFeedforward rightFF =
       new SimpleMotorFeedforward(
-          rightFlywheelConstants.kS(), rightFlywheelConstants.kV(), rightFlywheelConstants.kA());
+          rightShooter.kS(), rightShooter.kV(), rightShooter.kA());
 
   private double leftAppliedVolts = 0.0;
   private double rightAppliedVolts = 0.0;
@@ -52,7 +52,7 @@ public class ShooterIOSim implements ShooterIO {
       rightSim.setInputVoltage(MathUtil.clamp(rightAppliedVolts, -12.0, 12.0));
     }
 
-    inputs.leftFlywheelPositionRotations +=
+    inputs.leftShooterPositionRotations +=
         Units.radiansToRotations(leftSim.getAngularVelocityRadPerSec() * 0.02);
     inputs.leftFlywheelVelocityRPM = leftSim.getAngularVelocityRPM();
     inputs.leftFlywheelAppliedVolts = leftAppliedVolts;

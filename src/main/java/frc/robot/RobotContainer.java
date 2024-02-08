@@ -123,6 +123,8 @@ public class RobotContainer {
 
     // cancel trajectory
     driver.getY().onTrue(drive.endTrajectoryCommand());
+
+    operator.a().whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
   }
 
   /**
