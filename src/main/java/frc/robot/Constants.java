@@ -209,8 +209,8 @@ public final class Constants {
   // CHANGE CONSTANTS RIGHT NOW YOU STUPID IDIOT
   public static class TrapPivot {
     // Arm measurements
-    public final static double TRAP_PIVOT_LENGTH_M = 2;
-    public final static double TRAP_PIVOT_MASS_KG = 0.1;
+    public final static double TRAP_PIVOT_LENGTH_M = 1;
+    public final static double TRAP_PIVOT_MASS_KG = 1;
     public final static double TRAP_PIVOT_MIN_ANGLE_RADS = 0;
     public final static double TRAP_PIVOT_MAX_ANGLE_RADS = 2;
     public final static double TRAP_PIVOT_ANGLE_THRESHOLD = (TRAP_PIVOT_MIN_ANGLE_RADS + TRAP_PIVOT_MAX_ANGLE_RADS) / 2;
@@ -220,7 +220,7 @@ public final class Constants {
 
     public static class TrapPivotSim {
       // Trap pivot measurements
-      public final static double TRAP_PIVOT_REDUCTION_SIM = 1.57;
+      public final static double TRAP_PIVOT_REDUCTION_SIM = 1;
 
       // PID constants
       public final static double[] TRAP_PIVOT_PID_SIM = { 15, 0, 0 };

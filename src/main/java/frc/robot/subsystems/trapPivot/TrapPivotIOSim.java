@@ -33,8 +33,8 @@ public class TrapPivotIOSim implements TrapPivotIO {
             TRAP_PIVOT_REDUCTION_SIM,
             SingleJointedArmSim.estimateMOI(TRAP_PIVOT_LENGTH_M, TRAP_PIVOT_MASS_KG),
             TRAP_PIVOT_LENGTH_M,
-            TRAP_PIVOT_MIN_ANGLE_RADS,
-            TRAP_PIVOT_MAX_ANGLE_RADS,
+            -224398,
+            24298,
             true,
             0
         );
