@@ -161,8 +161,9 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    drive.setDefaultCommand(
-        DriveCommands.joystickDriveRobotRelative(
+    //drive.setDefaultCommandRobotRelative
+    drive.setDefaultCommand( //change state here
+        DriveCommands.joystickDrive(
             drive,
             DriveControls.DRIVE_FORWARD,
             DriveControls.DRIVE_STRAFE,

@@ -107,12 +107,14 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, -kTrackWidthX / 2));
 
     // Angular offsets of the modules relative to the chassis in radians
+    //Subject to change depending on what robot side is the front
     public static final double kFrontLeftChassisAngularOffset = Math.PI;
     public static final double kFrontRightChassisAngularOffset = 0;
-    public static final double kBackLeftChassisAngularOffset = Math.PI;
-    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+    public static final double kBackLeftChassisAngularOffset = 0;
+    public static final double kBackRightChassisAngularOffset = -Math.PI / 2;
 
-    // SPARK MAX CAN IDs
+    // SPARK MAX CAN IDs 
+    //Subject to change depending on what robot side is the front
     public static final int kFrontLeftDrivingCanId = 3;
     public static final int kRearLeftDrivingCanId = 7;
     public static final int kFrontRightDrivingCanId = 1;
@@ -187,6 +189,7 @@ public final class Constants {
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
+    //Turning PID will have to be changed for robot relative, use sysid one day
     public static final double kTurningP = 1;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
