@@ -35,7 +35,7 @@ public class TrapPivotIOSim implements TrapPivotIO {
             TRAP_PIVOT_LENGTH_M,
             TRAP_PIVOT_MIN_ANGLE_RADS,
             TRAP_PIVOT_MAX_ANGLE_RADS,
-            false,
+            true,
             0
         );
         pidController = new ProfiledPIDController(TRAP_PIVOT_PID_SIM[0], TRAP_PIVOT_PID_SIM[1], TRAP_PIVOT_PID_SIM[2],
@@ -68,11 +68,12 @@ public class TrapPivotIOSim implements TrapPivotIO {
     @Override
     public void goToSetpoint(double setpoint) {
         pidController.setGoal(setpoint);
-
         // With the setpoint value we run PID control like normal
         double pidOutput = pidController.calculate(sim.getAngleRads());
         double feedForwardOutput = feedForward.calculate(pidController.getSetpoint().velocity);
-        sim.setInputVoltage(pidOutput + feedForwardOutput);
+
+        appliedVolts = pidOutput + feedForwardOutput;
+        sim.setInputVoltage(appliedVolts);
     }
 
     @Override
