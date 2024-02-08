@@ -210,7 +210,7 @@ public final class Constants {
   public static class TrapPivot {
     // Arm measurements
     public final static double TRAP_PIVOT_LENGTH_M = 0.7;
-    public final static double TRAP_PIVOT_MASS_KG = 2;
+    public final static double TRAP_PIVOT_MASS_KG = 5;
     public final static double TRAP_PIVOT_MIN_ANGLE_RADS = -1;
     public final static double TRAP_PIVOT_MAX_ANGLE_RADS = 1;
     public final static double TRAP_PIVOT_ANGLE_THRESHOLD = (TRAP_PIVOT_MIN_ANGLE_RADS + TRAP_PIVOT_MAX_ANGLE_RADS) / 2;

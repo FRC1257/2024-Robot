@@ -1,6 +1,7 @@
 package frc.robot.subsystems.trapPivot;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -14,6 +15,7 @@ public class TrapPivotIOSim implements TrapPivotIO {
 
     // PID controller helps you move to a setpoint as quickly and smoothly as possible
     private final ProfiledPIDController pidController;
+    private final SimpleMotorFeedforward feedForward;
 
     // Simulation classes help us simulate what's going on, including gravity.
     // This arm sim represents an arm that can travel from -75 degrees (rotated down front)
@@ -38,6 +40,7 @@ public class TrapPivotIOSim implements TrapPivotIO {
         );
         pidController = new ProfiledPIDController(TRAP_PIVOT_PID_SIM[0], TRAP_PIVOT_PID_SIM[1], TRAP_PIVOT_PID_SIM[2],
             new TrapezoidProfile.Constraints(TRAP_PIVOT_MAX_VELOCITY, TRAP_PIVOT_MAX_ACCELERATION));
+        feedForward = new SimpleMotorFeedforward(TRAP_PIVOT_LENGTH_M, TRAP_PIVOT_MASS_KG);
     }
 
     // This function runs periodically and updates the inputs
@@ -65,9 +68,11 @@ public class TrapPivotIOSim implements TrapPivotIO {
     @Override
     public void goToSetpoint(double setpoint) {
         pidController.setGoal(setpoint);
+
         // With the setpoint value we run PID control like normal
         double pidOutput = pidController.calculate(sim.getAngleRads());
-        sim.setInputVoltage(pidOutput);
+        double feedForwardOutput = feedForward.calculate(pidController.getSetpoint().velocity);
+        sim.setInputVoltage(pidOutput + feedForwardOutput);
     }
 
     @Override
