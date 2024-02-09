@@ -22,6 +22,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+
+//import frc.robot.commands.SpinAuto;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmIO;
+import frc.robot.subsystems.pivotArm.PivotArmIOSim;
+import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
+import frc.robot.Constants.PivotArm.PivotArmSimConstants;
+
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -55,11 +63,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
 import java.util.List;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -71,11 +83,9 @@ import java.util.List;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-
+  private final PivotArm pivot;
   private Mechanism2d mech = new Mechanism2d(3, 3);
-
   private Intake intake;
-
   // Controllers
   private final CommandSnailController driver = new CommandSnailController(0);
   private final CommandSnailController operator = new CommandSnailController(1);
@@ -93,8 +103,11 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       // Real robot, instantiate hardware IO implementations
       case REAL:
+
+        pivot = new PivotArm(new PivotArmIOSparkMax());
+
         drive = new Drive(
-            new GyroIOPigeon2(false),
+            new GyroIOReal(),
             new ModuleIOSparkMax(0),
             new ModuleIOSparkMax(1),
             new ModuleIOSparkMax(2),
@@ -105,6 +118,8 @@ public class RobotContainer {
 
       // Sim robot, instantiate physics sim IO implementations
       case SIM:
+      case TEST:
+        pivot = new PivotArm(new PivotArmIOSim());
         drive = new Drive(
             new GyroIO() {
             },
@@ -118,6 +133,7 @@ public class RobotContainer {
 
       // Replayed robot, disable IO implementations
       default:
+        pivot = new PivotArm(new PivotArmIO() {});
         drive = new Drive(
             new GyroIO() {
             },
@@ -138,9 +154,12 @@ public class RobotContainer {
     // Set up robot state manager
 
     MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
+
+    pivot.setMechanism(root.append(pivot.getArmMechanism()));
+
     // add subsystem mechanisms
     SmartDashboard.putData("Arm Mechanism", mech);
-
+    
     field = new Field2d();
     SmartDashboard.putData("Field", field);
 
@@ -183,11 +202,12 @@ public class RobotContainer {
 
     autoChooser.addOption("Drive Try Trajectory",
         drive.getAuto("thinger"));
-
+    
+     //autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings
     configureButtonBindings();
   }
-
+    
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -195,33 +215,10 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX()));
-            
-    driver.a().whileTrue(
-        DriveCommands.joystickSpeakerPoint(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX()));
 
-    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    driver.x().onTrue(new GoToPose(drive, new Pose2d(2, 7.8, new Rotation2d(90))));
+    operator.getB().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
+    operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
 
-    /* driver
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                () -> drive.setPose(
-                    new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                drive)
-                .ignoringDisable(true)); */
-
-    // driver.a().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(90))));
-    // driver.b().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(0))));
 
     intake.setDefaultCommand(
         intake.IntakeSpeedCommand(
@@ -237,6 +234,7 @@ public class RobotContainer {
             Units.degreesToRadians(360), Units.degreesToRadians(540)),
         0,
         2.0));
+
 
   }
 

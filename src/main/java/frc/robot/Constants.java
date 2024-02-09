@@ -33,7 +33,11 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final Mode currentMode = Mode.SIM;
+
+  public static final boolean tuning = true;
+
   public static final boolean tuningMode = true;
+
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -115,6 +119,85 @@ public final class Constants {
     public static final double kTurnSpeakerRateTolerance = 0.02;
   }
 
+  public static class BuildConstants {
+    public static int DIRTY = 1;
+    public static String MAVEN_NAME = "Snail";
+    public static String BUILD_DATE = "12/57";
+    public static String GIT_SHA = "Snail";
+    public static String GIT_DATE = "Snail";
+    public static String GIT_BRANCH = "PivotArm";
+  }
+  public static class Drivetrain {
+    // drivetrain constants
+    public static double DRIVE_TRACK_WIDTH_M = 0.86;// 0.66; // m
+    public static double DRIVE_WHEEL_DIAM_M = 0.1524; // m
+    public static double DRIVE_GEARBOX_REDUCTION = 10.71;
+
+    // driving modifiers
+    public static double DRIVE_SLOW_TURN_MULT = 0.25;
+    public static double DRIVE_SLOW_FORWARD_MULT = 0.25;
+
+    // closed loop driving
+    public static double DRIVE_CLOSED_MAX_VEL = 4.0; // m/s
+    public static double DRIVE_CLOSED_MAX_ROT_TELEOP = 360.00; //
+    public static double DRIVE_CLOSED_MAX_ROT_AUTO = 100.0; // deg/s
+    public static double DRIVE_CLOSED_MAX_ACC = 1.5; // m/s^2
+
+    // trajectory following
+    public static double DRIVE_TRAJ_MAX_VEL = 8.0; // m/s
+    public static double DRIVE_TRAJ_MAX_ACC = 0.7515; // .75; // m/s^2
+    public static double DRIVE_TRAJ_RAMSETE_B = 2.0; // don't change
+    public static double DRIVE_TRAJ_RAMSETE_ZETA = 0.7;
+
+    public static double DRIVE_TRAJ_KV = 0.0; // don't change
+    public static double DRIVE_TRAJ_KA = 0.0; // don't change
+    public static double DRIVE_TRAJ_KS = 0.0; // don't change
+
+    // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
+    // These characterization values MUST be determined either experimentally or
+    // theoretically
+    // for *your* robot's drive.
+    // The Robot Characterization Toolsuite provides a convenient tool for obtaining
+    // these
+    // values for your robot.
+    public static final double ksVolts = 0.22;
+    public static final double kvVoltSecondsPerMeter = 1.98;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.2;
+
+    // aligning
+    public static double DRIVE_ALIGN_MAX_VEL = 0.75; // m/s
+    public static double DRIVE_ALIGN_MAX_ACC = 0.350; // .75; // m/s^2
+
+    // linear position PID
+    public static double[] DRIVE_DIST_PID = { 3.50, 0.0, 0.0 };
+    public static double DRIVE_DIST_ANGLE_P = 0.1;
+    public static double DRIVE_DIST_TOLERANCE = 0.01;
+    public static double DRIVE_DIST_MAX_OUTPUT = 0.6;
+
+    // angular position PID works for test bot
+    public static double[] DRIVE_ANGLE_PID = { 0.045, 0.1, 0.005 }; // 0.055
+    public static double DRIVE_ANGLE_TOLERANCE = 0.5;
+    public static double DRIVE_ANGLE_MAX_OUTPUT = 0.6;
+
+    // velocity PID (for closed loop, profiling, and trajectory)
+    public static int DRIVE_VEL_SLOT = 0;
+    public static double DRIVE_VEL_LEFT_P = 0.25;
+    public static double DRIVE_VEL_LEFT_F = 0.25;
+    public static double DRIVE_VEL_RIGHT_P = 0.25;
+    public static double DRIVE_VEL_RIGHT_F = 0.25;
+
+    // profiling position PID (for further refinement of tracking)
+    public static double DRIVE_PROFILE_LEFT_P = 0.1;
+    public static double DRIVE_PROFILE_RIGHT_P = 0.1;
+
+    // vision PID
+    public static final double TRACKED_TAG_ROTATION_KP = 0.375;
+    public static final double TRACKED_TAG_DISTANCE_DRIVE_KP = 0.3; // P (Proportional) constant of a PID loop
+    public static final double TRACKED_TAG_AREA_DRIVE_KP = 0.2; // P (Proportional) constant of a PID loop
+    public static final double APRILTAG_POWER_CAP = 0.75;
+  };
+
+
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
     // This changes the drive speed of the module (a pinion gear with more teeth will result in a
@@ -165,6 +248,7 @@ public final class Constants {
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
+
 
   public static class Vision {
     public static final String kCameraName = "Front_Camera";
@@ -245,4 +329,44 @@ public final class Constants {
   // https://www.revrobotics.com/rev-11-1271/
 
   public final static int NEO_CURRENT_LIMIT = 80; // amps
+
+  
+  public static class PivotArm {
+    // CHANGE CONSTANTS, THESE ARE TEMPORARY
+    public static final int PIVOT_ARM_ID = 0;
+    public static final int LEFT_SLAVE_ID = 1;
+    public static final int RIGHT_SLAVE_FRONT_ID = 2;
+    public static final int RIGHT_SLAVE_BACK_ID = 3;
+
+    public static final double POSITION_CONVERSION_FACTOR = 1;
+    public static final double PIVOT_ARM_ROTATION_DIAM_M = 1;
+
+    public static final double[] PIVOT_ARM_PID_REAL = {0.25, 0, 0, 0};
+    public static final double PIVOT_ARM_PID_TOLERANCE = Units.degreesToRadians(1);
+
+    public static final double PIVOT_ARM_MAX_ANGLE = Units.degreesToRadians(105.0);
+    public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(0.0);
+
+    public static class PivotArmSimConstants {
+      public static final double[] kPivotSimPID = {15, 0, 0, 0};
+
+      public static final int kMotorPort = 2;
+      public static final int kEncoderAChannel = 2;
+      public static final int kEncoderBChannel = 3;
+
+      // The P gain for the PID controller that drives this arm.
+      public static final double kDefaultArmSetpointDegrees = Units.degreesToRadians(75.0);
+
+      // distance per pulse = (angle per revolution) / (pulses per revolution)
+      // = (2 * PI rads) / (4096 pulses)
+      public static final double kArmEncoderDistPerPulse = 1 / 4096;
+
+      public static final double kArmReduction = 200;
+      public static final double kArmMass = 10.0; // Kilograms
+      public static final double kArmLength = Units.inchesToMeters(20);
+      public static final double kMinAngleRads = Units.degreesToRadians(-175);
+      public static final double kMaxAngleRads = Units.degreesToRadians(255);
+    }
+  }
+
 }
