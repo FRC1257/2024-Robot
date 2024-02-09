@@ -40,6 +40,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -91,6 +92,8 @@ public class Drive extends SubsystemBase {
 
   private SysIdRoutine sysId;
   private SysIdRoutine turnRoutine;
+
+  private Rotation2d simRotation = new Rotation2d();
 
   public Drive(
       GyroIO gyroIO,
@@ -197,8 +200,16 @@ public class Drive extends SubsystemBase {
     for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
       modulePositions[moduleIndex] = modules[moduleIndex].getPosition();
     }
+
+    // Update gyro angle
+    if (gyroInputs.connected) {
+      // Use the real gyro angle
+      rawGyroRotation = gyroInputs.yawPosition;
+    } else {
+      rawGyroRotation = simRotation;
+    }
     
-    poseEstimator.update(gyroInputs.yawPosition, modulePositions);
+    poseEstimator.update(rawGyroRotation, modulePositions);
     odometry.update(rawGyroRotation, modulePositions);
 
     Logger.recordOutput("Odometry/Odometry", odometry.getPoseMeters());
@@ -212,6 +223,9 @@ public class Drive extends SubsystemBase {
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    simRotation = simRotation.rotateBy(
+        Rotation2d.fromRadians(
+            discreteSpeeds.omegaRadiansPerSecond * 0.02));
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, kMaxSpeedMetersPerSecond);
 
