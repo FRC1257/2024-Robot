@@ -35,7 +35,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.GoToPose;
 import frc.robot.commands.TurnAngleCommand;
-
+import frc.robot.subsystems.Intake.*;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -43,9 +43,8 @@ import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhoton;
-import frc.robot.subsystems.vision.VisionIOSim;
+import frc.robot.subsystems.vision.*;
+import frc.robot.subsystems.Intake.*;
 import frc.robot.util.CommandSnailController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -61,6 +60,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -85,7 +85,7 @@ public class RobotContainer {
   private final Drive drive;
   private final PivotArm pivot;
   private Mechanism2d mech = new Mechanism2d(3, 3);
-  
+  private Intake intake;
   // Controllers
   private final CommandSnailController driver = new CommandSnailController(0);
   private final CommandSnailController operator = new CommandSnailController(1);
@@ -113,7 +113,7 @@ public class RobotContainer {
             new ModuleIOSparkMax(2),
             new ModuleIOSparkMax(3),
             new VisionIOPhoton());
-
+        intake = new Intake(new IntakeIOSparkMax());
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -128,6 +128,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new VisionIOSim());
+            intake = new Intake(new IntakeIOSim());
         break;
 
       // Replayed robot, disable IO implementations
@@ -146,6 +147,7 @@ public class RobotContainer {
             },
             new VisionIO() {
             });
+        intake = new Intake(new IntakeIO(){});
         break;
     }
 
@@ -218,6 +220,12 @@ public class RobotContainer {
     operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
 
 
+    intake.setDefaultCommand(
+        intake.IntakeSpeedCommand(
+          () -> operator.getLeftX() * 120
+        )
+      );
+
     // Add a button to run pathfinding commands to SmartDashboard
     SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
         new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)),
@@ -238,4 +246,5 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
+
 }

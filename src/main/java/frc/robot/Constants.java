@@ -270,6 +270,37 @@ public final class Constants {
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
   }
 
+  public static final class Intake {
+    public static class IntakeSimConstants {
+      public static final int kMotorPort = 0;
+      public static final int kBreakBeamSensorChannel = 0;
+      public static final int kJoystickPort = 0;
+
+      public static final double kIntakeP = 0.001;
+      public static final double kIntakeI = 0.0;
+      public static final double kIntakeD = 0.0;
+
+      public static final double kIntakeS = 0.0;
+      public static final double kIntakeG = 0.0;
+      public static final double kIntakeV = 0.0;
+      public static final double kIntakeA = 0.0;
+      // Not sure what these three are or if they're needed
+      public static final double kIntakeGearing = 0.0;
+      public static final double kIntakeDrumRadius = 0.03; 
+      public static final double kCarriageMass = 0.15; // Mass in Kg
+      public static final double kMomentOfInertia = 0.5 * kCarriageMass * kIntakeDrumRadius * kIntakeDrumRadius; // Moment of inertia represents how resistant to force something is
+
+      // distance per pulse = (distance per revolution) / (pulses per revolution)
+      // = (Pi * D) / ppr
+      public static final double kIntakeEncoderDistPerPulse = 2.0 * Math.PI * kIntakeDrumRadius / 4096;
+    }
+
+    public static class IntakePhysicalConstants {
+      // Not sure if these two necessary
+      public static final double GROUND_STOP_BUFFER = 0.0;
+      public static final double GROUND_TOLERANCE = 0.0;
+    }
+  }
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
@@ -284,6 +315,11 @@ public final class Constants {
     public final static int DRIVE_FRONT_RIGHT = 2;
     public final static int DRIVE_BACK_LEFT = 3;
     public final static int DRIVE_BACK_RIGHT = 4;
+
+    // PLACEHOLDER Intake
+    public final static int INTAKE_MOTOR = 0;
+
+    public final static int INTAKE_BREAK_BEAM = 0;
   };
 
   public static double PI = 3.141592653589793238462643;
