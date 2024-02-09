@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
-import frc.robot.commands.SpinAuto;
+//import frc.robot.commands.SpinAuto;
 import frc.robot.subsystems.pivotArm.PivotArm;
 import frc.robot.subsystems.pivotArm.PivotArmIO;
 import frc.robot.subsystems.pivotArm.PivotArmIOSim;
@@ -201,7 +201,7 @@ public class RobotContainer {
     autoChooser.addOption("Drive Try Trajectory",
         drive.getAuto("thinger"));
     
-     autoChooser.addOption("Spin", new SpinAuto(drive));
+     //autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -213,49 +213,10 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    drive.setDefaultCommand(
 
-        new RunCommand(() -> drive.driveArcade(driver.getDriveForward(), driver.getDriveTurn()), drive));
-    pivot.setDefaultCommand(
-        new RunCommand(() -> pivot.move(operator.getLeftY()), pivot));
-
-    driver.rightBumper().onTrue(
-      new StartEndCommand(() -> drive.startSlowMode(), () -> drive.stopSlowMode(), drive)
-    );
-
-    // cancel trajectory
-    driver.getY().onTrue(drive.endTrajectoryCommand());
-    
-    // these are triggers that run the subsystem's command
     operator.getB().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
     operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
 
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX()));
-            
-    driver.a().whileTrue(
-        DriveCommands.joystickSpeakerPoint(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX()));
-
-    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    driver.x().onTrue(new GoToPose(drive, new Pose2d(2, 7.8, new Rotation2d(90))));
-
-    /* driver
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                () -> drive.setPose(
-                    new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                drive)
-                .ignoringDisable(true)); */
-
-    // driver.a().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(90))));
-    // driver.b().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(0))));
 
     // Add a button to run pathfinding commands to SmartDashboard
     SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
