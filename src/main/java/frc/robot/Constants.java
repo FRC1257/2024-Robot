@@ -33,7 +33,6 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final Mode currentMode = Mode.SIM;
-  public static final boolean tuningMode = true;
 
   public static final boolean tuning = true;
 
