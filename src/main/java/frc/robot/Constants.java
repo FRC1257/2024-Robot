@@ -330,6 +330,38 @@ public final class Constants {
       public static final double GROUND_TOLERANCE = 0.0;
     }
   }
+
+  public static final class GroundIntake {
+    public static class GroundIntakeSimConstants {
+      public static final int kMotorPort = 0;
+      public static final int kBreakBeamSensorChannel = 0;
+      public static final int kJoystickPort = 0;
+
+      public static final double kGroundIntakeP = 0.001;
+      public static final double kGroundIntakeI = 0.0;
+      public static final double kGroundIntakeD = 0.0;
+
+      public static final double kGroundIntakeS = 0.0;
+      public static final double kGroundIntakeG = 0.0;
+      public static final double kGroundIntakeV = 0.0;
+      public static final double kGroundIntakeA = 0.0;
+      // Not sure what these three are or if they're needed
+      public static final double kGroundIntakeGearing = 0.0;
+      public static final double kGroundIntakeDrumRadius = 0.03; 
+      public static final double kCarriageMass = 0.15; // Mass in Kg
+      public static final double kMomentOfInertia = 0.5 * kCarriageMass * kGroundIntakeDrumRadius * kGroundIntakeDrumRadius; // Moment of inertia represents how resistant to force something is
+
+      // distance per pulse = (distance per revolution) / (pulses per revolution)
+      // = (Pi * D) / ppr
+      public static final double kGroundIntakeEncoderDistPerPulse = 2.0 * Math.PI * kGroundIntakeDrumRadius / 4096;
+    }
+
+    public static class GroundIntakePhysicalConstants {
+      // Not sure if these two necessary
+      public static final double GROUND_STOP_BUFFER = 0.0;
+      public static final double GROUND_TOLERANCE = 0.0;
+    }
+  }
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
@@ -347,6 +379,7 @@ public final class Constants {
 
     // PLACEHOLDER Intake
     public final static int INTAKE_MOTOR = 0;
+    public final static int GROUND_INTAKE_MOTOR = 0;
 
     public final static int INTAKE_BREAK_BEAM = 0;
   };
@@ -408,7 +441,7 @@ public final class Constants {
     public static final double[] PIVOT_ARM_PID_REAL = {0.25, 0, 0, 0};
     public static final double PIVOT_ARM_PID_TOLERANCE = Units.degreesToRadians(1);
 
-    public static final double PIVOT_ARM_MAX_ANGLE = Units.degreesToRadians(105.0);
+    public static final double PIVOT_ARM_MAX_ANGLE = Units.degreesToRadians(120.0);
     public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(0.0);
 
     public static class PivotArmSimConstants {
@@ -428,8 +461,8 @@ public final class Constants {
       public static final double kArmReduction = 200;
       public static final double kArmMass = 10.0; // Kilograms
       public static final double kArmLength = Units.inchesToMeters(20);
-      public static final double kMinAngleRads = Units.degreesToRadians(-175);
-      public static final double kMaxAngleRads = Units.degreesToRadians(255);
+      public static final double kMinAngleRads = Units.degreesToRadians(0);
+      public static final double kMaxAngleRads = Units.degreesToRadians(180);
     }
   }
 

@@ -3,6 +3,7 @@ package frc.robot.subsystems.pivotArm;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import static frc.robot.Constants.PivotArm.*;
+
+import java.util.function.DoubleSupplier;
 
 public class PivotArm extends SubsystemBase {
     private final PivotArmIOInputsAutoLogged inputs = new PivotArmIOInputsAutoLogged();
@@ -37,9 +40,11 @@ public class PivotArm extends SubsystemBase {
         logD = new LoggedDashboardNumber("PivotArm/D", io.getD());
         
     }
+
     public void PivotManualPIDCommand (double volts) {
 
     }
+    
     @Override
     public void periodic() {
         io.updateInputs(inputs);
@@ -91,6 +96,10 @@ public class PivotArm extends SubsystemBase {
         armMechanism = mechanism;
     }
 
+    public Rotation2d getAngle() {
+        return new Rotation2d(inputs.angleRads);
+    }
+
     public MechanismLigament2d append(MechanismLigament2d mechanism) {
         return armMechanism.append(mechanism);
     }
@@ -104,6 +113,16 @@ public class PivotArm extends SubsystemBase {
             () -> runPID(), 
             (stop) -> move(0), 
             this::atSetpoint, 
+            this
+        );
+    }
+
+    public Command ManualCommand(DoubleSupplier speedSupplier) {
+        return new FunctionalCommand(
+            () -> move(speedSupplier.getAsDouble()), 
+            () -> move(speedSupplier.getAsDouble()), 
+            (stop) -> move(0), 
+            () -> false, 
             this
         );
     }

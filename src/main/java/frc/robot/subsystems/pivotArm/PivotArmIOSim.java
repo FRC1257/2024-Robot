@@ -45,6 +45,7 @@ public class PivotArmIOSim implements PivotArmIO {
         m_encoderSim.setDistancePerPulse(kArmEncoderDistPerPulse);
         m_controller = new ProfiledPIDController(kPivotSimPID[0], kPivotSimPID[1], kPivotSimPID[2],
                 new TrapezoidProfile.Constraints(2.45, 2.45));
+        
     }
 
     @Override

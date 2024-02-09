@@ -1,4 +1,4 @@
-package frc.robot.subsystems.GroundIntake;
+package frc.robot.subsystems.groundIntake;
 
 import static frc.robot.Constants.NEO_CURRENT_LIMIT;
 import static frc.robot.Constants.GroundIntake.GroundIntakeSimConstants.*;

@@ -111,13 +111,21 @@
       "zeroedRotations": [
         {
           "axis": "y",
-          "degrees": 0
+          "degrees": -90
+        },
+        {
+          "axis": "z",
+          "degrees": 90
+        },
+        {
+          "axis": "x",
+          "degrees": -90
         }
       ],
       "zeroedPosition": [
+        0.055,
         0,
-        0.3,
-        0.6
+        0
       ]
     }
   ]

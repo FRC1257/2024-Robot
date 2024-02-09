@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -19,8 +20,12 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -44,7 +49,6 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.GoToPose;
 import frc.robot.commands.TurnAngleCommand;
-import frc.robot.subsystems.Intake.*;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -53,8 +57,8 @@ import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.vision.*;
-import frc.robot.subsystems.Intake.*;
 import frc.robot.util.CommandSnailController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -124,7 +128,7 @@ public class RobotContainer {
             new ModuleIOSparkMax(2),
             new ModuleIOSparkMax(3),
             new VisionIOPhoton());
-        intake = new Intake(new IntakeIOSparkMax());
+        /* intake = new Intake(new IntakeIOSparkMax()); */
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -140,7 +144,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new VisionIOSim());
-            intake = new Intake(new IntakeIOSim());
+        /* intake = new Intake(new IntakeIOSim()); */
         break;
 
       // Replayed robot, disable IO implementations
@@ -160,7 +164,7 @@ public class RobotContainer {
             },
             new VisionIO() {
             });
-        intake = new Intake(new IntakeIO(){});
+        /* intake = new Intake(new IntakeIO(){}); */
 
         break;
     }
@@ -234,11 +238,15 @@ public class RobotContainer {
     operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
 
 
-    intake.setDefaultCommand(
+    /* intake.setDefaultCommand(
         intake.IntakeSpeedCommand(
           () -> operator.getLeftX() * 120
         )
-      );
+      ); */
+
+    pivot.setDefaultCommand(
+      pivot.ManualCommand(operator::getLeftX)
+    );
 
     // Add a button to run pathfinding commands to SmartDashboard
     SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
@@ -259,6 +267,15 @@ public class RobotContainer {
 
     operator.a().whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
+  }
+
+  public void setPivotPose3d() {
+    Pose2d armPose = drive.getPose().plus(new Transform2d(new Translation2d(0.098, Rotation2d.fromDegrees(180)), new Rotation2d()));
+
+    Rotation3d rotation = new Rotation3d(0, pivot.getAngle().getRadians(), armPose.getRotation().plus(Rotation2d.fromDegrees(180)).getRadians());
+    Translation3d translation = new Translation3d(armPose.getTranslation().getX(), armPose.getTranslation().getY(), 0.28);
+    Pose3d pose = new Pose3d(translation, rotation);
+    Logger.recordOutput("PivotPose3d", new Pose3d[] {pose});
   }
 
   /**
