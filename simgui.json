@@ -17,6 +17,7 @@
       "/SmartDashboard/Drive": "Subsystem",
       "/SmartDashboard/Elevator": "Subsystem",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Intake": "Subsystem",
       "/SmartDashboard/Pathfind to Pickup Pos": "Command",
       "/SmartDashboard/PivotArm": "Subsystem",
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"

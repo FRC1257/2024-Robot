@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8996502608389847,
-      "y": 3.7593052109181144
+      "x": 0.8799163752173672,
+      "y": 6.571383911998593
     },
-    "rotation": 0
+    "rotation": 61.557071375636646
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Curvy"
+            "pathName": "Cool"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Align"
           }
         }
       ]
