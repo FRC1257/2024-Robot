@@ -10,7 +10,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
-import static frc.robot.subsystems.shooter.ShooterConstants.*;
+import static frc.robot.Constants.ShooterConstants.*;
 
 import java.util.function.DoubleSupplier;
 

@@ -7,10 +7,12 @@ package frc.robot;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+import static frc.robot.Constants.ShooterConstants.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.SpinAuto;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.drive.*;
