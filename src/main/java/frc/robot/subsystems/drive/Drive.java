@@ -171,7 +171,7 @@ public class Drive extends SubsystemBase {
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
 
-    if (!useVision) {
+    if (useVision) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
       poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp, visionIO.getEstimationStdDevs(getPose()));
@@ -201,7 +201,7 @@ public class Drive extends SubsystemBase {
     poseEstimator.update(gyroInputs.yawPosition, modulePositions);
     odometry.update(rawGyroRotation, modulePositions);
 
-    Logger.recordOutput("Odometry", odometry.getPoseMeters());
+    Logger.recordOutput("Odometry/Odometry", odometry.getPoseMeters());
   }
 
   /**
