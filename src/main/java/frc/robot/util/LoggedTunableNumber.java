@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+
 import frc.robot.Constants;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class LoggedTunableNumber {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      if (Constants.tuningMode) {
+      if (tuningMode) {
         dashboardNumber = new LoggedDashboardNumber(key, defaultValue);
       }
     }
@@ -64,7 +65,8 @@ public class LoggedTunableNumber {
     if (!hasDefault) {
       return 0.0;
     } else {
-      return Constants.tuningMode ? dashboardNumber.get() : defaultValue;
+      return tuningMode ? dashboardNumber.get() : defaultValue;
+
     }
   }
 
@@ -77,7 +79,9 @@ public class LoggedTunableNumber {
    *     otherwise.
    */
   public boolean hasChanged(int id) {
-    if (!Constants.tuningMode) return false;
+
+    if (!tuningMode) return false;
+
     double currentValue = get();
     Double lastValue = lastHasChangedValues.get(id);
     if (lastValue == null || currentValue != lastValue) {
@@ -87,6 +91,7 @@ public class LoggedTunableNumber {
 
     return false;
   }
+
 
   /**
    * Runs action if any of the tunableNumbers have changed
@@ -108,4 +113,11 @@ public class LoggedTunableNumber {
   public static void ifChanged(int id, Runnable action, LoggedTunableNumber... tunableNumbers) {
     ifChanged(id, values -> action.run(), tunableNumbers);
   }
+
+  public void runUpdate(Consumer<Double> update) {
+    if (hasChanged(update.hashCode())) {
+      update.accept(get());
+    }
+  }
+
 }
