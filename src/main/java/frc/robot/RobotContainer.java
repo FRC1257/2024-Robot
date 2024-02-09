@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.commands.SpinAuto;
+
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.drive.*;
 
@@ -144,7 +144,7 @@ public class RobotContainer {
         break;
 
       // Replayed robot, disable IO implementations
-      default
+      default:
         shooter = new Shooter(new ShooterIO(){});
         pivot = new PivotArm(new PivotArmIO() {});
         drive = new Drive(
@@ -255,8 +255,7 @@ public class RobotContainer {
       shooter.runSpeed(0)
     );
 
-    // cancel trajectory
-    driver.getY().onTrue(drive.endTrajectoryCommand());
+
 
     operator.a().whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
