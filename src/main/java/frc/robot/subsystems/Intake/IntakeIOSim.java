@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import static frc.robot.Constants.Intake.IntakeSimConstants.*;
 
 public class IntakeIOSim implements IntakeIO {
-    private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.2, 2);
+    private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.2, kMomentOfInertia);
     private PIDController controller = new PIDController(0, 0, 0);
 
     private double appliedVoltage = 0.0;

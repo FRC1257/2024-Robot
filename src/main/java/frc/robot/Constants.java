@@ -192,7 +192,7 @@ public final class Constants {
       public static final int kBreakBeamSensorChannel = 0;
       public static final int kJoystickPort = 0;
 
-      public static final double kIntakeP = 1.0;
+      public static final double kIntakeP = 0.001;
       public static final double kIntakeI = 0.0;
       public static final double kIntakeD = 0.0;
 
@@ -202,8 +202,9 @@ public final class Constants {
       public static final double kIntakeA = 0.0;
       // Not sure what these three are or if they're needed
       public static final double kIntakeGearing = 0.0;
-      public static final double kIntakeDrumRadius = 0.0; 
-      public static final double kCarriageMass = 0.0; // Mass in Kg
+      public static final double kIntakeDrumRadius = 0.03; 
+      public static final double kCarriageMass = 0.15; // Mass in Kg
+      public static final double kMomentOfInertia = 0.5 * kCarriageMass * kIntakeDrumRadius * kIntakeDrumRadius; // Moment of inertia represents how resistant to force something is
 
       // distance per pulse = (distance per revolution) / (pulses per revolution)
       // = (Pi * D) / ppr
