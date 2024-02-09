@@ -7,6 +7,9 @@ package frc.robot;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+
+import static frc.robot.Constants.ShooterConstants.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.GoalEndState;
@@ -22,6 +25,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.commands.SpinAuto;
+import frc.robot.subsystems.shooter.*;
+import frc.robot.subsystems.drive.*;
+
 
 //import frc.robot.commands.SpinAuto;
 import frc.robot.subsystems.pivotArm.PivotArm;
@@ -39,6 +48,7 @@ import frc.robot.subsystems.Intake.*;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
+
 import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
@@ -83,6 +93,7 @@ import java.util.List;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Shooter shooter;
   private final PivotArm pivot;
   private Mechanism2d mech = new Mechanism2d(3, 3);
   private Intake intake;
@@ -104,8 +115,8 @@ public class RobotContainer {
       // Real robot, instantiate hardware IO implementations
       case REAL:
 
+        shooter = new Shooter(new ShooterIOSparkMax());
         pivot = new PivotArm(new PivotArmIOSparkMax());
-
         drive = new Drive(
             new GyroIOReal(),
             new ModuleIOSparkMax(0),
@@ -120,6 +131,7 @@ public class RobotContainer {
       case SIM:
       case TEST:
         pivot = new PivotArm(new PivotArmIOSim());
+        shooter = new Shooter(new ShooterIOSim());
         drive = new Drive(
             new GyroIO() {
             },
@@ -132,7 +144,8 @@ public class RobotContainer {
         break;
 
       // Replayed robot, disable IO implementations
-      default:
+      default
+        shooter = new Shooter(new ShooterIO(){});
         pivot = new PivotArm(new PivotArmIO() {});
         drive = new Drive(
             new GyroIO() {
@@ -148,6 +161,7 @@ public class RobotContainer {
             new VisionIO() {
             });
         intake = new Intake(new IntakeIO(){});
+
         break;
     }
 
@@ -235,6 +249,16 @@ public class RobotContainer {
         0,
         2.0));
 
+
+
+    shooter.setDefaultCommand(
+      shooter.runSpeed(0)
+    );
+
+    // cancel trajectory
+    driver.getY().onTrue(drive.endTrajectoryCommand());
+
+    operator.a().whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
   }
 

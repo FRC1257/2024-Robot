@@ -33,6 +33,7 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final Mode currentMode = Mode.SIM;
+  public static final boolean tuningMode = true;
 
   public static final boolean tuning = true;
 
@@ -198,6 +199,33 @@ public final class Constants {
   };
 
 
+  public static class Shooter {
+    public static final double RIGHT_MOTOR_MIN_SPEED = 0;
+    public static final double RIGHT_MOTOR_MAX_SPEED = 0;
+    public static final double LEFT_MOTOR_MIN_SPEED = 0;
+    public static final double LEFT_MOTOR_MAX_SPEED = 0;
+
+    public static class ShooterSimConstants {
+      public static final double RIGHT_MOTOR_MIN_SPEED = 0;
+      public static final double RIGHT_MOTOR_MAX_SPEED = 0;
+      public static final double LEFT_MOTOR_MIN_SPEED = 0;
+      public static final double LEFT_MOTOR_MAX_SPEED = 0;
+
+      public static final double rightEncoder = 0.0;
+      public static final double leftEncoder = 0.0;
+
+      public static class ShooterPhysicalConstants {
+        public static final double RIGHT_MOTOR_MIN_SPEED = 0;
+        public static final double RIGHT_MOTOR_MAX_SPEED = 0;
+        public static final double LEFT_MOTOR_MIN_SPEED = 0;
+        public static final double LEFT_MOTOR_MAX_SPEED = 0;
+
+      }
+    }
+  }
+
+
+
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
     // This changes the drive speed of the module (a pinion gear with more teeth will result in a
@@ -248,6 +276,7 @@ public final class Constants {
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
+
 
 
   public static class Vision {
@@ -330,6 +359,41 @@ public final class Constants {
 
   public final static int NEO_CURRENT_LIMIT = 80; // amps
 
+
+  public static class ShooterConstants {
+    // encoder / flywheelReduction = flywheel
+    public static double flywheelReduction = (1.0 / 2.0);
+    public static double shooterToleranceRPM = 50.0;
+    public static double defaultShooterSpeedRPM = 1000;
+    
+    public static double wheelRadiusM = 0.05;
+    public static double wheelMassKg = 0.2;
+    public static double momentOfInertia = 0.5 * wheelMassKg * wheelRadiusM * wheelRadiusM;
+  
+    public static FlywheelConstants leftShooter =
+        switch (Constants.currentMode) {
+          default -> new FlywheelConstants(2, false, 0.001, 0.01, 0.0, 0.33329, 0.00083, 0.0);
+        };
+  
+    public static FlywheelConstants rightShooter =
+        switch (Constants.currentMode) {
+          default -> new FlywheelConstants(1, false, 0.001, 0.01, 0.0, 0.33329, 0.00083, 0.0);
+        };
+        
+    public record FlywheelConstants(
+        int id,
+        boolean inverted,
+        double kP,
+        double kI,
+        double kD,
+        double kS,
+        double kV,
+        double kA) {}
+  
+    public record FeederConstants(int id, boolean inverted) {}
+  }
+  
+
   
   public static class PivotArm {
     // CHANGE CONSTANTS, THESE ARE TEMPORARY
@@ -368,5 +432,6 @@ public final class Constants {
       public static final double kMaxAngleRads = Units.degreesToRadians(255);
     }
   }
+
 
 }
