@@ -190,6 +190,10 @@ public final class Constants {
     public static final double kFreeSpeedRpm = 5676;
   }
 
+  public static class BlinkinLEDControllerConstants {
+    public static final int BLINKIN_LED_CONTROLLER_PORT = 1;
+  }
+
   public static class ElectricalLayout {
     // Controllers
     public final static int CONTROLLER_DRIVER_ID = 0;
