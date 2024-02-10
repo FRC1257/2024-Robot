@@ -1,4 +1,4 @@
-package frc.robot.subsystems.GroundIntake;
+package frc.robot.subsystems.groundIntake;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface GroundIntakeIO {

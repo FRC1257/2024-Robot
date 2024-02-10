@@ -1,4 +1,4 @@
-package frc.robot.subsystems.GroundIntake;
+package frc.robot.subsystems.groundIntake;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import org.littletonrobotics.junction.Logger;
