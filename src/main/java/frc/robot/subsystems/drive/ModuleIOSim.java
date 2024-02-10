@@ -32,8 +32,8 @@ import static frc.robot.Constants.ModuleConstants.*;
 public class ModuleIOSim implements ModuleIO {
   private static final double LOOP_PERIOD_SECS = 0.02;
 
-  private DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), 6.75, 0.025);
-  private DCMotorSim turnSim = new DCMotorSim(DCMotor.getNeo550(1), 150.0 / 7.0, 0.004);
+  private DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), 4.71, 0.025);
+  private DCMotorSim turnSim = new DCMotorSim(DCMotor.getNEO(1), 150.0 / 7.0, 0.004);
 
   private final Rotation2d turnAbsoluteInitPosition = new Rotation2d(); // new Rotation2d(Math.random() * 2.0 * Math.PI);
   private double driveAppliedVolts = 0.0;
