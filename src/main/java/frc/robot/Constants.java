@@ -20,6 +20,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -32,12 +33,20 @@ import edu.wpi.first.math.util.Units;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.SIM;
+
+  public static final Mode mode = Mode.REAL;
+  public static final Drivers driver = Drivers.PROGRAMMERS;
+  public static final Operators operator = Operators.PROGRAMMERS;
+
+  public static final Mode currentMode = getRobotMode();
+
+  //public static final Mode currentMode = Mode.SIM;
 
 
   public static final boolean tuning = true;
 
   public static final boolean tuningMode = true;
+  public static final boolean useVision = true;
 
 
   public static enum Mode {
@@ -52,6 +61,35 @@ public final class Constants {
 
     /** Replaying from a log file. */
     REPLAY
+  }
+
+  public static enum Drivers {
+    MAUI,
+    PROGRAMMERS
+  }
+
+  public static enum Operators {
+    ERICK,
+    PROGRAMMERS
+  }
+
+  public static Mode getRobotMode() {
+    if (RobotBase.isReal()) {
+      return Mode.REAL;
+    }
+    if (RobotBase.isSimulation()) {
+      switch (mode) {
+        case REAL:
+          System.out.println("WARNING: Running in real mode while in simulation");
+        case SIM:
+          return Mode.SIM;
+        case TEST:
+          return Mode.TEST;
+        case REPLAY:
+          return Mode.REPLAY;
+      }
+    }
+    return Mode.REAL;
   }
 
   public static final class DriveConstants {
@@ -77,21 +115,23 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, -kTrackWidthX / 2));
 
     // Angular offsets of the modules relative to the chassis in radians
-    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
+    //Subject to change depending on what robot side is the front
+    public static final double kFrontLeftChassisAngularOffset = Math.PI;
     public static final double kFrontRightChassisAngularOffset = 0;
-    public static final double kBackLeftChassisAngularOffset = Math.PI;
-    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+    public static final double kBackLeftChassisAngularOffset = 0;
+    public static final double kBackRightChassisAngularOffset = -Math.PI / 2;
 
-    // SPARK MAX CAN IDs
-    public static final int kFrontLeftDrivingCanId = 11;
-    public static final int kRearLeftDrivingCanId = 13;
-    public static final int kFrontRightDrivingCanId = 15;
-    public static final int kRearRightDrivingCanId = 17;
+    // SPARK MAX CAN IDs 
+    //Subject to change depending on what robot side is the front
+    public static final int kFrontLeftDrivingCanId = 3;
+    public static final int kRearLeftDrivingCanId = 7;
+    public static final int kFrontRightDrivingCanId = 1;
+    public static final int kRearRightDrivingCanId = 5;
 
-    public static final int kFrontLeftTurningCanId = 10;
-    public static final int kRearLeftTurningCanId = 12;
-    public static final int kFrontRightTurningCanId = 14;
-    public static final int kRearRightTurningCanId = 16;
+    public static final int kFrontLeftTurningCanId = 4;
+    public static final int kRearLeftTurningCanId = 8;
+    public static final int kFrontRightTurningCanId = 2;
+    public static final int kRearRightTurningCanId = 6;
 
     public static final boolean kGyroReversed = false;
     
@@ -230,7 +270,7 @@ public final class Constants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
     // This changes the drive speed of the module (a pinion gear with more teeth will result in a
     // robot that drives faster).
-    public static final int kDrivingMotorPinionTeeth = 14;
+    public static final int kDrivingMotorPinionTeeth = 13;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
@@ -263,6 +303,7 @@ public final class Constants {
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
+    //Turning PID will have to be changed for robot relative, use sysid one day
     public static final double kTurningP = 1;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
@@ -280,13 +321,14 @@ public final class Constants {
 
 
   public static class Vision {
-    public static final String kCameraName = "Front_Camera";
-    public static final String kBackCameraName = "Back_Camera";
+    public static final String kRaspberryCameraName = "Front_Camera";
+    public static final String kOrangeCameraName = "Orange_tag";
+    public static final String kNoteCameraName = "Note_Camera";
     // Cam mounted facing forward, half a meter forward of center, half a meter up
     // from center.
-    public static final Transform3d kRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),
+    public static final Transform3d kRaspberryRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),
         new Rotation3d(0, 0, 0));
-    public static final Transform3d kBackRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),
+    public static final Transform3d kOrangeRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),
         new Rotation3d(0, 0, 135));
 
     // The layout of the AprilTags on the field

@@ -36,12 +36,12 @@ public class VisionIOSim implements VisionIO {
     private VisionSystemSim visionSim;
 
     public VisionIOSim() {
-        camera = new PhotonCamera(kCameraName);
-        backCamera = new PhotonCamera(kBackCameraName);
+        camera = new PhotonCamera(kRaspberryCameraName);
+        backCamera = new PhotonCamera(kOrangeCameraName);
 
-        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, kRobotToCam);
+        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, kRaspberryRobotToCam);
         photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        backPhotonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backCamera, kBackRobotToCam);
+        backPhotonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backCamera, kOrangeRobotToCam);
         backPhotonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         // Create the vision system simulation which handles cameras and targets on the field.
@@ -60,8 +60,8 @@ public class VisionIOSim implements VisionIO {
         cameraSim = new PhotonCameraSim(camera, cameraProp);
         backCameraSim = new PhotonCameraSim(backCamera, cameraProp);
         // Add the simulated camera to view the targets on this simulated field.
-        visionSim.addCamera(cameraSim, kRobotToCam);
-        visionSim.addCamera(backCameraSim, kBackRobotToCam);
+        visionSim.addCamera(cameraSim, kRaspberryRobotToCam);
+        visionSim.addCamera(backCameraSim, kOrangeRobotToCam);
 
         cameraSim.enableDrawWireframe(true);
     }
