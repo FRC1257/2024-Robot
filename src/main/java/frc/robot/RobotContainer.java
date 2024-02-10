@@ -5,31 +5,25 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants.DriveConstants;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
-import frc.robot.commands.GoToPose;
 import frc.robot.commands.TurnAngleCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
@@ -37,28 +31,7 @@ import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
-import frc.robot.util.CommandSnailController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Filesystem;
-import java.io.File;
-import java.util.List;
+import frc.robot.util.DriveControls;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -71,11 +44,8 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
 
+  // Mechanisms
   private Mechanism2d mech = new Mechanism2d(3, 3);
-
-  // Controllers
-  private final CommandSnailController driver = new CommandSnailController(0);
-  private final CommandSnailController operator = new CommandSnailController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -92,11 +62,11 @@ public class RobotContainer {
       case REAL:
         drive = new Drive(
             new GyroIOReal(),
-            new ModuleIOSparkMax(0),
-            new ModuleIOSparkMax(1),
-            new ModuleIOSparkMax(2),
-            new ModuleIOSparkMax(3),
-            new VisionIOPhoton());
+            new ModuleIOSparkMax(0), //Front Left
+            new ModuleIOSparkMax(1), //Front Right
+            new ModuleIOSparkMax(2), //Back left
+            new ModuleIOSparkMax(3), //Back right
+            new VisionIOPhoton()); 
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -156,6 +126,8 @@ public class RobotContainer {
       field.getObject("path").setPoses(poses);
     });
 
+    DriveControls.configureControls();
+
     // Set up auto routines
     /*
      * NamedCommands.registerCommand(
@@ -189,44 +161,51 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    drive.setDefaultCommand(
+    //drive.setDefaultCommandRobotRelative
+    drive.setDefaultCommand( //change state here
         DriveCommands.joystickDrive(
             drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX()));
+            DriveControls.DRIVE_FORWARD,
+            DriveControls.DRIVE_STRAFE,
+            DriveControls.DRIVE_ROTATE));
+
+    DriveControls.DRIVE_SPEAKER_AIM.whileTrue(DriveCommands.joystickDriveRobotRelative(
+      drive,
+      DriveControls.DRIVE_FORWARD,
+      DriveControls.DRIVE_STRAFE,
+      DriveControls.DRIVE_ROTATE
+    ));
             
-    driver.a().whileTrue(
-        DriveCommands.joystickSpeakerPoint(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX()));
+    DriveControls.DRIVE_SPEAKER_AIM.whileTrue(
+      DriveCommands.joystickSpeakerPoint(
+          drive,
+          DriveControls.DRIVE_FORWARD,
+          DriveControls.DRIVE_STRAFE
+    ));
+    
+    DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
-    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    driver.x().onTrue(new GoToPose(drive, new Pose2d(2, 7.8, new Rotation2d(90))));
+    DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose));
+    DriveControls.DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose));
+    DriveControls.DRIVE_STOP.onTrue(new InstantCommand(drive::stopWithX, drive));
 
-    /* driver
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                () -> drive.setPose(
-                    new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                drive)
-                .ignoringDisable(true)); */
+    DriveControls.TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
+    DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
-    // driver.a().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(90))));
-    // driver.b().onTrue(new TurnAngleCommand(drive, new Rotation2d(Units.degreesToRadians(0))));
+    if (Constants.tuningMode) {
+      SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      SmartDashboard.putData("Sysid Dynamic Drive Backward", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+      SmartDashboard.putData("Sysid Dynamic Turn Forward", drive.turnDynamic(SysIdRoutine.Direction.kForward));
+      SmartDashboard.putData("Sysid Dynamic Turn Backward", drive.turnDynamic(SysIdRoutine.Direction.kReverse));
 
-    // Add a button to run pathfinding commands to SmartDashboard
-    SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
-        new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)),
-        new PathConstraints(
-            4.0, 4.0,
-            Units.degreesToRadians(360), Units.degreesToRadians(540)),
-        0,
-        2.0));
+      SmartDashboard.putData("Sysid Quasi Drive Forward", drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      SmartDashboard.putData("Sysid Quasi Drive Backward", drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+      SmartDashboard.putData("Sysid Quasi Turn Forward", drive.turnQuasistatic(SysIdRoutine.Direction.kForward));
+      SmartDashboard.putData("Sysid Quasi Turn Backward", drive.turnQuasistatic(SysIdRoutine.Direction.kReverse));
+    }
 
   }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

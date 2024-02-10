@@ -23,6 +23,7 @@ public class TurnAngleCommand extends Command {
         this.angle = angle;
 
         angleController.setTolerance(kTurnSpeakerTolerance, kTurnSpeakerRateTolerance);
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override
