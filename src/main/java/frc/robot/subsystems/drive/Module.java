@@ -13,18 +13,22 @@
 
 package frc.robot.subsystems.drive;
 
+import static frc.robot.Constants.ModuleConstants.kDrivingD;
+import static frc.robot.Constants.ModuleConstants.kDrivingFF;
+import static frc.robot.Constants.ModuleConstants.kDrivingI;
+import static frc.robot.Constants.ModuleConstants.kDrivingP;
+import static frc.robot.Constants.ModuleConstants.kTurningD;
+import static frc.robot.Constants.ModuleConstants.kTurningFF;
+import static frc.robot.Constants.ModuleConstants.kTurningI;
+import static frc.robot.Constants.ModuleConstants.kTurningP;
+import static frc.robot.Constants.ModuleConstants.kWheelDiameterMeters;
+
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
-import org.littletonrobotics.junction.Logger;
-
-import static frc.robot.Constants.ModuleConstants.*;
 
 public class Module {
   private static final double WHEEL_RADIUS = kWheelDiameterMeters / 2;
@@ -34,9 +38,7 @@ public class Module {
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private final int index;
 
-  private final SimpleMotorFeedforward driveFeedforward;
-  private final PIDController driveFeedback;
-  private final PIDController turnFeedback;
+  //private final SimpleMotorFeedforward driveFeedforward;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
@@ -51,23 +53,19 @@ public class Module {
     switch (Constants.currentMode) {
       case REAL:
       case REPLAY:
-        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
-        driveFeedback = new PIDController(0.05, 0.0, 0.0);
-        turnFeedback = new PIDController(7.0, 0.0, 0.0);
+        io.setDrivePIDFF(kDrivingP, kDrivingI, kDrivingD, kDrivingFF);
+        io.setTurnPIDFF(kTurningP, kTurningI, kTurningD, kTurningFF);
         break;
       case SIM:
-        driveFeedforward = new SimpleMotorFeedforward(0.0, 0.13);
-        driveFeedback = new PIDController(0.1, 0.0, 0.0);
-        turnFeedback = new PIDController(10.0, 0.0, 0.0);
+        io.setDrivePIDFF(0.1, 0, 0, 0);
+        io.setTurnPIDFF(10.0, 0, 0, 0);
         break;
       default:
-        driveFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
-        driveFeedback = new PIDController(0.0, 0.0, 0.0);
-        turnFeedback = new PIDController(0.0, 0.0, 0.0);
+        io.setDrivePIDFF(0, 0, 0, 0);
+        io.setTurnPIDFF(0, 0, 0, 0);
         break;
     }
 
-    turnFeedback.enableContinuousInput(-Math.PI, Math.PI);
     setBrakeMode(true);
   }
 
@@ -84,14 +82,13 @@ public class Module {
 
     // On first cycle, reset relative turn encoder
     // Wait until absolute angle is nonzero in case it wasn't initialized yet
-    if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
-      turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
-    }
+   // if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
+     // turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
+    //}
 
     // Run closed loop turn control
     if (angleSetpoint != null) {
-      io.setTurnVoltage(
-          turnFeedback.calculate(getAngle().getRadians(), angleSetpoint.getRadians()));
+      io.setTurnPosition(angleSetpoint.getRadians());
 
       // Run closed loop drive control
       // Only allowed if closed loop turn control is running
@@ -101,13 +98,12 @@ public class Module {
         // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
-        double adjustSpeedSetpoint = speedSetpoint * Math.cos(turnFeedback.getPositionError());
+        // double adjustSpeedSetpoint = speedSetpoint * Math.cos(io.getTurnPositionError(angleSetpoint.getRadians()));
 
         // Run drive controller
-        double velocityRadPerSec = adjustSpeedSetpoint / WHEEL_RADIUS;
-        io.setDriveVoltage(
-            driveFeedforward.calculate(velocityRadPerSec)
-                + driveFeedback.calculate(inputs.driveVelocityRadPerSec, velocityRadPerSec));
+        // double velocityRadPerSec = adjustSpeedSetpoint;
+
+        io.setDriveVelocity(speedSetpoint);
       }
     }
 
@@ -146,6 +142,16 @@ public class Module {
     speedSetpoint = null;
   }
 
+  public void runCharacterization(double driveVolts, double angleVolts) {
+    // Closed loop turn control
+    angleSetpoint = null;
+    speedSetpoint = null;
+
+    // Open loop drive control
+    io.setDriveVoltage(driveVolts);
+    io.setTurnVoltage(angleVolts);
+  }
+
   /** Disables all outputs to motors. */
   public void stop() {
     io.setTurnVoltage(0.0);
@@ -164,21 +170,22 @@ public class Module {
 
   /** Returns the current turn angle of the module. */
   public Rotation2d getAngle() {
-    if (turnRelativeOffset == null) {
-      return new Rotation2d();
+     if (turnRelativeOffset == null) {
+      return inputs.turnPosition;
     } else {
       return inputs.turnPosition.plus(turnRelativeOffset);
     }
+   
   }
 
   /** Returns the current drive position of the module in meters. */
   public double getPositionMeters() {
-    return inputs.drivePositionRad * WHEEL_RADIUS;
+    return inputs.drivePositionMeters;
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
   public double getVelocityMetersPerSec() {
-    return inputs.driveVelocityRadPerSec * WHEEL_RADIUS;
+    return inputs.driveVelocityMeterPerSec;
   }
 
   /** Returns the module position (turn angle and drive position). */
@@ -204,5 +211,9 @@ public class Module {
   /** Returns the drive velocity in radians/sec. */
   public double getCharacterizationVelocity() {
     return inputs.driveVelocityRadPerSec;
+  }
+
+  public void setTurnVoltage(double voltage) {
+    setTurnVoltage(voltage);
   }
 }

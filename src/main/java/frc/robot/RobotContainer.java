@@ -6,18 +6,24 @@ package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 
 import static frc.robot.Constants.ShooterConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
+
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -43,20 +49,21 @@ import frc.robot.subsystems.pivotArm.PivotArmIO;
 import frc.robot.subsystems.pivotArm.PivotArmIOSim;
 import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
 import frc.robot.Constants.PivotArm.PivotArmSimConstants;
-
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
-import frc.robot.commands.GoToPose;
 import frc.robot.commands.TurnAngleCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
-
 import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhoton;
+import frc.robot.subsystems.vision.VisionIOSim;
+import frc.robot.util.DriveControls;
 import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.vision.*;
 import frc.robot.util.CommandSnailController;
@@ -88,6 +95,7 @@ import java.io.File;
 import java.util.List;
 
 
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a "declarative" paradigm, very little robot logic should
@@ -98,13 +106,18 @@ import java.util.List;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+
+
+  // Mechanisms
+  private Mechanism2d mech = new Mechanism2d(3, 3);
+
   private final Shooter shooter;
   private final PivotArm pivot;
-  private Mechanism2d mech = new Mechanism2d(3, 3);
   private Intake intake;
-  // Controllers
+
   private final CommandSnailController driver = new CommandSnailController(0);
   private final CommandSnailController operator = new CommandSnailController(1);
+
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -124,12 +137,13 @@ public class RobotContainer {
         pivot = new PivotArm(new PivotArmIOSparkMax());
         drive = new Drive(
             new GyroIOReal(),
-            new ModuleIOSparkMax(0),
-            new ModuleIOSparkMax(1),
-            new ModuleIOSparkMax(2),
-            new ModuleIOSparkMax(3),
+            new ModuleIOSparkMax(0), //Front Left
+            new ModuleIOSparkMax(1), //Front Right
+            new ModuleIOSparkMax(2), //Back left
+            new ModuleIOSparkMax(3), //Back right
             new VisionIOPhoton());
         /* intake = new Intake(new IntakeIOSparkMax()); */
+
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -200,6 +214,8 @@ public class RobotContainer {
       field.getObject("path").setPoses(poses);
     });
 
+    DriveControls.configureControls();
+
     // Set up auto routines
     /*
      * NamedCommands.registerCommand(
@@ -235,6 +251,50 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
+    //drive.setDefaultCommandRobotRelative
+    drive.setDefaultCommand( //change state here
+        DriveCommands.joystickDrive(
+            drive,
+            DriveControls.DRIVE_FORWARD,
+            DriveControls.DRIVE_STRAFE,
+            DriveControls.DRIVE_ROTATE));
+
+    DriveControls.DRIVE_SPEAKER_AIM.whileTrue(DriveCommands.joystickDriveRobotRelative(
+      drive,
+      DriveControls.DRIVE_FORWARD,
+      DriveControls.DRIVE_STRAFE,
+      DriveControls.DRIVE_ROTATE
+    ));
+            
+    DriveControls.DRIVE_SPEAKER_AIM.whileTrue(
+      DriveCommands.joystickSpeakerPoint(
+          drive,
+          DriveControls.DRIVE_FORWARD,
+          DriveControls.DRIVE_STRAFE
+    ));
+    
+    DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
+
+    DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose));
+    DriveControls.DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose));
+    DriveControls.DRIVE_STOP.onTrue(new InstantCommand(drive::stopWithX, drive));
+
+    DriveControls.TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
+    DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
+
+    if (Constants.tuningMode) {
+      SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      SmartDashboard.putData("Sysid Dynamic Drive Backward", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+      SmartDashboard.putData("Sysid Dynamic Turn Forward", drive.turnDynamic(SysIdRoutine.Direction.kForward));
+      SmartDashboard.putData("Sysid Dynamic Turn Backward", drive.turnDynamic(SysIdRoutine.Direction.kReverse));
+
+      SmartDashboard.putData("Sysid Quasi Drive Forward", drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      SmartDashboard.putData("Sysid Quasi Drive Backward", drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+      SmartDashboard.putData("Sysid Quasi Turn Forward", drive.turnQuasistatic(SysIdRoutine.Direction.kForward));
+      SmartDashboard.putData("Sysid Quasi Turn Backward", drive.turnQuasistatic(SysIdRoutine.Direction.kReverse));
+    }
+
+
     operator.getB().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
     operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
 
@@ -263,6 +323,7 @@ public class RobotContainer {
 
 
 
+
     shooter.setDefaultCommand(
       shooter.runSpeed(0)
     );
@@ -281,6 +342,7 @@ public class RobotContainer {
     Pose3d pose = new Pose3d(translation, rotation);
     Logger.recordOutput("PivotPose3d", new Pose3d[] {pose});
   }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

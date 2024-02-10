@@ -21,6 +21,14 @@ public interface VisionIO {
     public double timestamp = 0;
     public Pose2d[] targets = new Pose2d[0];
     public Pose3d[] targets3d = new Pose3d[0];
+
+    // note detection
+    public int notes = 0;
+    public double noteTimestamp = 0;
+    public double[] noteConfidence = new double[0];
+    public double[] notePitch = new double[0];
+    public double[] noteYaw = new double[0];
+    public double[] noteArea = new double[0];
   }
 
   /** Updates the set of loggable inputs. */
