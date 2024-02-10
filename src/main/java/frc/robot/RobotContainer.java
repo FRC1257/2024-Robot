@@ -4,10 +4,15 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+
+import static frc.robot.Constants.ShooterConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
+
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -19,11 +24,38 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
+
+import frc.robot.Constants.ShooterConstants;
+
+import frc.robot.subsystems.shooter.*;
+import frc.robot.subsystems.drive.*;
+
+
+//import frc.robot.commands.SpinAuto;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmIO;
+import frc.robot.subsystems.pivotArm.PivotArmIOSim;
+import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
+import frc.robot.Constants.PivotArm.PivotArmSimConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.TurnAngleCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
@@ -32,6 +64,36 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.DriveControls;
+import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.vision.*;
+import frc.robot.util.CommandSnailController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj.Filesystem;
+import java.io.File;
+import java.util.List;
+
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -44,8 +106,17 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
 
+
   // Mechanisms
   private Mechanism2d mech = new Mechanism2d(3, 3);
+
+  private final Shooter shooter;
+  private final PivotArm pivot;
+  private Intake intake;
+
+  private final CommandSnailController driver = new CommandSnailController(0);
+  private final CommandSnailController operator = new CommandSnailController(1);
+
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -60,17 +131,25 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       // Real robot, instantiate hardware IO implementations
       case REAL:
+
+        shooter = new Shooter(new ShooterIOSparkMax());
+        pivot = new PivotArm(new PivotArmIOSparkMax());
         drive = new Drive(
             new GyroIOReal(),
             new ModuleIOSparkMax(0), //Front Left
             new ModuleIOSparkMax(1), //Front Right
             new ModuleIOSparkMax(2), //Back left
             new ModuleIOSparkMax(3), //Back right
-            new VisionIOPhoton()); 
+            new VisionIOPhoton());
+        /* intake = new Intake(new IntakeIOSparkMax()); */
+
         break;
 
       // Sim robot, instantiate physics sim IO implementations
       case SIM:
+      case TEST:
+        pivot = new PivotArm(new PivotArmIOSim());
+        shooter = new Shooter(new ShooterIOSim());
         drive = new Drive(
             new GyroIO() {
             },
@@ -79,10 +158,13 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new VisionIOSim());
+        /* intake = new Intake(new IntakeIOSim()); */
         break;
 
       // Replayed robot, disable IO implementations
       default:
+        shooter = new Shooter(new ShooterIO(){});
+        pivot = new PivotArm(new PivotArmIO() {});
         drive = new Drive(
             new GyroIO() {
             },
@@ -96,15 +178,20 @@ public class RobotContainer {
             },
             new VisionIO() {
             });
+        /* intake = new Intake(new IntakeIO(){}); */
+
         break;
     }
 
     // Set up robot state manager
 
     MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
+
+    pivot.setMechanism(root.append(pivot.getArmMechanism()));
+
     // add subsystem mechanisms
     SmartDashboard.putData("Arm Mechanism", mech);
-
+    
     field = new Field2d();
     SmartDashboard.putData("Field", field);
 
@@ -149,11 +236,12 @@ public class RobotContainer {
 
     autoChooser.addOption("Drive Try Trajectory",
         drive.getAuto("thinger"));
-
+    
+     //autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings
     configureButtonBindings();
   }
-
+    
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -161,6 +249,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
     //drive.setDefaultCommandRobotRelative
     drive.setDefaultCommand( //change state here
         DriveCommands.joystickDrive(
@@ -204,6 +293,50 @@ public class RobotContainer {
       SmartDashboard.putData("Sysid Quasi Turn Backward", drive.turnQuasistatic(SysIdRoutine.Direction.kReverse));
     }
 
+
+    operator.getB().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
+    operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
+
+
+    /* intake.setDefaultCommand(
+        intake.IntakeSpeedCommand(
+          () -> operator.getLeftX() * 120
+        )
+      ); */
+
+    pivot.setDefaultCommand(
+      pivot.ManualCommand(operator::getLeftX)
+    );
+
+    // Add a button to run pathfinding commands to SmartDashboard
+    SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
+        new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)),
+        new PathConstraints(
+            4.0, 4.0,
+            Units.degreesToRadians(360), Units.degreesToRadians(540)),
+        0,
+        2.0));
+
+
+
+
+    shooter.setDefaultCommand(
+      shooter.runSpeed(0)
+    );
+
+
+
+    operator.a().whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
+
+  }
+
+  public void setPivotPose3d() {
+    Pose2d armPose = drive.getPose().plus(new Transform2d(new Translation2d(0.098, Rotation2d.fromDegrees(180)), new Rotation2d()));
+
+    Rotation3d rotation = new Rotation3d(0, pivot.getAngle().getRadians(), armPose.getRotation().plus(Rotation2d.fromDegrees(180)).getRadians());
+    Translation3d translation = new Translation3d(armPose.getTranslation().getX(), armPose.getTranslation().getY(), 0.28);
+    Pose3d pose = new Pose3d(translation, rotation);
+    Logger.recordOutput("PivotPose3d", new Pose3d[] {pose});
   }
 
 
@@ -215,4 +348,5 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
+
 }

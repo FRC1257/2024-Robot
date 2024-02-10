@@ -1,0 +1,56 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7401886415755699,
+      "y": 6.686887667641241
+    },
+    "rotation": 57.09475707701204
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Note 1"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Note 2a"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Note 2b"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Note 3a"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Note 3b"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
