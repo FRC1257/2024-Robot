@@ -74,7 +74,7 @@ public class NoteShot {
         // fix this code
         double dx = shotStraightSpeed * Math.cos(shotPosition.getRotation().getZ() + Math.PI) * Math.cos(shotPosition.getRotation().getY())
             /* + shotTangentSpeed * Math.cos(shotPosition.getRotation().getZ()) */;
-        double dy = shotStraightSpeed * Math.sin(shotPosition.getRotation().getZ()) * Math.cos(shotPosition.getRotation().getY())
+        double dy = -shotStraightSpeed * Math.sin(shotPosition.getRotation().getZ()) * Math.cos(shotPosition.getRotation().getY())
             /* + shotTangentSpeed * Math.sin(shotPosition.getRotation().getZ() + Math.PI / 2) */;
         double dz = shotStraightSpeed * Math.sin(shotPosition.getRotation().getY());
         
