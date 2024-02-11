@@ -57,6 +57,16 @@
           "commands": []
         }
       }
+    },
+    {
+      "name": "Intake Intake",
+      "waypointRelativePos": 0.9,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": []
+        }
+      }
     }
   ],
   "globalConstraints": {

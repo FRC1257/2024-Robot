@@ -41,14 +41,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.ShooterConstants;
 
 import frc.robot.subsystems.shooter.*;
+import frc.robot.subsystems.groundIntake.*;
 import frc.robot.subsystems.drive.*;
-
-
-//import frc.robot.commands.SpinAuto;
-import frc.robot.subsystems.pivotArm.PivotArm;
-import frc.robot.subsystems.pivotArm.PivotArmIO;
-import frc.robot.subsystems.pivotArm.PivotArmIOSim;
-import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
+import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.pivotArm.*;
 import frc.robot.Constants.PivotArm.PivotArmSimConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveCommands;
@@ -65,8 +61,9 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.DriveControls;
-import frc.robot.subsystems.intake.*;
+
 import frc.robot.subsystems.vision.*;
+//import frc.robot.commands.SpinAuto;
 import frc.robot.util.CommandSnailController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -106,14 +103,15 @@ import java.util.List;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-
+  private final Shooter shooter;
+  private final PivotArm pivot;
+  private final Intake intake;
+  private final GroundIntake groundIntake;
 
   // Mechanisms
   private Mechanism2d mech = new Mechanism2d(3, 3);
 
-  private final Shooter shooter;
-  private final PivotArm pivot;
-  private Intake intake;
+
 
   private final CommandSnailController driver = new CommandSnailController(0);
   private final CommandSnailController operator = new CommandSnailController(1);
@@ -132,7 +130,6 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       // Real robot, instantiate hardware IO implementations
       case REAL:
-
         shooter = new Shooter(new ShooterIOSparkMax());
         pivot = new PivotArm(new PivotArmIOSparkMax());
         drive = new Drive(
@@ -142,8 +139,8 @@ public class RobotContainer {
             new ModuleIOSparkMax(2), //Back left
             new ModuleIOSparkMax(3), //Back right
             new VisionIOPhoton());
-        /* intake = new Intake(new IntakeIOSparkMax()); */
-
+        intake = new Intake(new IntakeIOSparkMax()); 
+        groundIntake = new GroundIntake(new GroundIntakeIOSparkMax());
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -159,28 +156,23 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new VisionIOSim());
-        /* intake = new Intake(new IntakeIOSim()); */
+        intake = new Intake(new IntakeIOSim());
+        groundIntake = new GroundIntake(new GroundIntakeIOSim()); 
         break;
 
-      // Replayed robot, disable IO implementations
+      // Replayed robot, disable IO implementations, only reads log files
       default:
         shooter = new Shooter(new ShooterIO(){});
         pivot = new PivotArm(new PivotArmIO() {});
         drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new VisionIO() {
-            });
-        /* intake = new Intake(new IntakeIO(){}); */
-
+            new GyroIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new VisionIO() {});
+        intake = new Intake(new IntakeIO(){}); 
+        groundIntake = new GroundIntake(new GroundIntakeIO(){});
         break;
     }
 
@@ -299,14 +291,20 @@ public class RobotContainer {
     operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
 
 
-    /* intake.setDefaultCommand(
+     intake.setDefaultCommand(
         intake.IntakeSpeedCommand(
           () -> operator.getLeftX() * 120
         )
-      ); */
+      ); 
+
+    groundIntake.setDefaultCommand(
+      groundIntake.GroundIntakeSpeedCommand(
+        () -> operator.getLeftY() * 120
+      )
+    );
 
     pivot.setDefaultCommand(
-      pivot.ManualCommand(operator::getLeftX)
+      pivot.ManualCommand(operator::getRightX)
     );
 
     // Add a button to run pathfinding commands to SmartDashboard
