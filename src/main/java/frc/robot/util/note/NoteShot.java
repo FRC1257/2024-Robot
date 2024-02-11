@@ -51,7 +51,7 @@ public class NoteShot {
 
     public static NoteShot fromRobotInfo(Pose2d robotPose, Rotation2d pivotAngle, double shotLeftSpeed, double shotRightSpeed) {
         // calculate the position of the arm in 2d
-        Pose2d armPose = robotPose.plus(new Transform2d(new Translation2d(0.098, Rotation2d.fromDegrees(180)), new Rotation2d()));
+        Pose2d armPose = robotPose.plus(new Transform2d(new Translation2d(0.098, robotPose.getRotation().plus(Rotation2d.fromDegrees(180))), new Rotation2d()));
         
         // get the 3d rotation of the arm
         Rotation3d rotation = new Rotation3d(0, pivotAngle.getRadians(), armPose.getRotation().plus(Rotation2d.fromDegrees(180)).getRadians());
@@ -72,9 +72,9 @@ public class NoteShot {
 
     public PathPoint getFirstPoint() {
         // fix this code
-        double dx = shotStraightSpeed * Math.cos(shotPosition.getRotation().getZ() + Math.PI)
+        double dx = shotStraightSpeed * Math.cos(shotPosition.getRotation().getZ() + Math.PI) * Math.cos(shotPosition.getRotation().getY())
             /* + shotTangentSpeed * Math.cos(shotPosition.getRotation().getZ()) */;
-        double dy = shotStraightSpeed * Math.sin(shotPosition.getRotation().getZ()) 
+        double dy = shotStraightSpeed * Math.sin(shotPosition.getRotation().getZ()) * Math.cos(shotPosition.getRotation().getY())
             /* + shotTangentSpeed * Math.sin(shotPosition.getRotation().getZ() + Math.PI / 2) */;
         double dz = shotStraightSpeed * Math.sin(shotPosition.getRotation().getY());
         

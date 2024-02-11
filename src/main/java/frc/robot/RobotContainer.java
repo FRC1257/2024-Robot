@@ -299,7 +299,7 @@ public class RobotContainer {
     operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 5.0, () -> 6.0, pivot::getAngle);
-    driver.getA().onTrue(NoteVisualizer.shoot());
+    operator.getA().onTrue(NoteVisualizer.shoot());
 
 
     /* intake.setDefaultCommand(
@@ -312,30 +312,16 @@ public class RobotContainer {
       pivot.ManualCommand(operator::getLeftX)
     );
 
-    // Add a button to run pathfinding commands to SmartDashboard
-    SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
-        new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)),
-        new PathConstraints(
-            4.0, 4.0,
-            Units.degreesToRadians(360), Units.degreesToRadians(540)),
-        0,
-        2.0));
-
-
-
-
     shooter.setDefaultCommand(
       shooter.runSpeed(0)
     );
-
-
 
     operator.a().whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
   }
 
   public void setPivotPose3d() {
-    Pose2d armPose = drive.getPose().plus(new Transform2d(new Translation2d(0.098, Rotation2d.fromDegrees(180)), new Rotation2d()));
+    Pose2d armPose = drive.getPose().plus(new Transform2d(new Translation2d(0.098, drive.getRotation().plus(Rotation2d.fromDegrees(180))), new Rotation2d()));
 
     Rotation3d rotation = new Rotation3d(0, pivot.getAngle().getRadians(), armPose.getRotation().plus(Rotation2d.fromDegrees(180)).getRadians());
     Translation3d translation = new Translation3d(armPose.getTranslation().getX(), armPose.getTranslation().getY(), 0.28);
