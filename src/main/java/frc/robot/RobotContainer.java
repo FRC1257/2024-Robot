@@ -316,9 +316,6 @@ public class RobotContainer {
         0,
         2.0));
 
-
-
-
     shooter.setDefaultCommand(
       shooter.runSpeed(0)
     );
