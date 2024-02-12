@@ -189,7 +189,7 @@ public class RobotContainer {
     // Named Commands
     NamedCommands.registerCommand("Shoot", shootAnywhere());
     NamedCommands.registerCommand("Intake", intake.IntakeLoopCommand(3).deadlineWith(groundIntake.GroundIntakeManualCommand(() -> 2)));
-
+    NamedCommands.registerCommand("PrepShoot", prepShoot());
     DriveControls.configureControls();
 
     // Set up auto routines
@@ -326,6 +326,13 @@ public class RobotContainer {
   }
 
   public Command shootAnywhere() {
+    // implement this later using swerve to turn to desired target
+    // move pivot arm
+    // and calculate the speed required to shoot
+    return new InstantCommand();
+  }
+
+  public Command prepShoot() {
     // implement this later using swerve to turn to desired target
     // move pivot arm
     // and calculate the speed required to shoot
