@@ -136,4 +136,8 @@ public class Shooter extends SubsystemBase {
       this
     );
   }
+
+  public Command stop() {
+    return runSpeed(0);
+  }
 }

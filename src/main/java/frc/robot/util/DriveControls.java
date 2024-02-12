@@ -30,6 +30,28 @@ public class DriveControls {
     public static Trigger TURN_90;
     public static Trigger TURN_180;
 
+    // Pivot Controls
+    public static DoubleSupplier PIVOT_ROTATE;
+    public static Trigger PIVOT_AMP;
+    public static Trigger PIVOT_ZERO;
+    public static Trigger PIVOT_TO_SPEAKER;
+
+    // Intake Controls
+    public static Trigger INTAKE_IN;
+    public static Trigger INTAKE_OUT;
+    public static DoubleSupplier INTAKE_ROTATE;
+
+    // Ground Intake
+    public static Trigger GROUND_INTAKE_IN;
+    public static Trigger GROUND_INTAKE_OUT;
+    public static DoubleSupplier GROUND_INTAKE_ROTATE;
+
+    // Shooter Controls
+    public static DoubleSupplier SHOOTER_SPEED;
+    public static Trigger SHOOTER_PREP;
+    public static Trigger SHOOTER_FIRE_AMP;
+    public static Trigger SHOOTER_FIRE_SPEAKER;
+
     // Setup the controls
     public static void configureControls() {
         switch (Constants.driver) {
@@ -65,10 +87,44 @@ public class DriveControls {
         switch (Constants.operator) {
             case ERICK:
                 // Operator controls
+                PIVOT_ROTATE = operator::getRightY;
+                PIVOT_AMP = operator.rightBumper();
+                PIVOT_ZERO = operator.leftBumper();
+                PIVOT_TO_SPEAKER = operator.a();
+                
+                INTAKE_IN = operator.rightTrigger();
+                INTAKE_OUT = EMPTY_TRIGGER;
+                INTAKE_ROTATE = operator::getLeftY;
+
+                GROUND_INTAKE_IN = operator.y();
+                GROUND_INTAKE_OUT = operator.b();
+                GROUND_INTAKE_ROTATE = operator::getRightY;
+
+                SHOOTER_SPEED = operator::getRightY;
+                SHOOTER_PREP = operator.rightBumper();
+                SHOOTER_FIRE_AMP = operator.leftBumper();
+                SHOOTER_FIRE_SPEAKER = operator.x();
                 break;
             case PROGRAMMERS:
             default:
                 // Operator controls
+                PIVOT_ROTATE = operator::getRightY;
+                PIVOT_AMP = operator.rightBumper();
+                PIVOT_ZERO = operator.leftBumper();
+                PIVOT_TO_SPEAKER = operator.a();
+                
+                INTAKE_IN = operator.rightTrigger();
+                INTAKE_OUT = EMPTY_TRIGGER;
+                INTAKE_ROTATE = operator::getLeftY;
+
+                GROUND_INTAKE_IN = operator.y();
+                GROUND_INTAKE_OUT = operator.b();
+                GROUND_INTAKE_ROTATE = operator::getRightY;
+
+                SHOOTER_SPEED = operator::getRightY;
+                SHOOTER_PREP = operator.rightBumper();
+                SHOOTER_FIRE_AMP = operator.leftBumper();
+                SHOOTER_FIRE_SPEAKER = operator.x();
                 break;
         }
     }

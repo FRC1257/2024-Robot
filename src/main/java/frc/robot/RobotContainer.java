@@ -7,13 +7,12 @@ package frc.robot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-
 import static frc.robot.Constants.ShooterConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PathPlannerLogging;
-
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -66,33 +65,6 @@ import frc.robot.subsystems.vision.*;
 //import frc.robot.commands.SpinAuto;
 import frc.robot.util.CommandSnailController;
 import frc.robot.util.note.NoteVisualizer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj.Filesystem;
-import java.io.File;
-import java.util.List;
-
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -112,12 +84,6 @@ public class RobotContainer {
   // Mechanisms
   private Mechanism2d mech = new Mechanism2d(3, 3);
 
-
-
-  private final CommandSnailController driver = new CommandSnailController(0);
-  private final CommandSnailController operator = new CommandSnailController(1);
-
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -136,12 +102,12 @@ public class RobotContainer {
         pivot = new PivotArm(new PivotArmIOSparkMax());
         drive = new Drive(
             new GyroIOReal(),
-            new ModuleIOSparkMax(0), //Front Left
-            new ModuleIOSparkMax(1), //Front Right
-            new ModuleIOSparkMax(2), //Back left
-            new ModuleIOSparkMax(3), //Back right
+            new ModuleIOSparkMax(0), // Front Left
+            new ModuleIOSparkMax(1), // Front Right
+            new ModuleIOSparkMax(2), // Back left
+            new ModuleIOSparkMax(3), // Back right
             new VisionIOPhoton());
-        intake = new Intake(new IntakeIOSparkMax()); 
+        intake = new Intake(new IntakeIOSparkMax());
         groundIntake = new GroundIntake(new GroundIntakeIOSparkMax());
         break;
 
@@ -159,22 +125,32 @@ public class RobotContainer {
             new ModuleIOSim(),
             new VisionIOSim());
         intake = new Intake(new IntakeIOSim());
-        groundIntake = new GroundIntake(new GroundIntakeIOSim()); 
+        groundIntake = new GroundIntake(new GroundIntakeIOSim());
         break;
 
       // Replayed robot, disable IO implementations, only reads log files
       default:
-        shooter = new Shooter(new ShooterIO(){});
-        pivot = new PivotArm(new PivotArmIO() {});
+        shooter = new Shooter(new ShooterIO() {
+        });
+        pivot = new PivotArm(new PivotArmIO() {
+        });
         drive = new Drive(
-            new GyroIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new VisionIO() {});
-        intake = new Intake(new IntakeIO(){}); 
-        groundIntake = new GroundIntake(new GroundIntakeIO(){});
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new VisionIO() {
+            });
+        intake = new Intake(new IntakeIO() {
+        });
+        groundIntake = new GroundIntake(new GroundIntakeIO() {
+        });
         break;
     }
 
@@ -188,7 +164,7 @@ public class RobotContainer {
 
     // add subsystem mechanisms
     SmartDashboard.putData("Arm Mechanism", mech);
-    
+
     field = new Field2d();
     SmartDashboard.putData("Field", field);
 
@@ -209,6 +185,10 @@ public class RobotContainer {
       // Do whatever you want with the poses here
       field.getObject("path").setPoses(poses);
     });
+
+    // Named Commands
+    NamedCommands.registerCommand("Shoot", shootAnywhere());
+    NamedCommands.registerCommand("Intake", intake.IntakeLoopCommand(3).deadlineWith(groundIntake.GroundIntakeManualCommand(() -> 2)));
 
     DriveControls.configureControls();
 
@@ -233,13 +213,13 @@ public class RobotContainer {
 
     autoChooser.addOption("Drive Try Trajectory",
         drive.getAuto("thinger"));
-    
-     //autoChooser.addOption("Spin", new SpinAuto(drive));
+
+    // autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings
     System.out.println("[Init] Creating Button Bindings");
     configureButtonBindings();
   }
-    
+
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -247,29 +227,40 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
-    //drive.setDefaultCommandRobotRelative
-    drive.setDefaultCommand( //change state here
+    // drive.setDefaultCommandRobotRelative
+    drive.setDefaultCommand( // change state here
         DriveCommands.joystickDrive(
             drive,
             DriveControls.DRIVE_FORWARD,
             DriveControls.DRIVE_STRAFE,
             DriveControls.DRIVE_ROTATE));
 
+    intake.setDefaultCommand(
+        intake.IntakeSpeedCommand(
+            DriveControls.INTAKE_ROTATE));
+
+    groundIntake.setDefaultCommand(
+        groundIntake.GroundIntakeSpeedCommand(
+            DriveControls.GROUND_INTAKE_ROTATE));
+
+    pivot.setDefaultCommand(
+        pivot.ManualCommand(DriveControls.PIVOT_ROTATE));
+
+    shooter.setDefaultCommand(
+        shooter.runSpeed(0));
+
     DriveControls.DRIVE_SPEAKER_AIM.whileTrue(DriveCommands.joystickDriveRobotRelative(
-      drive,
-      DriveControls.DRIVE_FORWARD,
-      DriveControls.DRIVE_STRAFE,
-      DriveControls.DRIVE_ROTATE
-    ));
-            
+        drive,
+        DriveControls.DRIVE_FORWARD,
+        DriveControls.DRIVE_STRAFE,
+        DriveControls.DRIVE_ROTATE));
+
     DriveControls.DRIVE_SPEAKER_AIM.whileTrue(
-      DriveCommands.joystickSpeakerPoint(
-          drive,
-          DriveControls.DRIVE_FORWARD,
-          DriveControls.DRIVE_STRAFE
-    ));
-    
+        DriveCommands.joystickSpeakerPoint(
+            drive,
+            DriveControls.DRIVE_FORWARD,
+            DriveControls.DRIVE_STRAFE));
+
     DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
     DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose));
@@ -278,6 +269,15 @@ public class RobotContainer {
 
     DriveControls.TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
     DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
+
+    // Operator controls
+    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
+    DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
+
+    NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
+    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(NoteVisualizer.shoot());
+
+    DriveControls.SHOOTER_PREP.whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
     if (Constants.tuningMode) {
       SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
@@ -291,53 +291,23 @@ public class RobotContainer {
       SmartDashboard.putData("Sysid Quasi Turn Backward", drive.turnQuasistatic(SysIdRoutine.Direction.kReverse));
     }
 
-
-    operator.getB().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
-    operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
-
-    NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
-    operator.getA().onTrue(NoteVisualizer.shoot());
-
-
-     intake.setDefaultCommand(
-        intake.IntakeSpeedCommand(
-          () -> operator.getLeftX() * 120
-        )
-      ); 
-
-    groundIntake.setDefaultCommand(
-      groundIntake.GroundIntakeSpeedCommand(
-        () -> operator.getLeftY() * 120
-      )
-    );
-
-    pivot.setDefaultCommand(
-      pivot.ManualCommand(operator::getRightX)
-    );
-
-    shooter.setDefaultCommand(
-      shooter.runSpeed(0)
-    );
-
-    operator.a().whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
-
   }
 
   public void setPivotPose3d() {
-    Pose2d armPose = drive.getPose().plus(new Transform2d(new Translation2d(0.098, drive.getRotation().plus(Rotation2d.fromDegrees(180))), new Rotation2d()));
+    Pose2d armPose = drive.getPose().plus(new Transform2d(
+        new Translation2d(0.098, drive.getRotation().plus(Rotation2d.fromDegrees(180))), new Rotation2d()));
 
-    Rotation3d rotation = new Rotation3d(0, pivot.getAngle().getRadians(), armPose.getRotation().plus(Rotation2d.fromDegrees(180)).getRadians());
-    Translation3d translation = new Translation3d(armPose.getTranslation().getX(), armPose.getTranslation().getY(), 0.28);
+    Rotation3d rotation = new Rotation3d(0, pivot.getAngle().getRadians(),
+        armPose.getRotation().plus(Rotation2d.fromDegrees(180)).getRadians());
+    Translation3d translation = new Translation3d(armPose.getTranslation().getX(), armPose.getTranslation().getY(),
+        0.28);
     Pose3d pose = new Pose3d(translation, rotation);
-    Logger.recordOutput("PivotPose3d", new Pose3d[] {pose});
+    Logger.recordOutput("PivotPose3d", new Pose3d[] { pose });
     Logger.recordOutput("PivotPoseThing",
-      new Pose3d(
-        new Translation3d(0, 0, 0.28),
-        new Rotation3d(0, -pivot.getAngle().getRadians(), 0)
-      )
-    );
+        new Pose3d(
+            new Translation3d(0, 0, 0.28),
+            new Rotation3d(0, -pivot.getAngle().getRadians(), 0)));
   }
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -348,4 +318,17 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
+  public Command zeroPosition() {
+    return pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE)
+        .alongWith(intake.stop())
+        .alongWith(shooter.stop())
+        .alongWith(groundIntake.stop());
+  }
+
+  public Command shootAnywhere() {
+    // implement this later using swerve to turn to desired target
+    // move pivot arm
+    // and calculate the speed required to shoot
+    return new InstantCommand();
+  }
 }
