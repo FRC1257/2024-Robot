@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.Intake;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import org.littletonrobotics.junction.Logger;
@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.Intake.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-
 
 public class Intake extends SubsystemBase {
     private final IntakeIO io;

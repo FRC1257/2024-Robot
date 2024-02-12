@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.Intake;
 
 import static frc.robot.Constants.NEO_CURRENT_LIMIT;
 import static frc.robot.Constants.Intake.IntakeSimConstants.*;

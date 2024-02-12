@@ -17,9 +17,18 @@
       "/SmartDashboard/Drive": "Subsystem",
       "/SmartDashboard/Elevator": "Subsystem",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/GroundIntake": "Subsystem",
       "/SmartDashboard/Intake": "Subsystem",
       "/SmartDashboard/Pathfind to Pickup Pos": "Command",
       "/SmartDashboard/PivotArm": "Subsystem",
+      "/SmartDashboard/Sysid Dynamic Drive Backward": "Command",
+      "/SmartDashboard/Sysid Dynamic Drive Forward": "Command",
+      "/SmartDashboard/Sysid Dynamic Turn Backward": "Command",
+      "/SmartDashboard/Sysid Dynamic Turn Forward": "Command",
+      "/SmartDashboard/Sysid Quasi Drive Backward": "Command",
+      "/SmartDashboard/Sysid Quasi Drive Forward": "Command",
+      "/SmartDashboard/Sysid Quasi Turn Backward": "Command",
+      "/SmartDashboard/Sysid Quasi Turn Forward": "Command",
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
     },
     "windows": {

@@ -52,7 +52,6 @@ public class Shooter extends SubsystemBase {
   private boolean characterizing = false;
 
   public Shooter(ShooterIO io) {
-    System.out.println("[Init] Creating Shooter");
     shooterIO = io;
     shooterIO.setLeftPID(leftkP.get(), leftkI.get(), leftkD.get());
     shooterIO.setLeftFF(leftkS.get(), leftkV.get(), leftkA.get());

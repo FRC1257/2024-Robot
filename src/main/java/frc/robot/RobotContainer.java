@@ -42,8 +42,8 @@ import frc.robot.Constants.ShooterConstants;
 
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.groundIntake.*;
+import frc.robot.subsystems.Intake.*;
 import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.pivotArm.*;
 import frc.robot.Constants.PivotArm.PivotArmSimConstants;
 import frc.robot.Constants.DriveConstants;
@@ -127,6 +127,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    System.out.println("[Init] Creating Subsystems");
     switch (Constants.currentMode) {
       // Real robot, instantiate hardware IO implementations
       case REAL:
@@ -175,6 +176,8 @@ public class RobotContainer {
         groundIntake = new GroundIntake(new GroundIntakeIO(){});
         break;
     }
+
+    System.out.println("[Init] Setting up Logs");
 
     // Set up robot state manager
 
@@ -232,6 +235,7 @@ public class RobotContainer {
     
      //autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings
+    System.out.println("[Init] Creating Button Bindings");
     configureButtonBindings();
   }
     
