@@ -190,6 +190,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot", shootAnywhere());
     NamedCommands.registerCommand("Intake", intake.IntakeLoopCommand(3).deadlineWith(groundIntake.GroundIntakeManualCommand(() -> 2)));
     NamedCommands.registerCommand("PrepShoot", prepShoot());
+    NamedCommands.registerCommand("Zero", zeroPosition());
     DriveControls.configureControls();
 
     // Set up auto routines
