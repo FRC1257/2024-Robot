@@ -105,7 +105,7 @@ public class PivotArm extends SubsystemBase {
     }
 
     public MechanismLigament2d getArmMechanism() {
-        return new MechanismLigament2d("Pivot Arm", 2, 0, 5, new Color8Bit(Color.kAqua));
+        return new MechanismLigament2d("Pivot Arm", 0.4, 0, 5, new Color8Bit(Color.kAqua));
     }
     public Command PIDCommand(double setpoint) {
         return new FunctionalCommand(

@@ -65,6 +65,7 @@ import frc.robot.util.DriveControls;
 import frc.robot.subsystems.vision.*;
 //import frc.robot.commands.SpinAuto;
 import frc.robot.util.CommandSnailController;
+import frc.robot.util.note.NoteVisualizer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -294,6 +295,9 @@ public class RobotContainer {
     operator.getB().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
     operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
 
+    NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
+    operator.getA().onTrue(NoteVisualizer.shoot());
+
 
      intake.setDefaultCommand(
         intake.IntakeSpeedCommand(
@@ -311,32 +315,27 @@ public class RobotContainer {
       pivot.ManualCommand(operator::getRightX)
     );
 
-    // Add a button to run pathfinding commands to SmartDashboard
-    SmartDashboard.putData("Pathfind to Pickup Pos", AutoBuilder.pathfindToPose(
-        new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)),
-        new PathConstraints(
-            4.0, 4.0,
-            Units.degreesToRadians(360), Units.degreesToRadians(540)),
-        0,
-        2.0));
-
     shooter.setDefaultCommand(
       shooter.runSpeed(0)
     );
-
-
 
     operator.a().whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
   }
 
   public void setPivotPose3d() {
-    Pose2d armPose = drive.getPose().plus(new Transform2d(new Translation2d(0.098, Rotation2d.fromDegrees(180)), new Rotation2d()));
+    Pose2d armPose = drive.getPose().plus(new Transform2d(new Translation2d(0.098, drive.getRotation().plus(Rotation2d.fromDegrees(180))), new Rotation2d()));
 
     Rotation3d rotation = new Rotation3d(0, pivot.getAngle().getRadians(), armPose.getRotation().plus(Rotation2d.fromDegrees(180)).getRadians());
     Translation3d translation = new Translation3d(armPose.getTranslation().getX(), armPose.getTranslation().getY(), 0.28);
     Pose3d pose = new Pose3d(translation, rotation);
     Logger.recordOutput("PivotPose3d", new Pose3d[] {pose});
+    Logger.recordOutput("PivotPoseThing",
+      new Pose3d(
+        new Translation3d(0, 0, 0.28),
+        new Rotation3d(0, -pivot.getAngle().getRadians(), 0)
+      )
+    );
   }
 
 
