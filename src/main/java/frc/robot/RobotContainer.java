@@ -64,7 +64,6 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.DriveControls;
-import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.vision.*;
 import frc.robot.util.CommandSnailController;
 import frc.robot.util.note.NoteVisualizer;
@@ -113,7 +112,6 @@ public class RobotContainer {
 
   private final Shooter shooter;
   private final PivotArm pivot;
-  private Intake intake;
 
   private final CommandSnailController driver = new CommandSnailController(0);
   private final CommandSnailController operator = new CommandSnailController(1);
@@ -298,7 +296,7 @@ public class RobotContainer {
     operator.getB().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
     operator.getX().onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE));
 
-    NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 5.0, () -> 6.0, pivot::getAngle);
+    NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
     operator.getA().onTrue(NoteVisualizer.shoot());
 
 
