@@ -513,10 +513,10 @@ public final class Constants {
   }
 
   public static final double[][] LookupTable = {
-    {1,2,3},
-    {2,2,3},
-    {3,2,3},
-    {4,2,3},
-    {5,2,3}
+    {1,5000,3},
+    {2,5000,3},
+    {3,5000,3},
+    {4,5500,3},
+    {5,5500,3}
   };
 }

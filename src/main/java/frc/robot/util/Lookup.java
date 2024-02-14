@@ -19,12 +19,13 @@ public class Lookup {
        }
        return map(distance, LookupTable[upperIndex-1][0], LookupTable[upperIndex][0], LookupTable[upperIndex-1][column], LookupTable[upperIndex][column]);
    }
-   public static double getVelocity(double distance) {
-       return getValueFromColumn(distance, 1); //1 is the index of velocity
+   // returns appropriate RPM based on distance
+   public static double getRPM(double distance) {
+       return getValueFromColumn(distance, 1); //1 is the index of RPM
    }
-   //returns the proper velocity based on
+   //returns the proper angle based on distance
    public static double getAngle(double distance) {
-       return getValueFromColumn(distance, 2); //1 is the index of velocity
+       return getValueFromColumn(distance, 2); //1 is the index of angle
    }
 }
 
