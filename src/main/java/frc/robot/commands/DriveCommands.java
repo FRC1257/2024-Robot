@@ -171,37 +171,36 @@ public class DriveCommands {
     // turns robot to speaker from current location
     public static Command turnSpeakerAngle(Drive drive) {
         Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
-        return new FunctionalCommand(
-            () -> {
-                Transform2d targetTransform = drive.getPose().minus(speakerPose);
-                Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
-                angleController.setSetpoint(targetDirection.getRadians())
-            }
-            () -> {
-                // defines how far the robot's angle is from the speaker
-                Transform2d targetTransform = drive.getPose().minus(speakerPose);
-                Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
-                double omega = angleController.calculate(drive.getRotation().getRadians(), targetDirection.getRadians());
-                omega = Math.copySign(omega * omega, omega);
-                // Convert to robot relative speeds and send command
-                drive.runVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                        0,
-                        0,
-                        omega * drive.getMaxAngularSpeedRadPerSec(),
-                        drive.getRotation()));
-            }
-            (interrupted) -> {
-                drive.stop();
-            },
-            () -> angleController.atSetpoint(),
-            drive
-        )
-    }
-    /** 
-     * Toggle Slow Mode
-     */
-    public static void toggleSlowMode() {
+            return new FunctionalCommand(
+                () -> {
+                    Transform2d targetTransform = drive.getPose().minus(speakerPose);
+                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+                    angleController.setSetpoint(targetDirection.getRadians());
+                },
+                () -> {
+                    // defines how far the robot's angle is from the speaker
+                    Transform2d targetTransform = drive.getPose().minus(speakerPose);
+                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+                    double omega = angleController.calculate(drive.getRotation().getRadians(), targetDirection.getRadians());
+                    omega = Math.copySign(omega * omega, omega);
+                    // Convert to robot relative speeds and send command
+                    drive.runVelocity(
+                        ChassisSpeeds.fromFieldRelativeSpeeds(
+                            0,
+                            0,
+                            omega * drive.getMaxAngularSpeedRadPerSec(),
+                            drive.getRotation()));
+                },
+                (interrupted) -> {
+                    drive.stop();
+                },
+                () -> angleController.atSetpoint(),
+                drive);
+        }
+        /** 
+         * Toggle Slow Mode
+         */
+        public static void toggleSlowMode() {
       if (slowMode == 1) {
         slowMode = kSlowModeConstant;
       } else {
