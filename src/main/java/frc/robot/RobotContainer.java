@@ -41,7 +41,7 @@ import frc.robot.Constants.ShooterConstants;
 
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.groundIntake.*;
-import frc.robot.subsystems.Intake.*;
+import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.pivotArm.*;
 import frc.robot.Constants.PivotArm.PivotArmSimConstants;
