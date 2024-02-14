@@ -1,3 +1,4 @@
+package frc.robot.util;
 import static frc.robot.Constants.LookupTable;
 
 
@@ -19,11 +20,11 @@ public class Lookup {
        return map(distance, LookupTable[upperIndex-1][0], LookupTable[upperIndex][0], LookupTable[upperIndex-1][column], LookupTable[upperIndex][column]);
    }
    public static double getVelocity(double distance) {
-       getValueFromColumn(distance, 1); //1 is the index of velocity
+       return getValueFromColumn(distance, 1); //1 is the index of velocity
    }
    //returns the proper velocity based on
    public static double getAngle(double distance) {
-       getValueFromColumn(distance, 2); //1 is the index of velocity
+       return getValueFromColumn(distance, 2); //1 is the index of velocity
    }
 }
 
