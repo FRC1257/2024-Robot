@@ -7,6 +7,9 @@ package frc.robot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import static frc.robot.Constants.DriveConstants.setPoint;
+import static frc.robot.Constants.PivotArm.PIVOT_ARM_MAX_ANGLE;
+import static frc.robot.Constants.PivotArm.PIVOT_ARM_MIN_ANGLE;
 import static frc.robot.Constants.ShooterConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -45,6 +48,7 @@ import frc.robot.subsystems.Intake.*;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.pivotArm.*;
 import frc.robot.Constants.PivotArm.PivotArmSimConstants;
+import frc.robot.subsystems.pivotArm.*;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -272,7 +276,7 @@ public class RobotContainer {
     DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
     // Operator controls
-    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
+    DriveControls.PIVOT_AMP.onTrue(pivot.pivotPIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
@@ -320,7 +324,7 @@ public class RobotContainer {
   }
 
   public Command zeroPosition() {
-    return pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE)
+    return pivot.pivotPIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE)
         .alongWith(intake.stop())
         .alongWith(shooter.stop())
         .alongWith(groundIntake.stop());
@@ -338,5 +342,13 @@ public class RobotContainer {
     // move pivot arm
     // and calculate the speed required to shoot
     return new InstantCommand();
+  }
+
+  public Command manualScoreAmp() {
+    return pivot.pivotPIDCommand(PIVOT_ARM_MAX_ANGLE).andThen(shooter.runSpeed(defaultShooterSpeedRPM));
+  }
+
+  public Command autoScoreAmp() {
+    return (drive.goToPose(drive.getPose()).alongWith(pivot.pivotPIDCommand(PIVOT_ARM_MAX_ANGLE))).andThen(shooter.runSpeed(defaultShooterSpeedRPM));
   }
 }
