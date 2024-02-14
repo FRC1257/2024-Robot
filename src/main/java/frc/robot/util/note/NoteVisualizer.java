@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import java.util.Set;
 import java.util.function.Supplier;
+import frc.robot.subsystems.drive.Drive;
 import org.littletonrobotics.junction.Logger;
 
 // from here https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/example_projects/kitbot_2024/src/main/java/frc/robot/util/NoteVisualizer.java
@@ -41,6 +42,7 @@ public class NoteVisualizer {
   private static Supplier<Double> leftSpeed = () -> 10.0;
   private static Supplier<Double> rightSpeed = () -> 10.0;
   private static Supplier<Rotation2d> pivotAngle = () -> Rotation2d.fromDegrees(90.0);
+  private static  Drive drive;
 
   public static void setRobotPoseSupplier(Supplier<Pose2d> supplier, Supplier<Double> leftSpeedSupplier, Supplier<Double> rightSpeedSupplier, Supplier<Rotation2d> pivotAngleSupplier) {
     robotPoseSupplier = supplier;
@@ -87,7 +89,7 @@ public class NoteVisualizer {
     return new ScheduleCommand( // Branch off and exit immediately
         Commands.defer(
                 () -> {
-                  NoteShot shot = NoteShot.fromRobotInfo(robotPoseSupplier.get(), pivotAngle.get(), leftSpeed.get(), rightSpeed.get());
+                  NoteShot shot = NoteShot.fromRobotInfo(robotPoseSupplier.get(), pivotAngle.get(), leftSpeed.get(), rightSpeed.get(), drive);
 
                   NotePath path = new NotePath(shot);
                   path.generatePath();
