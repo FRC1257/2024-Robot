@@ -42,7 +42,6 @@ public class NoteVisualizer {
   private static Supplier<Double> leftSpeed = () -> 10.0;
   private static Supplier<Double> rightSpeed = () -> 10.0;
   private static Supplier<Rotation2d> pivotAngle = () -> Rotation2d.fromDegrees(90.0);
-  private static  Drive drive;
 
   public static void setRobotPoseSupplier(Supplier<Pose2d> supplier, Supplier<Double> leftSpeedSupplier, Supplier<Double> rightSpeedSupplier, Supplier<Rotation2d> pivotAngleSupplier) {
     robotPoseSupplier = supplier;
@@ -85,7 +84,7 @@ public class NoteVisualizer {
             .ignoringDisable(false));
   } */
 
-  public static Command shoot() {
+  public static Command shoot(Drive drive) {
     return new ScheduleCommand( // Branch off and exit immediately
         Commands.defer(
                 () -> {
