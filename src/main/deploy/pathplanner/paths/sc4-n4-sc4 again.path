@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.48,
-        "y": 4.09
+        "x": 4.816826556730038,
+        "y": 6.383911998593228
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.446567628177991,
-        "y": 2.7715146028582662
+        "x": 5.816826556730038,
+        "y": 6.383911998593228
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "sc4"
     },
     {
       "anchor": {
-        "x": 7.849266980585242,
-        "y": 0.7835083476434771
+        "x": 7.792518387887133,
+        "y": 7.400066486593781
       },
       "prevControl": {
-        "x": 7.5686057879845245,
-        "y": 0.8068788178923252
+        "x": 7.87206111972803,
+        "y": 7.459723535474455
+      },
+      "nextControl": {
+        "x": 7.753519355019709,
+        "y": 7.370817211943212
+      },
+      "isLocked": false,
+      "linkedName": "n4"
+    },
+    {
+      "anchor": {
+        "x": 4.816826556730038,
+        "y": 6.383911998593228
+      },
+      "prevControl": {
+        "x": 5.684555038030226,
+        "y": 6.539908130062926
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,36 +48,22 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot 1",
-      "waypointRelativePos": 0,
+      "name": "Zero",
+      "waypointRelativePos": 0.4,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Shoot"
-              }
-            }
-          ]
+          "commands": []
         }
       }
     },
     {
-      "name": "Intake 8",
-      "waypointRelativePos": 0.85,
+      "name": "Intake",
+      "waypointRelativePos": 1.0,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Intake"
-              }
-            }
-          ]
+          "commands": []
         }
       }
     }
@@ -78,9 +80,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4 Note Auto (Bottom)",
+  "folder": null,
   "previewStartingState": {
-    "rotation": -36.229706721775834,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true

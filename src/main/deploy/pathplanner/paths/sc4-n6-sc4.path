@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2504306243766896,
-        "y": 4.124147725730131
+        "x": 4.816826556730038,
+        "y": 6.383911998593228
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2504306243766883,
+        "x": 6.60968660968661,
+        "y": 7.0398809743488435
+      },
+      "isLocked": false,
+      "linkedName": "sc4"
+    },
+    {
+      "anchor": {
+        "x": 7.841267178971414,
         "y": 4.124147725730131
+      },
+      "prevControl": {
+        "x": 8.202110148385945,
+        "y": 3.8401287949339453
+      },
+      "nextControl": {
+        "x": 7.732325436160843,
+        "y": 4.209895599278378
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6251465329533996,
-        "y": 4.270394098982973
+        "x": 4.816826556730038,
+        "y": 6.383911998593228
       },
       "prevControl": {
-        "x": 1.8451658756049112,
-        "y": 4.679883944090929
+        "x": 6.57460414635929,
+        "y": 7.051575128791284
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,25 +48,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot First Note",
-      "waypointRelativePos": 0,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Shoot"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Ground Intake",
-      "waypointRelativePos": 0.9,
+      "name": "Zero",
+      "waypointRelativePos": 0.6,
       "command": {
         "type": "parallel",
         "data": {
@@ -59,8 +58,28 @@
       }
     },
     {
-      "name": "Intake Intake",
-      "waypointRelativePos": 0.9,
+      "name": "Intake",
+      "waypointRelativePos": 0.95,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": []
+        }
+      }
+    },
+    {
+      "name": "PrepShoot",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": []
+        }
+      }
+    },
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 2.0,
       "command": {
         "type": "parallel",
         "data": {
@@ -77,13 +96,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -25.083594006190836,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -48.468229258917106,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true
