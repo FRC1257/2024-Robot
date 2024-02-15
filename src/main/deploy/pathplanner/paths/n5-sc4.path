@@ -3,6 +3,7 @@
   "waypoints": [
     {
       "anchor": {
+<<<<<<< Updated upstream
         "x": 7.84,
         "y": 5.78
       },
@@ -26,6 +27,31 @@
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
+=======
+        "x": 8.270256540513081,
+        "y": 5.771856864378813
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.26578008902503,
+        "y": 5.770380338492137
+      },
+      "isLocked": false,
+      "linkedName": "n5"
+    },
+    {
+      "anchor": {
+        "x": 4.419102044854923,
+        "y": 5.771856864378813
+      },
+      "prevControl": {
+        "x": 5.384328108323676,
+        "y": 6.707833653196998
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "sc4"
+>>>>>>> Stashed changes
     }
   ],
   "rotationTargets": [],
@@ -57,7 +83,11 @@
   },
   "goalEndState": {
     "velocity": 0,
+<<<<<<< Updated upstream
     "rotation": 17.417970792202876,
+=======
+    "rotation": 0,
+>>>>>>> Stashed changes
     "rotateFast": false
   },
   "reversed": false,

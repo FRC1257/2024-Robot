@@ -3,52 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-<<<<<<< Updated upstream
-        "x": 8.25856238607168,
-        "y": 7.437482225394444
+        "x": 8.270256540513081,
+        "y": 5.771856864378813
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.182700177366167,
-        "y": 7.051575128791284
-=======
-        "x": 8.289756056947246,
-        "y": 7.4293157612446805
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 8.319005331597813,
-        "y": 7.419566003027824
->>>>>>> Stashed changes
+        "x": 8.28000629872994,
+        "y": 5.752357347945101
       },
       "isLocked": false,
-      "linkedName": "n4"
+      "linkedName": "n5"
     },
     {
       "anchor": {
-<<<<<<< Updated upstream
-        "x": 4.0,
-        "y": 6.0
-      },
-      "prevControl": {
-        "x": 4.995893296629898,
-        "y": 6.291455090032688
-      },
-      "nextControl": null,
-      "isLocked": false,
-      "linkedName": null
-=======
         "x": 4.419102044854923,
         "y": 5.771856864378813
       },
       "prevControl": {
-        "x": 4.428851803071779,
-        "y": 5.7426075897282445
+        "x": 5.533824400982135,
+        "y": 7.063269283233724
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "sc4"
->>>>>>> Stashed changes
     }
   ],
   "rotationTargets": [],
