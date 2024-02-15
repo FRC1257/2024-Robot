@@ -3,43 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.24,
-        "y": 6.59
+        "x": 1.3674277229789629,
+        "y": 5.5768617000416905
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.033336812516856,
-        "y": 6.464089697775596
+        "x": 2.367427722978963,
+        "y": 5.5768617000416905
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.3368788827838936,
-        "y": 5.547612425391122
+        "x": 2.430151368616278,
+        "y": 5.5768617000416905
       },
       "prevControl": {
-        "x": 3.5708730799884396,
-        "y": 5.635360249342828
+        "x": 1.430151368616278,
+        "y": 5.5768617000416905
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.2,
-      "rotationDegrees": 180.0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Intake 2",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.85,
       "command": {
         "type": "sequential",
         "data": {
@@ -63,13 +57,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -178.85423716122284,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4 Note Auto (Top)",
+  "folder": "4 Note Auto (Mid)",
   "previewStartingState": {
-    "rotation": 163.100223125829,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true
