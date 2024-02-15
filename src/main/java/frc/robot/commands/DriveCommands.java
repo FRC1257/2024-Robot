@@ -178,7 +178,7 @@ public class DriveCommands {
                     angleController.setSetpoint(targetDirection.getRadians());
                 },
                 () -> {
-                    // defines how far the robot's angle is from the speaker
+                    // defines distance from speaker
                     Transform2d targetTransform = drive.getPose().minus(speakerPose);
                     Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
                     double omega = angleController.calculate(drive.getRotation().getRadians(), targetDirection.getRadians());

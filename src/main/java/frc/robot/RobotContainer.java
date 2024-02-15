@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -60,6 +61,7 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.DriveControls;
+import frc.robot.util.Lookup;
 
 import frc.robot.subsystems.vision.*;
 //import frc.robot.commands.SpinAuto;
@@ -330,7 +332,34 @@ public class RobotContainer {
     // implement this later using swerve to turn to desired target
     // move pivot arm
     // and calculate the speed required to shoot
-    return new InstantCommand();
+    return DriveCommands.turnSpeakerAngle(drive).andThen(new FunctionalCommand(
+        () -> {
+          // defines speaker location
+          Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
+          // turns to speaker
+          ;
+          // defines distance from speaker
+          Transform2d targetTransform = drive.getPose().minus(speakerPose);
+          double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
+          double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
+          shooter.runSpeed(RPM);
+          pivot.PIDCommand(angle);
+        },
+        () -> {
+          Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
+          Transform2d targetTransform = drive.getPose().minus(speakerPose);
+          double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
+          double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
+          shooter.runSpeed(RPM);
+          pivot.PIDCommand(angle);
+        },
+        (interrupted) -> {
+          shooter.stop();
+          pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE);
+        },
+        () -> false,
+        drive, shooter, pivot
+    ));
   }
 
   public Command prepShoot() {
