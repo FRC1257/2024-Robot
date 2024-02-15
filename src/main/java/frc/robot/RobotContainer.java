@@ -303,7 +303,6 @@ public class RobotContainer {
     Translation3d translation = new Translation3d(armPose.getTranslation().getX(), armPose.getTranslation().getY(),
         0.28);
     Pose3d pose = new Pose3d(translation, rotation);
-    Logger.recordOutput("PivotPose3d", new Pose3d[] { pose });
     Logger.recordOutput("PivotPoseThing",
         new Pose3d(
             new Translation3d(0, 0, 0.28),
