@@ -342,16 +342,20 @@ public class RobotContainer {
           Transform2d targetTransform = drive.getPose().minus(speakerPose);
           double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
           double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
-          shooter.runSpeed(RPM);
           pivot.PIDCommand(angle);
+          if(pivot.atSetpoint() == true) {
+            shooter.runSpeed(RPM);
+          }
         },
         () -> {
           Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
           Transform2d targetTransform = drive.getPose().minus(speakerPose);
           double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
           double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
-          shooter.runSpeed(RPM);
           pivot.PIDCommand(angle);
+          if(pivot.atSetpoint() == true) {
+            shooter.runSpeed(RPM);
+          }
         },
         (interrupted) -> {
           shooter.stop();
