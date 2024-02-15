@@ -19,6 +19,7 @@ import static frc.robot.Constants.DriveConstants.kMaxSpeedMetersPerSecond;
 import static frc.robot.Constants.DriveConstants.kPathConstraints;
 import static frc.robot.Constants.DriveConstants.kTrackWidthX;
 import static frc.robot.Constants.DriveConstants.kTrackWidthY;
+import static frc.robot.Constants.DriveConstants.periodicTime;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -83,7 +84,6 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition()
       };
   private Pose2d lastPose = new Pose2d();
-  private double lastTime = Timer.getFPGATimestamp();
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
@@ -167,11 +167,14 @@ public class Drive extends SubsystemBase {
   }
 
   public double getVelocityX() {
-    return (getPose().getX() - lastPose.getX())/(Timer.getFPGATimestamp() - lastTime);
+    //return (getPose().getX() - lastPose.getX())/(Timer.getFPGATimestamp()/100000 - lastTime);
+
+    return (getPose().getX() - lastPose.getX())/(periodicTime);
   }
 
   public double getVelocityY() {
-    return (getPose().getY() - lastPose.getY())/(Timer.getFPGATimestamp() - lastTime);
+    //return (getPose().getY() - lastPose.getY())/(Timer.getFPGATimestamp()/100000 - lastTime);
+    return (getPose().getY() - lastPose.getY())/(periodicTime);
   }
 
   public void periodic() {
@@ -215,7 +218,6 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Xvelocity",Xvelocity);
     Logger.recordOutput("Yvelocity", Yvelocity);
     lastPose = getPose();
-    lastTime = Timer.getFPGATimestamp();
 
 
     // Update gyro angle
