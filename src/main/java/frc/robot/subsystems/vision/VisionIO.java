@@ -39,4 +39,6 @@ public interface VisionIO {
   public default Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) { return null; }
 
   public default Optional<EstimatedRobotPose> getEstimatedGlobalPose() { return null; }
+
+  public default void NoteDetect(){} //the plan is to get the center of the ring, then set a PID loop turning it to the center of the camera
 }
