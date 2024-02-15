@@ -38,5 +38,3 @@ public class Lookup {
       return getValueFromColumn(distance, 2); //1 is the index of angle
     }
   }
-}
-
