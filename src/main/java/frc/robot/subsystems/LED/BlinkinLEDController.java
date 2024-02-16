@@ -132,6 +132,13 @@ public class BlinkinLEDController {
     }
   };
 
+  // Robot state booleans
+  public static boolean isEnabled = false;
+  public static boolean isEndgame = false;
+  public static boolean noteInIntake = false;
+  public static boolean shooting = false;
+  public static boolean pivotArmDown = false;
+
   private static BlinkinLEDController m_controller = null;
   private static Spark m_blinkin;
   private static BlinkinPattern m_currentPattern;
@@ -231,5 +238,27 @@ public class BlinkinLEDController {
    */
   public void off() {
     setPattern(BlinkinPattern.BLACK);
+  }
+
+  // Runs periodically and updates LEDs based on state
+  public void periodic() {
+    if(isEndgame) {
+      setAllianceColorShot();
+    }
+    else if(shooting) {
+      setPattern(BlinkinPattern.VIOLET);
+    }
+    else if(noteInIntake) {
+      setPattern(BlinkinPattern.ORANGE);
+    }
+    else if(pivotArmDown) {
+      setPattern(BlinkinPattern.GREEN);
+    }
+    else if(isEnabled) {
+      setAllianceColorSolid();
+    }
+    else {
+      setPattern(BlinkinPattern.BLACK);
+    }
   }
 }

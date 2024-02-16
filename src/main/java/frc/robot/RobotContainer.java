@@ -7,6 +7,8 @@ package frc.robot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import static frc.robot.Constants.PivotArm.PIVOT_ARM_MAX_ANGLE;
+import static frc.robot.Constants.PivotArm.PIVOT_ARM_MIN_ANGLE;
 import static frc.robot.Constants.ShooterConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -42,6 +44,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.groundIntake.*;
 import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.pivotArm.*;
 import frc.robot.Constants.PivotArm.PivotArmSimConstants;
@@ -80,6 +83,9 @@ public class RobotContainer {
   private final PivotArm pivot;
   private final Intake intake;
   private final GroundIntake groundIntake;
+
+  // LEDs
+  private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
 
   // Mechanisms
   private Mechanism2d mech = new Mechanism2d(3, 3);
@@ -292,6 +298,7 @@ public class RobotContainer {
       SmartDashboard.putData("Sysid Quasi Turn Backward", drive.turnQuasistatic(SysIdRoutine.Direction.kReverse));
     }
 
+
   }
 
   public void setPivotPose3d() {
@@ -337,5 +344,14 @@ public class RobotContainer {
     // move pivot arm
     // and calculate the speed required to shoot
     return new InstantCommand();
+  }
+
+  public void LEDPeriodic() {
+    BlinkinLEDController.isEndgame = DriverStation.getMatchTime() <= 30;
+    BlinkinLEDController.isEnabled = DriverStation.isEnabled();
+    BlinkinLEDController.noteInIntake = intake.isIntaked();
+    BlinkinLEDController.pivotArmDown = pivot.getAngle().getRadians() < (PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
+    BlinkinLEDController.shooting = shooter.getLeftCharacterizationVelocity() > 100;
+    ledController.periodic();
   }
 }

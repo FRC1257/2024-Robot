@@ -96,6 +96,7 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
     robotContainer.setPivotPose3d();
+    robotContainer.LEDPeriodic();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -106,6 +107,7 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
+    robotContainer.LEDPeriodic();
   }
 
   /**
