@@ -13,12 +13,13 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.Constants.useVision;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.useVision;
 import static frc.robot.Constants.DriveConstants.kMaxSpeedMetersPerSecond;
 import static frc.robot.Constants.DriveConstants.kPathConstraints;
 import static frc.robot.Constants.DriveConstants.kTrackWidthX;
 import static frc.robot.Constants.DriveConstants.kTrackWidthY;
+import static frc.robot.Constants.DriveConstants.periodicTime;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -39,8 +40,8 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -48,6 +49,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -81,6 +83,7 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
+  private Pose2d lastPose = new Pose2d();
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
@@ -163,7 +166,16 @@ public class Drive extends SubsystemBase {
             }, null, this));
   }
 
-    
+  public double getVelocityX() {
+    //return (getPose().getX() - lastPose.getX())/(Timer.getFPGATimestamp()/100000 - lastTime);
+
+    return (getPose().getX() - lastPose.getX())/(periodicTime);
+  }
+
+  public double getVelocityY() {
+    //return (getPose().getY() - lastPose.getY())/(Timer.getFPGATimestamp()/100000 - lastTime);
+    return (getPose().getY() - lastPose.getY())/(periodicTime);
+  }
 
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
@@ -200,6 +212,13 @@ public class Drive extends SubsystemBase {
     for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
       modulePositions[moduleIndex] = modules[moduleIndex].getPosition();
     }
+
+    double Xvelocity = getVelocityX();
+    double Yvelocity = getVelocityY();
+    Logger.recordOutput("Xvelocity",Xvelocity);
+    Logger.recordOutput("Yvelocity", Yvelocity);
+    lastPose = getPose();
+
 
     // Update gyro angle
     if (gyroInputs.connected) {

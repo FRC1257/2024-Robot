@@ -276,7 +276,7 @@ public class RobotContainer {
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
-    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(NoteVisualizer.shoot());
+    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(NoteVisualizer.shoot(drive));
 
     DriveControls.SHOOTER_PREP.whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
