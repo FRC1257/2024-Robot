@@ -325,6 +325,7 @@ public final class Constants {
     public static final String kRaspberryCameraName = "Front_Camera";
     public static final String kOrangeCameraName = "Orange_tag";
     public static final String kNoteCameraName = "Note_Camera";
+    public static final String kRaspberryCameraName1 = "Camera";
     // Cam mounted facing forward, half a meter forward of center, half a meter up
     // from center.
     public static final Transform3d kRaspberryRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),

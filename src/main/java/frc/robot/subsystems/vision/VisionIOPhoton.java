@@ -25,6 +25,9 @@ public class VisionIOPhoton implements VisionIO {
     private final PhotonCamera raspberryCamera;
     private final PhotonPoseEstimator raspberryEstimator;
 
+    private final PhotonCamera raspberryCamera2;
+    private final PhotonPoseEstimator raspberryEstimator2;
+
     private final PhotonCamera orangeCamera;
     private final PhotonPoseEstimator orangeEstimator;
 
@@ -45,6 +48,10 @@ public class VisionIOPhoton implements VisionIO {
         orangeEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         noteCamera = new PhotonCamera(kNoteCameraName);
+
+        raspberryCamera2 = new PhotonCamera(kRaspberryCameraName1);
+        raspberryEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam);
+        raspberryEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     @Override
