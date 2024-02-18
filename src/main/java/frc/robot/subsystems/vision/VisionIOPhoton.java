@@ -13,8 +13,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import frc.robot.Robot;
-
 import static frc.robot.Constants.Vision.*;
 
 import java.util.List;
@@ -37,6 +35,7 @@ public class VisionIOPhoton implements VisionIO {
 
     private PhotonPipelineResult latestRaspberryResult;
     private PhotonPipelineResult latestOrangeResult;
+    private PhotonPipelineResult latestRaspberry2Result;
     
     public VisionIOPhoton() {
         raspberryCamera = new PhotonCamera(kRaspberryCameraName);
@@ -49,8 +48,8 @@ public class VisionIOPhoton implements VisionIO {
 
         noteCamera = new PhotonCamera(kNoteCameraName);
 
-        raspberryCamera2 = new PhotonCamera(kRaspberryCameraName1);
-        raspberryEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam);
+        raspberryCamera2 = new PhotonCamera(kRaspberryCameraName2);
+        raspberryEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam2);
         raspberryEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
@@ -58,12 +57,12 @@ public class VisionIOPhoton implements VisionIO {
     public void updateInputs(VisionIOInputs inputs, Pose2d currentEstimate) {
         raspberryEstimator.setReferencePose(currentEstimate);
         orangeEstimator.setReferencePose(currentEstimate);
-        
-        raspberryEstimator.setReferencePose(currentEstimate);
-        orangeEstimator.setReferencePose(currentEstimate);
+        raspberryEstimator2.setReferencePose(currentEstimate);
         
         latestRaspberryResult = getLatestResult(raspberryCamera);
         latestOrangeResult = getLatestResult(orangeCamera);
+        latestRaspberry2Result = getLatestResult(raspberryCamera2);
+        
         inputs.estimate = currentEstimate;
 
         // add code to check if the closest target is in front or back

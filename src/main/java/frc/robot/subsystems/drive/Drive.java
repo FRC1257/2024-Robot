@@ -168,7 +168,6 @@ public class Drive extends SubsystemBase {
 
   public double getVelocityX() {
     //return (getPose().getX() - lastPose.getX())/(Timer.getFPGATimestamp()/100000 - lastTime);
-
     return (getPose().getX() - lastPose.getX())/(periodicTime);
   }
 

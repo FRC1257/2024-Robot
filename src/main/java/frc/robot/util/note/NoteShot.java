@@ -78,8 +78,8 @@ public class NoteShot {
         double dx = shotStraightSpeed * Math.cos(shotPosition.getRotation().getZ() + Math.PI) * Math.cos(shotPosition.getRotation().getY())
              + shotTangentSpeed * Math.cos(shotPosition.getRotation().getZ()) + drive.getVelocityX();
         double dy = -shotStraightSpeed * Math.sin(shotPosition.getRotation().getZ()) * Math.cos(shotPosition.getRotation().getY())
-            + shotTangentSpeed * Math.sin(shotPosition.getRotation().getZ() + Math.PI / 2) ;
-        double dz = shotStraightSpeed * Math.sin(shotPosition.getRotation().getY()) + drive.getVelocityY();
+            + shotTangentSpeed * Math.sin(shotPosition.getRotation().getZ() + Math.PI / 2) + drive.getVelocityY();
+        double dz = shotStraightSpeed * Math.sin(shotPosition.getRotation().getY());
         
         return new PathPoint(
             shotPosition, 

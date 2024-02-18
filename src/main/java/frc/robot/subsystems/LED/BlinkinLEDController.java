@@ -2,6 +2,8 @@ package frc.robot.subsystems.LED;
 
 import java.util.HashMap;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -181,41 +183,50 @@ public class BlinkinLEDController {
   public void setPattern(BlinkinPattern pattern) {
     m_currentPattern = pattern;
     m_blinkin.set(m_currentPattern.value);
+    Logger.recordOutput("LEDPattern", m_currentPattern.toString());
+  }
+
+  private Alliance getAlliance() {
+    var alliance = DriverStation.getAlliance();
+    if (!alliance.isPresent()) {
+      return Alliance.Blue;
+    }
+    return alliance.get();
   }
 
   /**
    * Set LEDs alliance color solid pattern
    */
   public void setAllianceColorSolid() {
-    setPattern(m_allianceColors.get(DriverStation.getAlliance())[0]);
+    setPattern(m_allianceColors.get(getAlliance())[0]);
   }
 
   /**
    * Set LEDs to alliance color breath pattern
    */
   public void setAllianceColorBreath() {
-    setPattern(m_allianceColors.get(DriverStation.getAlliance())[1]);
+    setPattern(m_allianceColors.get(getAlliance())[1]);
   }
 
   /**
    * Set LEDs to alliance color chase pattern
    */
   public void setAllianceColorChase() {
-    setPattern(m_allianceColors.get(DriverStation.getAlliance())[2]);
+    setPattern(m_allianceColors.get(getAlliance())[2]);
   }
 
   /**
    * Set LEDs to alliance color shot pattern
    */
   public void setAllianceColorShot() {
-    setPattern(m_allianceColors.get(DriverStation.getAlliance())[3]);
+    setPattern(m_allianceColors.get(getAlliance())[3]);
   }
 
   /**
    * Set LEDs to alliance color strobe pattern
    */
   public void setAllianceColorStrobe() {
-    setPattern(m_allianceColors.get(DriverStation.getAlliance())[4]);
+    setPattern(m_allianceColors.get(getAlliance())[4]);
   }
 
   /**
