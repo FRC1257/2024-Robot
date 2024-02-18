@@ -70,14 +70,14 @@ public class DriveControls {
                 break;
             case PROGRAMMERS:
             default:
-                DRIVE_FORWARD = driver::getLeftY;
-                DRIVE_STRAFE = driver::getLeftX;
+                DRIVE_FORWARD = () -> -driver.getLeftY();
+                DRIVE_STRAFE = () -> -driver.getLeftX();
                 DRIVE_ROTATE = driver::getRightX;
                 DRIVE_SLOW = driver.x();
-                DRIVE_SPEAKER_AIM = driver.leftBumper();
+                DRIVE_SPEAKER_AIM = driver.b();
                 DRIVE_STOP = driver.rightBumper();
 
-                DRIVE_AMP = driver.b();
+                DRIVE_AMP = driver.leftBumper();
                 DRIVE_SOURCE = driver.a();
                 TURN_90 = driver.y();
                 TURN_180 = driver.start();

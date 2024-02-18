@@ -7,6 +7,8 @@ package frc.robot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import static frc.robot.Constants.PivotArm.PIVOT_ARM_MAX_ANGLE;
+import static frc.robot.Constants.PivotArm.PIVOT_ARM_MIN_ANGLE;
 import static frc.robot.Constants.ShooterConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -42,7 +44,8 @@ import frc.robot.Constants.ShooterConstants;
 
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.groundIntake.*;
-import frc.robot.subsystems.Intake.*;
+import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.pivotArm.*;
 import frc.robot.Constants.PivotArm.PivotArmSimConstants;
@@ -82,6 +85,9 @@ public class RobotContainer {
   private final PivotArm pivot;
   private final Intake intake;
   private final GroundIntake groundIntake;
+
+  // LEDs
+  private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
 
   // Mechanisms
   private Mechanism2d mech = new Mechanism2d(3, 3);
@@ -278,7 +284,7 @@ public class RobotContainer {
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
-    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(NoteVisualizer.shoot());
+    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(NoteVisualizer.shoot(drive));
 
     DriveControls.SHOOTER_PREP.whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
@@ -294,6 +300,7 @@ public class RobotContainer {
       SmartDashboard.putData("Sysid Quasi Turn Backward", drive.turnQuasistatic(SysIdRoutine.Direction.kReverse));
     }
 
+
   }
 
   public void setPivotPose3d() {
@@ -305,7 +312,6 @@ public class RobotContainer {
     Translation3d translation = new Translation3d(armPose.getTranslation().getX(), armPose.getTranslation().getY(),
         0.28);
     Pose3d pose = new Pose3d(translation, rotation);
-    Logger.recordOutput("PivotPose3d", new Pose3d[] { pose });
     Logger.recordOutput("PivotPoseThing",
         new Pose3d(
             new Translation3d(0, 0, 0.28),
@@ -371,5 +377,14 @@ public class RobotContainer {
     // move pivot arm
     // and calculate the speed required to shoot
     return new InstantCommand();
+  }
+
+  public void LEDPeriodic() {
+    BlinkinLEDController.isEndgame = DriverStation.getMatchTime() <= 30;
+    BlinkinLEDController.isEnabled = DriverStation.isEnabled();
+    BlinkinLEDController.noteInIntake = intake.isIntaked();
+    BlinkinLEDController.pivotArmDown = pivot.getAngle().getRadians() < (PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
+    BlinkinLEDController.shooting = shooter.getLeftCharacterizationVelocity() > 100;
+    ledController.periodic();
   }
 }
