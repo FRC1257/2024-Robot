@@ -319,9 +319,7 @@ public final class Constants {
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
-
-
-
+  
   public static class Vision {
     public static final String kRaspberryCameraName = "Front_Camera";
     public static final String kOrangeCameraName = "Orange_tag";
@@ -337,11 +335,15 @@ public final class Constants {
     public static final Transform3d kRaspberryRobotToCam2 = new Transform3d(new Translation3d(-0.5, 0.45, 0.23),
         new Rotation3d(0, 0, Rotation2d.fromDegrees(155).getRadians()));
 
+    // Note Camera Angle (used in sim)
+    public static final Transform3d kNoteRobotToCam = new Transform3d(new Translation3d(0.5, 0.45, 0.23),
+        new Rotation3d(0, 0, 0));
+
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
-    public static final double AMBIGUITY_THRESHOLD = 0.6;
-    public static final double MAX_DISTANCE = 6; // meters
+    public static final double AMBIGUITY_THRESHOLD = 0.5;
+    public static final double MAX_DISTANCE = 4; // meters
 
     // The standard deviations of our vision estimated poses, which affect
     // correction rate

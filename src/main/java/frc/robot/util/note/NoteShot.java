@@ -9,12 +9,16 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.subsystems.drive.Drive;
 
 import static frc.robot.Constants.PivotArm.PivotArmSimConstants.kArmLength;
 
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * Represents a note shot with its position and speed parameters.
+ */
 public class NoteShot {
     private Pose3d shotPosition;
     private double shotStraightSpeed;
@@ -65,7 +69,7 @@ public class NoteShot {
 
         extendedPose = extendedPose.plus(new Transform3d(new Translation3d(-kArmLength, 0, 0), noteRotation));
 
-        Logger.recordOutput("ExtendedPOse", extendedPose);
+        Logger.recordOutput("ExtendedPose", extendedPose);
 
         double straightSpeed = (shotLeftSpeed + shotRightSpeed) / 2;
         double tangentSpeed = (shotLeftSpeed - shotRightSpeed) / 2;
@@ -74,11 +78,13 @@ public class NoteShot {
     }
 
     public PathPoint getFirstPoint() {
-        // fix this code
+        ChassisSpeeds chassisSpeeds = drive.getFieldVelocity();
+        
+        // Make sure this code is correct
         double dx = shotStraightSpeed * Math.cos(shotPosition.getRotation().getZ() + Math.PI) * Math.cos(shotPosition.getRotation().getY())
-             + shotTangentSpeed * Math.cos(shotPosition.getRotation().getZ()) + drive.getVelocityX();
+             + shotTangentSpeed * Math.cos(shotPosition.getRotation().getZ()) + chassisSpeeds.vxMetersPerSecond;
         double dy = -shotStraightSpeed * Math.sin(shotPosition.getRotation().getZ()) * Math.cos(shotPosition.getRotation().getY())
-            + shotTangentSpeed * Math.sin(shotPosition.getRotation().getZ() + Math.PI / 2) + drive.getVelocityY();
+            + shotTangentSpeed * Math.sin(shotPosition.getRotation().getZ() + Math.PI / 2) + chassisSpeeds.vyMetersPerSecond;
         double dz = shotStraightSpeed * Math.sin(shotPosition.getRotation().getY());
         
         return new PathPoint(
