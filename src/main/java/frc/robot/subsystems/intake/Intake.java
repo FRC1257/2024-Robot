@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Intake.IntakeIOInputsAutoLogged;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -66,7 +67,7 @@ public class Intake extends SubsystemBase {
             (stop) -> setVoltage(0.0),
             this::isIntaked,
             this
-        );
+        ).withTimeout(5);
     }
 
     /**
@@ -79,7 +80,7 @@ public class Intake extends SubsystemBase {
             (stop) -> setVoltage(0.0),
             this::isIntaked,
             this
-        );
+        ).withTimeout(2);
     }
 
     public Command IntakeSpeedCommand(DoubleSupplier speed) {

@@ -46,6 +46,7 @@ public class PivotArmIOSim implements PivotArmIO {
         m_controller = new ProfiledPIDController(kPivotSimPID[0], kPivotSimPID[1], kPivotSimPID[2],
                 new TrapezoidProfile.Constraints(2.45, 2.45));
         
+        m_controller.setTolerance(0.1, 0.05);
     }
 
     @Override

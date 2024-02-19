@@ -65,7 +65,7 @@ import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.DriveControls;
 import frc.robot.util.Lookup;
-
+import frc.robot.util.LookupTuner;
 import frc.robot.subsystems.vision.*;
 //import frc.robot.commands.SpinAuto;
 import frc.robot.util.CommandSnailController;
@@ -227,6 +227,8 @@ public class RobotContainer {
     // Configure the button bindings
     System.out.println("[Init] Creating Button Bindings");
     configureButtonBindings();
+
+    LookupTuner.setupTuner();
   }
 
   /**
@@ -283,8 +285,8 @@ public class RobotContainer {
     DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
 
-    NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
-    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(NoteVisualizer.shoot(drive));
+    NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond, shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
+    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
 
     DriveControls.SHOOTER_PREP.whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
@@ -338,38 +340,40 @@ public class RobotContainer {
     // implement this later using swerve to turn to desired target
     // move pivot arm
     // and calculate the speed required to shoot
-    return DriveCommands.turnSpeakerAngle(drive).andThen(new FunctionalCommand(
+    return DriveCommands.turnSpeakerAngle(drive).alongWith(new FunctionalCommand(
+        () -> {},
         () -> {
-          // defines speaker location
-          Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
-          // turns to speaker
-          ;
-          // defines distance from speaker
-          Transform2d targetTransform = drive.getPose().minus(speakerPose);
-          double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
-          double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
-          pivot.PIDCommand(angle);
-          if(pivot.atSetpoint() == true) {
-            shooter.runSpeed(RPM);
-          }
-        },
-        () -> {
-          Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
-          Transform2d targetTransform = drive.getPose().minus(speakerPose);
-          double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
-          double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
-          pivot.PIDCommand(angle);
-          if(pivot.atSetpoint() == true) {
-            shooter.runSpeed(RPM);
-          }
+          pivot.setPID(getAngle());
+          pivot.runPID();
+          shooter.setRPM(getRPM(), getRPM());
         },
         (interrupted) -> {
+          if (!interrupted) return;
+
           shooter.stop();
-          pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE);
+          pivot.stop();
         },
-        () -> false,
-        drive, shooter, pivot
-    ));
+        () -> {
+          return pivot.atSetpoint() && shooter.atSetpoint();
+        },
+        shooter, pivot
+    )).andThen(
+      intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)))
+    );
+  }
+
+  private double getRPM() {
+    Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
+    Transform2d targetTransform = drive.getPose().minus(speakerPose);
+    double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
+    return RPM;
+  }
+
+  private double getAngle() {
+    Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
+    Transform2d targetTransform = drive.getPose().minus(speakerPose);
+    double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
+    return angle;
   }
 
   public Command prepShoot() {

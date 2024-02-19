@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
@@ -87,6 +88,7 @@ public class PivotArm extends SubsystemBase {
 
     public void setPID(double setpoint) {
         this.setpoint = setpoint;
+        Logger.recordOutput("PivotArm/Setpoint", setpoint);
     }
 
     public boolean atSetpoint() {
@@ -117,12 +119,32 @@ public class PivotArm extends SubsystemBase {
         );
     }
 
+    public Command PIDCommand(DoubleSupplier setpointSupplier) {
+        return new FunctionalCommand(
+            () -> setPID(setpointSupplier.getAsDouble()), 
+            () -> {
+                setPID(setpointSupplier.getAsDouble());
+                runPID();
+            }, 
+            (stop) -> move(0), 
+            this::atSetpoint, 
+            this
+        );
+    }
+
     public Command ManualCommand(DoubleSupplier speedSupplier) {
         return new FunctionalCommand(
             () -> move(speedSupplier.getAsDouble()), 
             () -> move(speedSupplier.getAsDouble()), 
             (stop) -> move(0), 
             () -> false, 
+            this
+        );
+    }
+
+    public Command stop() {
+        return new InstantCommand(
+            () -> move(0), 
             this
         );
     }
