@@ -224,12 +224,12 @@ public class RobotContainer {
     autoChooser.addOption("Bottom 4 Note Auto",
         drive.getAuto("4 Note Auto (Bottom)"));
 
-    autoChooser.addOption("4 Note Auto (Top)"
+    autoChooser.addOption("4 Note Auto (Top)",
         drive.getAuto("4 Note Auto (Top)"));
 
     autoChooser.addOption("6 note auto, n2-n1-n4-n5-n6",
         drive.getAuto("6 note auto"));
-        
+
     autoChooser.addOption("s1-n1-n4-s4-n2-n3",
         drive.getAuto("s1-n1-n4-s4-n2-n3"));
 
