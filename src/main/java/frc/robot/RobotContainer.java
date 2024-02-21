@@ -215,6 +215,33 @@ public class RobotContainer {
     autoChooser.addOption("Drive Try Trajectory",
         drive.getAuto("thinger"));
 
+    autoChooser.addOption("N4 and N5",
+        drive.getAuto("1,2,3, takeoff!!!"));
+
+    autoChooser.addOption("N2 then N1 then shoot at SC4",
+        drive.getAuto("2 Note auto"));
+
+    autoChooser.addOption("Bottom 4 Note Auto",
+        drive.getAuto("4 Note Auto (Bottom)"));
+
+    autoChooser.addOption("4 Note Auto (Top)"
+        drive.getAuto("4 Note Auto (Top)"));
+
+    autoChooser.addOption("6 note auto, n2-n1-n4-n5-n6",
+        drive.getAuto("6 note auto"));
+        
+    autoChooser.addOption("s1-n1-n4-s4-n2-n3",
+        drive.getAuto("s1-n1-n4-s4-n2-n3"));
+
+    autoChooser.addOption("s2-n2-n4-n5",
+        drive.getAuto("s2-n2-4-5"));
+
+    autoChooser.addOption("s3-n8-n6",
+        drive.getAuto("s3-n8-6"));
+  
+    
+
+
     // autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings
     System.out.println("[Init] Creating Button Bindings");
