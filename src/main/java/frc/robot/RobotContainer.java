@@ -363,7 +363,7 @@ public class RobotContainer {
       intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)))
     );
   }
-
+// May be a total redundancy
   public Command ShootWhileMovingSpeed() {
     // May need to revise the distance logic here; the getRPM and getAngle functions within this file are likely unapplicable
     return DriveCommands.turnSpeakerAngle(drive).alongWith(new FunctionalCommand(
@@ -372,7 +372,7 @@ public class RobotContainer {
           pivot.setPID(getAngle());
           pivot.runPID();
           if(pivot.atSetpoint()) {
-            shooter.setRPM(getRPM() - Math.abs(getRPM()-drive.getFieldVelocity().omegaRadiansPerSecond*Math.PI*2/60), getRPM() - Math.abs(getRPM()-drive.getFieldVelocity().omegaRadiansPerSecond*Math.PI*2/60));
+            shooter.setRPM(getRPM(), getRPM());
           }
         },
         (interrupted) -> {
@@ -392,14 +392,14 @@ public class RobotContainer {
 
   private double getRPM() {
     Pose2d speakerPose = FieldConstants.SpeakerPosition;
-    Transform2d targetTransform = drive.getPose().minus(speakerPose);
+    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(drive.getFieldVelocity().times(0.02));
     double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
     return RPM;
   }
 
   private double getAngle() {
     Pose2d speakerPose = FieldConstants.SpeakerPosition;
-    Transform2d targetTransform = drive.getPose().minus(speakerPose);
+    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(drive.getFieldVelocity().times(0.02));
     double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
     return angle;
   }
