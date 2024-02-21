@@ -341,7 +341,9 @@ public class RobotContainer {
         () -> {
           pivot.setPID(getAngle());
           pivot.runPID();
-          shooter.setRPM(getRPM(), getRPM());
+          if(pivot.atSetpoint == true) {
+            shooter.setRPM(getRPM(), getRPM());
+          }
         },
         (interrupted) -> {
           if (!interrupted) return;
@@ -359,12 +361,15 @@ public class RobotContainer {
   }
 
   public Command ShootWhileMovingSpeed() {
+    // May need to revise the distance logic here; the getRPM and getAngle functions within this file are likely unapplicable
     return DriveCommands.turnSpeakerAngle(drive).alongWith(new FunctionalCommand(
         () -> {},
         () -> {
           pivot.setPID(getAngle());
           pivot.runPID();
-          shooter.setRPM(getRPM() - Math.abs(getRPM()-drive.getFieldVelocity().omegaRadiansPerSecond*Math.PI*2/60), getRPM() - Math.abs(getRPM()-drive.getFieldVelocity().omegaRadiansPerSecond*Math.PI*2/60));
+          if(pivot.atSetpoint == true) {
+            shooter.setRPM(getRPM() - Math.abs(getRPM()-drive.getFieldVelocity().omegaRadiansPerSecond*Math.PI*2/60), getRPM() - Math.abs(getRPM()-drive.getFieldVelocity().omegaRadiansPerSecond*Math.PI*2/60));
+          }
         },
         (interrupted) -> {
           if (!interrupted) return;
