@@ -331,6 +331,10 @@ public class RobotContainer {
         .alongWith(groundIntake.stop());
   }
 
+   public double CalculateAddedDistance() {
+    return Math.sqrt(Math.pow(drive.getFieldVelocity().vxMetersPerSecond,2)+ Math.pow(drive.getFieldVelocity().vyMetersPerSecond,2));
+  }
+  
   public Command shootAnywhere() {
     // implement this later using swerve to turn to desired target
     // move pivot arm
@@ -341,7 +345,7 @@ public class RobotContainer {
         () -> {
           pivot.setPID(getAngle());
           pivot.runPID();
-          if(pivot.atSetpoint == true) {
+          if(pivot.atSetpoint()) {
             shooter.setRPM(getRPM(), getRPM());
           }
         },
@@ -367,7 +371,7 @@ public class RobotContainer {
         () -> {
           pivot.setPID(getAngle());
           pivot.runPID();
-          if(pivot.atSetpoint == true) {
+          if(pivot.atSetpoint()) {
             shooter.setRPM(getRPM() - Math.abs(getRPM()-drive.getFieldVelocity().omegaRadiansPerSecond*Math.PI*2/60), getRPM() - Math.abs(getRPM()-drive.getFieldVelocity().omegaRadiansPerSecond*Math.PI*2/60));
           }
         },
