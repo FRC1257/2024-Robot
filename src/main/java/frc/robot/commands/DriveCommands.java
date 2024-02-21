@@ -170,7 +170,7 @@ public class DriveCommands {
     }
     // turns robot to speaker from current location
     public static Command turnSpeakerAngle(Drive drive) {
-        Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
+        Pose2d speakerPose = FieldConstants.SpeakerPosition;
         angleController.setTolerance(0.08, 0.01);
             return new FunctionalCommand(
                 () -> {
