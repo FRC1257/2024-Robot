@@ -4,19 +4,23 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.PivotArm.PIVOT_ARM_MIN_ANGLE;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import static frc.robot.Constants.PivotArm.PIVOT_ARM_MAX_ANGLE;
-import static frc.robot.Constants.PivotArm.PIVOT_ARM_MIN_ANGLE;
-import static frc.robot.Constants.ShooterConstants.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -27,48 +31,39 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-
 import frc.robot.Constants.ShooterConstants;
-
-import frc.robot.subsystems.shooter.*;
-import frc.robot.subsystems.groundIntake.*;
-import frc.robot.subsystems.intake.*;
-import frc.robot.subsystems.LED.BlinkinLEDController;
-import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.pivotArm.*;
-import frc.robot.Constants.PivotArm.PivotArmSimConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.TurnAngleCommand;
+import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.groundIntake.GroundIntake;
+import frc.robot.subsystems.groundIntake.GroundIntakeIO;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmIO;
+import frc.robot.subsystems.pivotArm.PivotArmIOSim;
+import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.DriveControls;
 import frc.robot.util.Lookup;
 import frc.robot.util.LookupTuner;
-import frc.robot.subsystems.vision.*;
-//import frc.robot.commands.SpinAuto;
-import frc.robot.util.CommandSnailController;
 import frc.robot.util.note.NoteVisualizer;
 
 /**
@@ -362,15 +357,38 @@ public class RobotContainer {
     );
   }
 
+  public Command ShootWhileMovingSpeed() {
+    return DriveCommands.turnSpeakerAngle(drive).alongWith(new FunctionalCommand(
+        () -> {},
+        () -> {
+          pivot.setPID(getAngle());
+          pivot.runPID();
+          shooter.setRPM(getRPM() - Math.abs(getRPM()-drive.getFieldVelocity().omegaRadiansPerSecond*Math.PI*2/60), getRPM() - Math.abs(getRPM()-drive.getFieldVelocity().omegaRadiansPerSecond*Math.PI*2/60));
+        },
+        (interrupted) -> {
+          if (!interrupted) return;
+
+          shooter.stop();
+          pivot.stop();
+        },
+        () -> {
+          return pivot.atSetpoint() && shooter.atSetpoint();
+        },
+        shooter, pivot
+    )).andThen(
+      intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)))
+    );
+  }
+
   private double getRPM() {
-    Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
+    Pose2d speakerPose = FieldConstants.SpeakerPosition;
     Transform2d targetTransform = drive.getPose().minus(speakerPose);
     double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
     return RPM;
   }
 
   private double getAngle() {
-    Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
+    Pose2d speakerPose = FieldConstants.SpeakerPosition;
     Transform2d targetTransform = drive.getPose().minus(speakerPose);
     double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
     return angle;
