@@ -331,9 +331,6 @@ public class RobotContainer {
         .alongWith(groundIntake.stop());
   }
 
-   public double CalculateAddedDistance() {
-    return Math.sqrt(Math.pow(drive.getFieldVelocity().vxMetersPerSecond,2)+ Math.pow(drive.getFieldVelocity().vyMetersPerSecond,2));
-  }
   
   public Command shootAnywhere() {
     // implement this later using swerve to turn to desired target
@@ -363,43 +360,21 @@ public class RobotContainer {
       intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)))
     );
   }
-// May be a total redundancy
-  public Command ShootWhileMovingSpeed() {
-    // May need to revise the distance logic here; the getRPM and getAngle functions within this file are likely unapplicable
-    return DriveCommands.turnSpeakerAngle(drive).alongWith(new FunctionalCommand(
-        () -> {},
-        () -> {
-          pivot.setPID(getAngle());
-          pivot.runPID();
-          if(pivot.atSetpoint()) {
-            shooter.setRPM(getRPM(), getRPM());
-          }
-        },
-        (interrupted) -> {
-          if (!interrupted) return;
 
-          shooter.stop();
-          pivot.stop();
-        },
-        () -> {
-          return pivot.atSetpoint() && shooter.atSetpoint();
-        },
-        shooter, pivot
-    )).andThen(
-      intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)))
-    );
+  private Transform2d getEstimatedDistance() {
+    return new Transform2d(new Translation2d(drive.getFieldVelocity().vxMetersPerSecond * 0.02, drive.getFieldVelocity().vyMetersPerSecond * 0.02), new Rotation2d(0.0));
   }
 
   private double getRPM() {
     Pose2d speakerPose = FieldConstants.SpeakerPosition;
-    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(drive.getFieldVelocity().times(0.02));
+    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(getEstimatedDistance());
     double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
     return RPM;
   }
 
   private double getAngle() {
     Pose2d speakerPose = FieldConstants.SpeakerPosition;
-    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(drive.getFieldVelocity().times(0.02));
+    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(getEstimatedDistance());
     double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
     return angle;
   }
