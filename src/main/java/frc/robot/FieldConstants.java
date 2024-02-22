@@ -98,15 +98,14 @@ public class FieldConstants {
   }
 
   public static Pose2d[] NOTE_POSITIONS = new Pose2d[] {
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
+    new Pose2d(2.90,6.68,Rotation2d.fromDegrees(0)),
+    new Pose2d(2.90,5.55,Rotation2d.fromDegrees(0)),
+    new Pose2d(2.90,4.09,Rotation2d.fromDegrees(0)),
+    new Pose2d(8.29,7.44,Rotation2d.fromDegrees(0)),
+    new Pose2d(8.29,5.78,Rotation2d.fromDegrees(0)),
+    new Pose2d(8.29,4.12,Rotation2d.fromDegrees(0)),
+    new Pose2d(8.29,2.45,Rotation2d.fromDegrees(0)),
+    new Pose2d(8.29,0.77,Rotation2d.fromDegrees(0)),
   };
 
   public static Pose2d[] START_POSITIONS = new Pose2d[] {
