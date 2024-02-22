@@ -359,23 +359,26 @@ public class RobotContainer {
       intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)))
     );
   }
-  // Estimates future position of robot based on current velocity
-  private Transform2d getEstimatedDistance() {
+  // Returns the estimated transformation over the next tick (The change in position)
+  private Transform2d getEstimatedTransform() {
     return new Transform2d(new Translation2d(drive.getFieldVelocity().vxMetersPerSecond * 0.02, drive.getFieldVelocity().vyMetersPerSecond * 0.02), new Rotation2d(0.0));
   }
-  // Gets RPM based on distance from speaker, taking into account the actual shooting position
+  //Returns the estimated robot position
+  private Pose2d getEstimatedPosition() {
+    return drive.getPose().plus(getEstimatedTransform().inverse());
+  }
+  //Returns the distance between the robot's next estimated position and the speaker position
+  private double getEstimatedDistance() {
+    Transform2d targetTransform = getEstimatedPosition().minus(FieldConstants.SpeakerPosition);
+    return targetTransform.getTranslation().getNorm();
+  }
+    // Gets RPM based on distance from speaker, taking into account the actual shooting position
   private double getRPM() {
-    Pose2d speakerPose = FieldConstants.SpeakerPosition;
-    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(getEstimatedDistance().inverse());
-    double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
-    return RPM;
+    return Lookup.getRPM(getEstimatedDistance());
   }
   // Gets angle based on distance from speaker, taking into account the actual shooting position
   private double getAngle() {
-    Pose2d speakerPose = FieldConstants.SpeakerPosition;
-    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(getEstimatedDistance().inverse());
-    double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
-    return angle;
+    return Lookup.getAngle(getEstimatedDistance());
   }
 
   public Command prepShoot() {
