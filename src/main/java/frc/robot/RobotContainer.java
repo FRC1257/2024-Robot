@@ -336,7 +336,6 @@ public class RobotContainer {
     // implement this later using swerve to turn to desired target
     // move pivot arm
     // and calculate the speed required to shoot
-    // REWRITE THIS
     return DriveCommands.turnSpeakerAngle(drive).alongWith(new FunctionalCommand(
         () -> {},
         () -> {
@@ -360,21 +359,21 @@ public class RobotContainer {
       intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)))
     );
   }
-
+  // Estimates future position of robot based on current velocity
   private Transform2d getEstimatedDistance() {
     return new Transform2d(new Translation2d(drive.getFieldVelocity().vxMetersPerSecond * 0.02, drive.getFieldVelocity().vyMetersPerSecond * 0.02), new Rotation2d(0.0));
   }
-
+  // Gets RPM based on distance from speaker, taking into account the actual shooting position
   private double getRPM() {
     Pose2d speakerPose = FieldConstants.SpeakerPosition;
     Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(getEstimatedDistance());
     double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
     return RPM;
   }
-
+  // Gets angle based on distance from speaker, taking into account the actual shooting position
   private double getAngle() {
     Pose2d speakerPose = FieldConstants.SpeakerPosition;
-    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(getEstimatedDistance());
+    Transform2d targetTransform = drive.getPose().minus(speakerPose).minus(getEstimatedDistance());
     double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
     return angle;
   }
