@@ -366,14 +366,14 @@ public class RobotContainer {
   // Gets RPM based on distance from speaker, taking into account the actual shooting position
   private double getRPM() {
     Pose2d speakerPose = FieldConstants.SpeakerPosition;
-    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(getEstimatedDistance());
+    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(getEstimatedDistance().inverse());
     double RPM = Lookup.getRPM(targetTransform.getTranslation().getNorm());
     return RPM;
   }
   // Gets angle based on distance from speaker, taking into account the actual shooting position
   private double getAngle() {
     Pose2d speakerPose = FieldConstants.SpeakerPosition;
-    Transform2d targetTransform = drive.getPose().minus(speakerPose).minus(getEstimatedDistance());
+    Transform2d targetTransform = drive.getPose().minus(speakerPose).plus(getEstimatedDistance().inverse());
     double angle = Lookup.getAngle(targetTransform.getTranslation().getNorm());
     return angle;
   }
