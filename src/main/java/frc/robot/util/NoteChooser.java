@@ -8,11 +8,9 @@ import static frc.robot.FieldConstants.*;
 
 public class NoteChooser {
 
-    private String name;
     private LoggedDashboardChooser<Pose2d> position;
 
     public NoteChooser(String name){
-        this.name = name;
         position = new LoggedDashboardChooser<Pose2d>(name);
     }
 
@@ -45,3 +43,8 @@ public class NoteChooser {
 
     
 }
+//     // Add commadns to the list
+//commands.add(drive.goPose(AutoChooser.NoteOneChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
+// commmands.add(intakeWhile); // use vision to detect the note 
+//commands.add(drive.goPose(AutoChooser.NoteOneShotChooser.getSelected()));
+//commands.add(shoot);

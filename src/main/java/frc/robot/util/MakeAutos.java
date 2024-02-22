@@ -35,6 +35,34 @@ public class MakeAutos {
         commands.add(drive.goPose(AutoChooser.NoteOneShotChooser.getSelected()));
         commands.add(shoot);
 
+        
+        // Add commadns to the list
+        commands.add(drive.goPose(AutoChooser.NoteOneChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
+        // commmands.add(intakeWhile); // use vision to detect the note
+        commands.add(drive.goPose(AutoChooser.NoteOneShotChooser.getSelected()));
+        commands.add(shoot);
+
+        
+        // Add commadns to the list
+        commands.add(drive.goPose(AutoChooser.NoteTwoChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
+        // commmands.add(intakeWhile); // use vision to detect the note 
+        commands.add(drive.goPose(AutoChooser.NoteTwoShotChooser.getSelected()));
+        commands.add(shoot);
+
+        
+        // Add commadns to the list
+        commands.add(drive.goPose(AutoChooser.NoteThreeChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
+        // commmands.add(intakeWhile); // use vision to detect the note 
+        commands.add(drive.goPose(AutoChooser.NoteThreeShotChooser.getSelected()));
+        commands.add(shoot);
+
+         // Add commadns to the list
+         commands.add(drive.goPose(AutoChooser.NoteFourChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
+         // commmands.add(intakeWhile); // use vision to detect the note 
+         commands.add(drive.goPose(AutoChooser.NoteFourShotChooser.getSelected()));
+         commands.add(shoot);
+ 
+
         // continue this stuff
 
         // Convert the arraylist to a command
