@@ -194,6 +194,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", intake.IntakeLoopCommand(3).deadlineWith(groundIntake.GroundIntakeManualCommand(() -> 2)));
     NamedCommands.registerCommand("PrepShoot", prepShoot());
     NamedCommands.registerCommand("Zero", zeroPosition());
+    NamedCommands.registerCommand("AmpShooter", setAmpShooterSpeed());
     DriveControls.configureControls();
 
     // Set up auto routines
@@ -331,6 +332,29 @@ public class RobotContainer {
         .alongWith(groundIntake.stop());
   }
 
+  public Command setAmpShooterSpeed() {
+    return new FunctionalCommand(
+        () -> {
+          shooter.setRPM(ShooterConstants.defaultShooterSpeedRPM, ShooterConstants.defaultShooterSpeedRPM); // placeholder speed
+        },
+        () -> {
+          shooter.setRPM(ShooterConstants.defaultShooterSpeedRPM, ShooterConstants.defaultShooterSpeedRPM); // placeholder speed
+        },
+        (interrupted) -> {
+          if (!interrupted) return;
+
+          shooter.stop();
+        },
+        () -> {
+          return shooter.atSetpoint();
+        },
+        shooter
+    );
+  }
+
+  public Command shootAmp() {
+    return drive.pathfindToTrajectory(PathPlannerPath.fromPathFile("amp score"));
+  }
   
   public Command shootAnywhere() {
     // implement this later using swerve to turn to desired target

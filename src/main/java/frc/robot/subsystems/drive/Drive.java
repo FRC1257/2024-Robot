@@ -393,6 +393,10 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.followPath(path);
   }
 
+  public Command pathfindToTrajectory(PathPlannerPath path) {
+    return AutoBuilder.pathfindToTrajectory(path, kPathConstraints);
+  }
+
   public Command goToThaPose(Pose2d endPose) {
     List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
       getPose(),
