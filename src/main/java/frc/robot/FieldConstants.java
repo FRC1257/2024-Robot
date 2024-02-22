@@ -96,4 +96,32 @@ public class FieldConstants {
       throw new RuntimeException(e);
     }
   }
+
+  public static Pose2d[] NOTE_POSITIONS = new Pose2d[] {
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+  };
+
+  public static Pose2d[] START_POSITIONS = new Pose2d[] {
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+  };
+
+  public static Pose2d[] SCORE_POSITIONS = new Pose2d[] {
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+    new Pose2d(),
+  };
 }

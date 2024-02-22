@@ -13,22 +13,27 @@ import com.pathplanner.lib.path.RotationTarget;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.drive.Drive;
 
 import static frc.robot.Constants.DriveConstants.kPathConstraints;
 
 public class MakeTrajectories {
-    public static PathPlannerPath makeTrajectory(Pose2d startPose, Pose2d endPose) {
-        // Create a list of bezier points from poses. Each pose represents one waypoint.
-        // The rotation component of the pose should be the direction of travel. Do not use holonomic rotation.
-        PathPlannerPath path = PathPlannerPath.fromPathPoints(
-            List.of(
-                new PathPoint(startPose.getTranslation(), new RotationTarget(0, startPose.getRotation()), kPathConstraints),
-                new PathPoint(endPose.getTranslation(), new RotationTarget(0, endPose.getRotation()), kPathConstraints)
-            ), 
-            kPathConstraints, 
-            new GoalEndState(0, endPose.getRotation())
-        );
+    public static Command makeCustomAutoCommand(Command shoot, Drive drive) {
+        Command auto = new InstantCommand();
 
-        return path;
+        if (AutoChooser.shootOnStart.get()) {
+            auto = auto.andThen(shoot);
+        }
+
+        auto = auto.andThen(drive.goPose(AutoChooser.NoteOneChooser.getSelected()));
+        auto = auto.andThen(drive.goPose(AutoChooser.NoteOneShotChooser.getSelected()));
+        auto = auto.andThen(shoot);
+
+        // continue this stuff
+
+        return auto;
     }
 }
