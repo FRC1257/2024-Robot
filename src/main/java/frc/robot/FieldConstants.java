@@ -109,18 +109,19 @@ public class FieldConstants {
   };
 
   public static Pose2d[] START_POSITIONS = new Pose2d[] {
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
+    new Pose2d(0.73,6.74,Rotation2d.fromDegrees(0)),
+    new Pose2d(1.51,5.57,Rotation2d.fromDegrees(0)),
+    new Pose2d(0.73,4.43,Rotation2d.fromDegrees(0)),
+    new Pose2d(0.73,3.25,Rotation2d.fromDegrees(0)),
+    new Pose2d(0.73,2.27,Rotation2d.fromDegrees(0)),
   };
 
   public static Pose2d[] SCORE_POSITIONS = new Pose2d[] {
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
-    new Pose2d(),
+    new Pose2d(0.73,6.74,Rotation2d.fromDegrees(0)),
+    new Pose2d(1.51,5.57,Rotation2d.fromDegrees(0)),
+    new Pose2d(0.73,4.43,Rotation2d.fromDegrees(0)),
+    new Pose2d(4.02,5.82,Rotation2d.fromDegrees(0)),
+    new Pose2d(2.61,3.46,Rotation2d.fromDegrees(0)),
+    //some of these positions may need to change once we learn how far we can be and still shoot
   };
 }
