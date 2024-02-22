@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.pathplanner.lib.path.ConstraintsZone;
@@ -20,20 +21,25 @@ import frc.robot.subsystems.drive.Drive;
 
 import static frc.robot.Constants.DriveConstants.kPathConstraints;
 
-public class MakeTrajectories {
-    public static Command makeCustomAutoCommand(Command shoot, Drive drive) {
-        Command auto = new InstantCommand();
+public class MakeAutos {
+    public static Command makeCustomAutoCommand(Drive drive, Command shoot, Command intake, Command intakeWhile) {
+        ArrayList<Command> commands = new ArrayList<Command>();
 
         if (AutoChooser.shootOnStart.get()) {
-            auto = auto.andThen(shoot);
+            commands.add(shoot);
         }
 
-        auto = auto.andThen(drive.goPose(AutoChooser.NoteOneChooser.getSelected()));
-        auto = auto.andThen(drive.goPose(AutoChooser.NoteOneShotChooser.getSelected()));
-        auto = auto.andThen(shoot);
+        // Add commadns to the list
+        commands.add(drive.goPose(AutoChooser.NoteOneChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
+        // commmands.add(intakeWhile); // use vision to detect the note 
+        commands.add(drive.goPose(AutoChooser.NoteOneShotChooser.getSelected()));
+        commands.add(shoot);
 
         // continue this stuff
 
+        // Convert the arraylist to a command
+        SequentialCommandGroup auto = new SequentialCommandGroup();
+        auto.addCommands(commands.toArray(new Command[0]));
         return auto;
     }
 }

@@ -60,8 +60,9 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.DriveControls;
-
+import frc.robot.util.MakeAutos;
 import frc.robot.subsystems.vision.*;
+import frc.robot.util.AutoChooser;
 //import frc.robot.commands.SpinAuto;
 import frc.robot.util.CommandSnailController;
 import frc.robot.util.note.NoteVisualizer;
@@ -155,6 +156,7 @@ public class RobotContainer {
     }
 
     System.out.println("[Init] Setting up Logs");
+    AutoChooser.setupChoosers();
 
     // Set up robot state manager
 
@@ -214,6 +216,8 @@ public class RobotContainer {
 
     autoChooser.addOption("Drive Try Trajectory",
         drive.getAuto("thinger"));
+
+    autoChooser.addOption("Customizable", MakeAutos.makeCustomAutoCommand(drive, shootAnywhere(), intake.IntakeManualCommand(() -> 2), new InstantCommand()));
 
     // autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings
