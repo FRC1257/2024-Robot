@@ -394,7 +394,7 @@ public class Drive extends SubsystemBase {
   }
 
   public Command pathfindToTrajectory(PathPlannerPath path) {
-    return AutoBuilder.pathfindToTrajectory(path, kPathConstraints);
+    return AutoBuilder.pathfindThenFollowPath(path, kPathConstraints);
   }
 
   public Command goToThaPose(Pose2d endPose) {
