@@ -282,9 +282,10 @@ public class RobotContainer {
     DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
 
-    NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond, shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
+   // NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond, shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
+    NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
     DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
-
+    DriveControls.SHOOTER_SHOOT.onTrue(shootNote());
     DriveControls.SHOOTER_PREP.whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
     if (Constants.tuningMode) {
@@ -382,6 +383,29 @@ public class RobotContainer {
         shooter, pivot
     )).andThen(
       intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)))
+    );
+  }
+
+  public Command shootNote() {
+    return new FunctionalCommand(
+        () -> {},
+        () -> { 
+
+       
+            shooter.setRPM(getRPM(), getRPM());
+            //shooter.setRPM(1000, 1000);
+          },
+        (interrupted) -> {
+          if (!interrupted) return;
+
+          shooter.stop();
+        },
+        () -> {
+          return shooter.atSetpoint();
+        },
+        shooter
+    ).andThen(
+      intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(NoteVisualizer.shoot(drive)))
     );
   }
   // Returns the estimated transformation over the next tick (The change in position)
