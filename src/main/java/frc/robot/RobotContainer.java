@@ -211,7 +211,8 @@ public class RobotContainer {
     autoChooser.addOption("Drive Try Trajectory",
         drive.getAuto("thinger"));
 
-    autoChooser.addOption("Customizable", MakeAutos.makeOnTheFlyCommand(drive, shootAnywhere(), intake.IntakeManualCommand(() -> 2), intake.IntakeLoopCommand(300)));
+    // this is defined later
+    autoChooser.addOption("Custom", new InstantCommand());
 
     // autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings
@@ -314,6 +315,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
+      return MakeAutos.makeAutoCommand(drive, shootAnywhere(), intake.IntakeManualCommand(() -> 2), intake.IntakeLoopCommand(300));
+    }
     return autoChooser.get();
   }
 
