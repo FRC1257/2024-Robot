@@ -23,29 +23,43 @@ public class VisionIOPhoton implements VisionIO {
     private final PhotonPoseEstimator orangeEstimator;
 
     private final PhotonCamera noteCamera;
+    private final PhotonPoseEstimator orangeEstimator2;
+    //private final PhotonPoseEstimator noteEstimator;
 
     private Pose2d lastEstimate = new Pose2d();
     
     public VisionIOPhoton() {
+        //These directions are arbitrary for now
+
+        //Front Right
         raspberryCamera = new PhotonCamera(kRaspberryCameraName);
         raspberryEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam);
         raspberryEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
+        //Front Left
+        raspberryCamera2 = new PhotonCamera(kRaspberryCameraName2);
+        raspberryEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam2);
+        raspberryEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+        //Back Left
         orangeCamera = new PhotonCamera(kOrangeCameraName);
         orangeEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, orangeCamera, kOrangeRobotToCam);
         orangeEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
+        //Back Right
         noteCamera = new PhotonCamera(kNoteCameraName);
+        orangeEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, orangeCamera, kOrangeRobotToCam);
+        orangeEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        //used for estimating pose based off 
 
-        raspberryCamera2 = new PhotonCamera(kRaspberryCameraName2);
-        raspberryEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam2);
-        raspberryEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+       
     }
 
     @Override
     public void updateInputs(VisionIOInputs inputs, Pose2d currentEstimate) {
         lastEstimate = currentEstimate;
-
+        //whether a camera looks for apriltags or notes is set in the website interface
         raspberryEstimator.setReferencePose(currentEstimate);
         orangeEstimator.setReferencePose(currentEstimate);
         raspberryEstimator2.setReferencePose(currentEstimate);
@@ -75,6 +89,8 @@ public class VisionIOPhoton implements VisionIO {
         }
 
         // get note data
+        //all note information is gotten here
+        //just need to do something with this information
         var note_result = getLatestResult(noteCamera);
         inputs.noteTimestamp = note_result.getTimestampSeconds();
         inputs.noteConfidence = new double[note_result.getTargets().size()];
@@ -93,6 +109,8 @@ public class VisionIOPhoton implements VisionIO {
         Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
         Logger.recordOutput("Vision/Raspberry2Connected", raspberryCamera2.isConnected());
     }
+
+
 
     @Override
     public boolean goodResult(PhotonPipelineResult result) {

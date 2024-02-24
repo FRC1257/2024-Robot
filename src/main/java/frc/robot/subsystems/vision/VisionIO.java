@@ -169,7 +169,24 @@ public interface VisionIO {
     return kSingleTagStdDevs;
   }
 
-  public default void NoteDetect() {
+  public default void NoteDetect(VisionIOInputs inputs) {
+    // int total_targets = 0;
+    // for (int i = 0; i < results.length; i++) {
+    //   if (goodResult(results[i])) {
+    //     total_targets += results[i].getTargets().size();
+    //   }
+    // }
+    // Pose3d[] targets = new Pose3d[total_targets];
+    // int index = 0;
+    // for (int i = 0; i < results.length; i++) {
+    //   if (goodResult(results[i])) {
+    //     for (PhotonTrackedTarget target : results[i].getTargets()) {
+    //       targets[index] = kTagLayout.getTagPose(target.getFiducialId()).get();
+    //       index++;
+    //     }
+    //   }
+    // }
+    // return targets;
   } // the plan is to get the center of the ring, then set a PID loop turning it to
     // the center of the camera
 }

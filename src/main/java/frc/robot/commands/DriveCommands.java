@@ -179,4 +179,8 @@ public class DriveCommands {
         slowMode = 1;
       }
     }
+
+    public static void lockNote(){
+        
+    }
 }
