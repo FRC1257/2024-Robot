@@ -217,7 +217,7 @@ public class RobotContainer {
     autoChooser.addOption("Drive Try Trajectory",
         drive.getAuto("thinger"));
 
-    autoChooser.addOption("Customizable", MakeAutos.makeCustomAutoCommand(drive, shootAnywhere(), intake.IntakeManualCommand(() -> 2), new InstantCommand()));
+    autoChooser.addOption("Customizable", MakeAutos.makeCustomAutoCommand(drive, shootAnywhere(), intake.IntakeManualCommand(() -> 2), intake.IntakeLoopCommand(300)));
 
     // autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings
@@ -268,8 +268,8 @@ public class RobotContainer {
 
     DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
-    DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose));
-    DriveControls.DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose));
+    DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose()));
+    DriveControls.DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose()));
     DriveControls.DRIVE_STOP.onTrue(new InstantCommand(drive::stopWithX, drive));
 
     DriveControls.TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
@@ -334,7 +334,7 @@ public class RobotContainer {
     // implement this later using swerve to turn to desired target
     // move pivot arm
     // and calculate the speed required to shoot
-    return new InstantCommand();
+    return shooter.runSpeed(2).withTimeout(2);
   }
 
   public Command prepShoot() {

@@ -19,8 +19,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.drive.Drive;
 
-import static frc.robot.Constants.DriveConstants.kPathConstraints;
-
 public class MakeAutos {
     public static Command makeCustomAutoCommand(Drive drive, Command shoot, Command intake, Command intakeWhile) {
         ArrayList<Command> commands = new ArrayList<Command>();
@@ -30,44 +28,42 @@ public class MakeAutos {
         }
 
         // Add commadns to the list
-        commands.add(drive.goPose(AutoChooser.NoteOneChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
-        // commmands.add(intakeWhile); // use vision to detect the note 
-        commands.add(drive.goPose(AutoChooser.NoteOneShotChooser.getSelected()));
-        commands.add(shoot);
-
-        
-        // Add commadns to the list
-        commands.add(drive.goPose(AutoChooser.NoteOneChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
+        commands.add(drive.goToPose(AutoChooser.NoteOneChooser.getSelected()).alongWith(intake)); // add intake stuff
+                                                                                                  // here too
         // commmands.add(intakeWhile); // use vision to detect the note
-        commands.add(drive.goPose(AutoChooser.NoteOneShotChooser.getSelected()));
+        commands.add(drive.goToPose(AutoChooser.NoteOneShotChooser.getSelected()));
         commands.add(shoot);
 
-        
         // Add commadns to the list
-        commands.add(drive.goPose(AutoChooser.NoteTwoChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
-        // commmands.add(intakeWhile); // use vision to detect the note 
-        commands.add(drive.goPose(AutoChooser.NoteTwoShotChooser.getSelected()));
+        commands.add(drive.goToPose(AutoChooser.NoteOneChooser.getSelected()).alongWith(intake)); // add intake stuff
+                                                                                                  // here too
+        // commmands.add(intakeWhile); // use vision to detect the note
+        commands.add(drive.goToPose(AutoChooser.NoteOneShotChooser.getSelected()));
         commands.add(shoot);
 
-        
         // Add commadns to the list
-        commands.add(drive.goPose(AutoChooser.NoteThreeChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
-        // commmands.add(intakeWhile); // use vision to detect the note 
-        commands.add(drive.goPose(AutoChooser.NoteThreeShotChooser.getSelected()));
+        commands.add(drive.goToPose(AutoChooser.NoteTwoChooser.getSelected()).alongWith(intake)); // add intake stuff
+                                                                                                  // here too
+        // commmands.add(intakeWhile); // use vision to detect the note
+        commands.add(drive.goToPose(AutoChooser.NoteTwoShotChooser.getSelected()));
         commands.add(shoot);
 
-         // Add commadns to the list
-         commands.add(drive.goPose(AutoChooser.NoteFourChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
-         // commmands.add(intakeWhile); // use vision to detect the note 
-         commands.add(drive.goPose(AutoChooser.NoteFourShotChooser.getSelected()));
-         commands.add(shoot);
- 
+        // Add commadns to the list
+        commands.add(drive.goToPose(AutoChooser.NoteThreeChooser.getSelected()).alongWith(intake)); // add intake stuff
+                                                                                                    // here too
+        // commmands.add(intakeWhile); // use vision to detect the note
+        commands.add(drive.goToPose(AutoChooser.NoteThreeShotChooser.getSelected()));
+        commands.add(shoot);
 
-        // continue this stuff
+        // Add commadns to the list
+        commands.add(drive.goToPose(AutoChooser.NoteFourChooser.getSelected()).alongWith(intake)); // add intake stuff
+                                                                                                   // here too
+        // commmands.add(intakeWhile); // use vision to detect the note
+        commands.add(drive.goToPose(AutoChooser.NoteFourShotChooser.getSelected()));
+        commands.add(shoot);
 
         // Convert the arraylist to a command
-        SequentialCommandGroup auto = new SequentialCommandGroup();
-        auto.addCommands(commands.toArray(new Command[0]));
+        SequentialCommandGroup auto = new SequentialCommandGroup(commands.toArray(Command[]::new));
         return auto;
     }
 }

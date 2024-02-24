@@ -376,21 +376,6 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.buildAuto(nameString);
   }
 
-  public Command goPose(Pose2d targetPose) {
-    // See the "Follow a single path" example for more info on what gets passed here
-    return new PathfindHolonomic(
-        targetPose,
-        kPathConstraints,
-        0.0, // Goal end velocity in m/s. Optional
-        this::getPose,
-        () -> kinematics.toChassisSpeeds(getModuleStates()),
-        this::runVelocity,
-        config, // HolonomicPathFollwerConfig, see the API or "Follow a single path" example for more info
-        0.0, // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate. Optional
-        this // Reference to drive subsystem to set requirements
-    );
-  }
-
   public Command runTrajectory(PathPlannerPath path) {
     return AutoBuilder.followPath(path);
   }

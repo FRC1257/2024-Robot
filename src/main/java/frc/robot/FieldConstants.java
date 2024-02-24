@@ -5,7 +5,12 @@ import static edu.wpi.first.apriltag.AprilTagFields.k2024Crescendo;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.util.AllianceFlipUtil;
+
 import java.io.IOException;
+
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
@@ -27,6 +32,7 @@ public class FieldConstants {
 
   public static Translation2d ampCenter =
       new Translation2d(Units.inchesToMeters(72.455), Units.inchesToMeters(322.996));
+
   public static Pose2d ampPose = new Pose2d(ampCenter, Rotation2d.fromDegrees(-90));
 
   public static Pose2d pickupPose = new Pose2d(15.331, 1, Rotation2d.fromDegrees(-60));
@@ -57,6 +63,8 @@ public class FieldConstants {
       for (int i = 0; i < spikeTranslations.length; i++) {
         spikeTranslations[i] = new Translation2d(spikeX, spikeFirstY + (i * spikeSeparationY));
       }
+      Logger.recordOutput("centerlineTranslations", centerlineTranslations);
+      Logger.recordOutput("spikeTranslations", spikeTranslations);
     }
   }
 
@@ -124,4 +132,41 @@ public class FieldConstants {
     new Pose2d(2.61,3.46,Rotation2d.fromDegrees(0)),
     //some of these positions may need to change once we learn how far we can be and still shoot
   };
+
+  // Flips a translation to the correct side of the field based on the current alliance color.
+  public static Pose2d flippedPose(Pose2d pose) {
+    return AllianceFlipUtil.apply(pose);
+  }
+
+  public static Translation2d flippedTranslation(Translation2d translation) {
+    return AllianceFlipUtil.apply(translation);
+  }
+
+  public static Pose2d ampPose() {
+    return flippedPose(ampPose);
+  }
+
+  public static Translation2d ampCenter() {
+    return flippedTranslation(ampCenter);
+  }
+  
+  public static Translation3d topRightSpeaker() {
+    return AllianceFlipUtil.apply(topRightSpeaker);
+  }
+
+  public static Pose2d[] NOTE_POSITIONS() {
+    return AllianceFlipUtil.apply(NOTE_POSITIONS);
+  }
+
+  public static Pose2d[] START_POSITIONS() {
+    return AllianceFlipUtil.apply(START_POSITIONS);
+  }
+
+  public static Pose2d[] SCORE_POSITIONS() {
+    return AllianceFlipUtil.apply(SCORE_POSITIONS);
+  }
+
+  public static Pose2d pickupPose() {
+    return flippedPose(pickupPose);
+  }
 }
