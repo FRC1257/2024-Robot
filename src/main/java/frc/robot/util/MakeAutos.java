@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.drive.Drive;
@@ -65,5 +66,12 @@ public class MakeAutos {
         // Convert the arraylist to a command
         SequentialCommandGroup auto = new SequentialCommandGroup(commands.toArray(Command[]::new));
         return auto;
+    }
+
+    public static Command makeOnTheFlyCommand(Drive drive, Command shoot, Command intake, Command intakeWhile) {
+        return new InstantCommand(() ->
+        {
+            CommandScheduler.getInstance().schedule(makeCustomAutoCommand(drive, shoot, intake, intakeWhile));
+        });
     }
 }
