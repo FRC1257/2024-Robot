@@ -23,17 +23,19 @@ import frc.robot.subsystems.drive.Drive;
 
 public class MakeAutos {
     public static Command makeAutoCommand(Drive drive, Command shoot, Command intake, Command intakeWhile) {
+        // shoot needs to be commented out to work
+        // TODO fix this
         return new SequentialCommandGroup(
-            shoot,
+            // shoot,
             drive.goToPose(AutoChooser.NoteOneChooser.getSelected()),
             drive.goToPose(AutoChooser.NoteOneShotChooser.getSelected()),
-            shoot,
+            // shoot,
             drive.goToPose(AutoChooser.NoteTwoChooser.getSelected()),
             drive.goToPose(AutoChooser.NoteTwoShotChooser.getSelected()),
-            shoot,
+            // shoot,
             drive.goToPose(AutoChooser.NoteThreeChooser.getSelected()),
             drive.goToPose(AutoChooser.NoteThreeShotChooser.getSelected()),
-            shoot,
+            // shoot,
             drive.goToPose(AutoChooser.NoteFourChooser.getSelected()),
             drive.goToPose(AutoChooser.NoteFourShotChooser.getSelected()),
             shoot

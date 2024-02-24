@@ -315,6 +315,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    AutoChooser.setupChoosers();
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
       return MakeAutos.makeAutoCommand(drive, shootAnywhere(), intake.IntakeManualCommand(() -> 2), intake.IntakeLoopCommand(300));
     }
