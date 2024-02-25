@@ -410,7 +410,7 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.followPath(path);
   }
 
-  public Command goToNote(Pose2d endPose2d, VisionIO visionIO){
+  public Command goToNote(VisionIO visionIO){
     return DriveCommands.turnToNote(this, visionIO, visionInputs).andThen(goToPose(visionIO.calculateNotePose(getPose(), visionIO.calculateNoteTranslation(visionInputs))));
     //might have to negate direction or angle due to orientation of the robot's intake
   }

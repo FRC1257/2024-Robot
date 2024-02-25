@@ -83,6 +83,7 @@ public class RobotContainer {
   private final PivotArm pivot;
   private final Intake intake;
   private final GroundIntake groundIntake;
+  private final VisionIO visionIO;
 
   // LEDs
   private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
@@ -115,6 +116,7 @@ public class RobotContainer {
             new VisionIOPhoton());
         intake = new Intake(new IntakeIOSparkMax());
         groundIntake = new GroundIntake(new GroundIntakeIOSparkMax());
+        visionIO = new VisionIOPhoton();
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -132,6 +134,7 @@ public class RobotContainer {
             new VisionIOSim());
         intake = new Intake(new IntakeIOSim());
         groundIntake = new GroundIntake(new GroundIntakeIOSim());
+        visionIO = new VisionIOSim();
         break;
 
       // Replayed robot, disable IO implementations, only reads log files
@@ -157,6 +160,7 @@ public class RobotContainer {
         });
         groundIntake = new GroundIntake(new GroundIntakeIO() {
         });
+        visionIO = new VisionIO(){};
         break;
     }
 
@@ -256,6 +260,7 @@ public class RobotContainer {
     shooter.setDefaultCommand(
         shooter.runSpeed(0));
 
+          //why we got two drive_speaker_aims?
     DriveControls.DRIVE_SPEAKER_AIM.whileTrue(DriveCommands.joystickDriveRobotRelative(
         drive,
         DriveControls.DRIVE_FORWARD,
@@ -267,6 +272,8 @@ public class RobotContainer {
             drive,
             DriveControls.DRIVE_FORWARD,
             DriveControls.DRIVE_STRAFE));
+
+    DriveControls.DRIVE_NOTE_GOTO.whileTrue(drive.goToNote(visionIO));
 
     DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
