@@ -55,6 +55,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
+import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.util.LocalADStarAK;
 
 public class Drive extends SubsystemBase {
@@ -408,4 +409,10 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.followPath(path);
   }
 
+  public Command goToNote(Pose2d endPose2d, VisionIOPhoton visionIOPhoton){
+    return goToPose(visionIOPhoton.calculateNotePose(getPose(), visionIOPhoton.calculateNoteTranslation(visionInputs)));
+  }
+
+
+  
 }

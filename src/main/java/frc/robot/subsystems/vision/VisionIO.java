@@ -16,6 +16,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
@@ -169,24 +170,7 @@ public interface VisionIO {
     return kSingleTagStdDevs;
   }
 
-  public default void NoteDetect(VisionIOInputs inputs) {
-    // int total_targets = 0;
-    // for (int i = 0; i < results.length; i++) {
-    //   if (goodResult(results[i])) {
-    //     total_targets += results[i].getTargets().size();
-    //   }
-    // }
-    // Pose3d[] targets = new Pose3d[total_targets];
-    // int index = 0;
-    // for (int i = 0; i < results.length; i++) {
-    //   if (goodResult(results[i])) {
-    //     for (PhotonTrackedTarget target : results[i].getTargets()) {
-    //       targets[index] = kTagLayout.getTagPose(target.getFiducialId()).get();
-    //       index++;
-    //     }
-    //   }
-    // }
-    // return targets;
-  } // the plan is to get the center of the ring, then set a PID loop turning it to
-    // the center of the camera
+  public default Translation2d calculateNoteTranslation(VisionIOInputs inputs) {
+    return null;
+  } 
 }

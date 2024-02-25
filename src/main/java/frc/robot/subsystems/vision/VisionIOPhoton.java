@@ -4,8 +4,12 @@ import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 
 import static frc.robot.Constants.Vision.*;
 
@@ -110,6 +114,27 @@ public class VisionIOPhoton implements VisionIO {
         Logger.recordOutput("Vision/Raspberry2Connected", raspberryCamera2.isConnected());
     }
 
+    @Override
+    public Translation2d calculateNoteTranslation(VisionIOInputs inputs) {
+        PhotonPipelineResult note_result = getLatestResult(noteCamera);
+        //height of the note shouldn't matter, because ideally it's going to be on the ground
+          if (note_result.hasTargets()) {
+                double range =
+                        PhotonUtils.calculateDistanceToTargetMeters(
+                                NoteCameraHeight, //need to set
+                                NoteHeight, //should be 0 or the height of the note
+                                0, //CAMERA_PITCH_RADIANS
+                                Units.degreesToRadians(note_result.getBestTarget().getPitch()));            
+                return PhotonUtils.estimateCameraToTargetTranslation(
+                range, Rotation2d.fromDegrees(-note_result.getBestTarget().getYaw()));
+        } else {
+            return null;
+        }
+    }
+
+    public Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation){
+        return new Pose2d(robotPose.getX() + noteTranslation.getX(), robotPose.getY() + noteTranslation.getY(), robotPose.getRotation());
+    }
 
 
     @Override

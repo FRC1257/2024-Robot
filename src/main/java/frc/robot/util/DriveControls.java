@@ -21,6 +21,7 @@ public class DriveControls {
     public static Trigger DRIVE_STOP;
 
     public static Trigger DRIVE_SPEAKER_AIM;
+    public static Trigger DRIVE_NOTE_LOCKON;
 
     // Drive Trajectories
     public static Trigger DRIVE_AMP;
@@ -75,6 +76,7 @@ public class DriveControls {
                 DRIVE_ROTATE = driver::getRightX;
                 DRIVE_SLOW = driver.x();
                 DRIVE_SPEAKER_AIM = driver.b();
+                DRIVE_NOTE_LOCKON = EMPTY_TRIGGER;
                 DRIVE_STOP = driver.rightBumper();
 
                 DRIVE_AMP = driver.leftBumper();

@@ -338,6 +338,9 @@ public final class Constants {
         new Rotation3d(0, 0, Rotation2d.fromDegrees(155).getRadians()));
         //Change CameraNameToCam angle and stuff as needed, ask MAURICIO SANCHEZ
 
+    public static final double NoteCameraHeight = 6.0;
+
+    public static final double NoteHeight = 0.0;
 
     // Note Camera Angle (used in sim)
     public static final Transform3d kNoteRobotToCam = new Transform3d(new Translation3d(0.5, 0.45, 0.23),
