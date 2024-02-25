@@ -170,7 +170,7 @@ public interface VisionIO {
     return kSingleTagStdDevs;
   }
 
-  public default Translation2d calculateNoteTranslation(VisionIOInputs inputs) {
-    return null;
-  } 
+  public default Translation2d calculateNoteTranslation(VisionIOInputs inputs) {return null;} 
+
+  public default Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation) {return null;}
 }

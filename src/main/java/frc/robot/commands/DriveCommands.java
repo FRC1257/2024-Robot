@@ -28,8 +28,8 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 
+import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
-import frc.robot.subsystems.vision.VisionIOPhoton;
 
 import static frc.robot.Constants.DriveConstants.*;
 
@@ -174,7 +174,7 @@ public class DriveCommands {
 
    
 
-    public static Command turnToNote(Drive drive, VisionIOPhoton visionIO, VisionIOInputsAutoLogged visionInputs) {
+    public static Command turnToNote(Drive drive, VisionIO visionIO, VisionIOInputsAutoLogged visionInputs) {
         Pose2d notePose = visionIO.calculateNotePose(drive.getPose(), visionIO.calculateNoteTranslation(visionInputs));
            angleController.setTolerance(0.08, 0.01);
                return new FunctionalCommand(
@@ -214,7 +214,5 @@ public class DriveCommands {
       }
     }
 
-    public static void lockNote(){
-        
-    }
+  
 }
