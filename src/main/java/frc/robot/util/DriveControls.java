@@ -19,6 +19,7 @@ public class DriveControls {
     public static DoubleSupplier DRIVE_ROTATE;
     public static Trigger DRIVE_SLOW;
     public static Trigger DRIVE_STOP;
+    public static Trigger DRIVE_TOGGLE_ROBOT_RELATIVE;
 
     public static Trigger DRIVE_SPEAKER_AIM;
 
@@ -63,6 +64,7 @@ public class DriveControls {
                 DRIVE_SLOW = driver.x();
                 DRIVE_SPEAKER_AIM = driver.leftBumper();
                 DRIVE_STOP = driver.rightBumper();
+                DRIVE_TOGGLE_ROBOT_RELATIVE = EMPTY_TRIGGER;
 
                 DRIVE_AMP = EMPTY_TRIGGER;
                 DRIVE_SOURCE = EMPTY_TRIGGER;
@@ -77,6 +79,7 @@ public class DriveControls {
                 DRIVE_SLOW = driver.x();
                 DRIVE_SPEAKER_AIM = driver.b();
                 DRIVE_STOP = driver.rightBumper();
+                DRIVE_TOGGLE_ROBOT_RELATIVE = EMPTY_TRIGGER;
 
                 DRIVE_AMP = driver.leftBumper();
                 DRIVE_SOURCE = driver.a();

@@ -257,7 +257,7 @@ public class RobotContainer {
     shooter.setDefaultCommand(
         shooter.runSpeed(0));
 
-    DriveControls.DRIVE_SPEAKER_AIM.whileTrue(DriveCommands.joystickDriveRobotRelative(
+    DriveControls.DRIVE_TOGGLE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(
         drive,
         DriveControls.DRIVE_FORWARD,
         DriveControls.DRIVE_STRAFE,
@@ -362,15 +362,23 @@ public class RobotContainer {
     // implement this later using swerve to turn to desired target
     // move pivot arm
     // and calculate the speed required to shoot
-    return DriveCommands.turnSpeakerAngle(drive).alongWith(new FunctionalCommand(
-        () -> {},
-        () -> {
-          pivot.setPID(getAngle());
-          pivot.runPID();
-          if(pivot.atSetpoint()) {
+    if (DriveCommands.pointedAtSpeaker(drive)){
+       return rotateArm().andThen(shoot());
+    } else {
+    return DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot());
+    }
+  }
+
+  public Command rotateArm(){
+    return new FunctionalCommand(
+          () -> {},
+          () -> {
+            pivot.setPID(getAngle());
+            pivot.runPID();
+            if(pivot.atSetpoint()) {
             shooter.setRPM(getRPM(), getRPM());
-          }
-        },
+            }
+          },
         (interrupted) -> {
           if (!interrupted) return;
 
@@ -381,10 +389,13 @@ public class RobotContainer {
           return pivot.atSetpoint() && shooter.atSetpoint();
         },
         shooter, pivot
-    )).andThen(
-      intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)))
     );
+}
+
+  public Command shoot() {
+    return intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)));
   }
+
 
   public Command shootNote() {
     return new FunctionalCommand(

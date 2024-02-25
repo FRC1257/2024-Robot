@@ -184,7 +184,7 @@ public class DriveCommands {
                     Transform2d targetTransform = drive.getPose().minus(speakerPose);
                     Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
                     double omega = angleController.calculate(drive.getRotation().getRadians(), targetDirection.getRadians());
-                    omega = Math.copySign(omega * omega, omega);
+                    omega = Math.copySign(omega * omega, omega); //no idea why squared
                     // Convert to robot relative speeds and send command
                     drive.runVelocity(
                         ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -209,4 +209,19 @@ public class DriveCommands {
         slowMode = 1;
       }
     }
+
+    public static boolean pointedAtSpeaker(Drive drive){
+        Pose2d speakerPose = FieldConstants.SpeakerPosition;
+        Transform2d targetTransform = drive.getPose().minus(speakerPose);
+        Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+        double omega = angleController.calculate(drive.getRotation().getRadians(), targetDirection.getRadians());
+        omega = Math.copySign(omega * omega, omega);
+        // Convert to robot relative speeds and send command
+        if (Math.abs(omega * drive.getMaxAngularSpeedRadPerSec()) < 0.09) {
+            return true;
+        } else {
+            return false;
+        }
+      }
+
 }
