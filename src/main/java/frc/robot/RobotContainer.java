@@ -317,7 +317,17 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     AutoChooser.setupChoosers();
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
-      return MakeAutos.makeAutoCommand(drive, shootAnywhere(), intake.IntakeManualCommand(() -> 2), intake.IntakeLoopCommand(300));
+      return MakeAutos.makeAutoCommand(
+        drive, 
+        this::shootAnywhere, 
+        () -> {
+          return intake.IntakeManualCommand(() -> 2);
+        }, 
+        () -> {
+          // use a vision command later
+          return intake.IntakeLoopCommand(8).withTimeout(1);
+        }
+      );
     }
     return autoChooser.get();
   }
