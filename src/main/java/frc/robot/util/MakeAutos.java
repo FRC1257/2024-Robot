@@ -8,8 +8,6 @@ import frc.robot.subsystems.drive.Drive;
 
 public class MakeAutos {
     public static Command makeAutoCommand(Drive drive, Supplier<Command> shoot, Supplier<Command> intakeCommand, Supplier<Command> intakeWhile) {
-        // shoot needs to be commented out to work
-        // TODO fix this
         return new SequentialCommandGroup(
             shoot.get(),
             drive.goToPose(AutoChooser.NoteOneChooser.getSelected()).deadlineWith(intakeCommand.get()),
