@@ -368,7 +368,7 @@ public class RobotContainer {
     return DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot()); */
 
     // return DriveCommands.turnSpeakerAngle(drive).onlyIf(() -> !DriveCommands.pointedAtSpeaker(drive)).alongWith(rotateArm()).andThen(shoot());
-    return (rotateArm().andThen(shoot()))
+    return (rotateArm().alongWith(shoot()))
       .deadlineWith(DriveCommands.joystickSpeakerPoint(
         drive,
         DriveControls.DRIVE_FORWARD,
@@ -398,9 +398,13 @@ public class RobotContainer {
     );
 }
 
-  public Command shoot() {
+public Command shoot() {
+  if(pivot.atSetpoint() == true) {
     return intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)));
+  } else {
+    return null;
   }
+}
 
 
   public Command shootNote() {
