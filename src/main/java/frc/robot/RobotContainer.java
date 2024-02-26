@@ -362,11 +362,13 @@ public class RobotContainer {
     // implement this later using swerve to turn to desired target
     // move pivot arm
     // and calculate the speed required to shoot
-    if (DriveCommands.pointedAtSpeaker(drive)){
+    /* if (DriveCommands.pointedAtSpeaker(drive)){
        return rotateArm().andThen(shoot());
     } else {
-    return DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot());
-    }
+    return DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot()); */
+
+    return DriveCommands.turnSpeakerAngle(drive).onlyIf(() -> !DriveCommands.pointedAtSpeaker(drive)).alongWith(rotateArm()).andThen(shoot());
+    
   }
 
   public Command rotateArm(){
