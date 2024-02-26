@@ -367,8 +367,14 @@ public class RobotContainer {
     } else {
     return DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot()); */
 
-    return DriveCommands.turnSpeakerAngle(drive).onlyIf(() -> !DriveCommands.pointedAtSpeaker(drive)).alongWith(rotateArm()).andThen(shoot());
-    
+    // return DriveCommands.turnSpeakerAngle(drive).onlyIf(() -> !DriveCommands.pointedAtSpeaker(drive)).alongWith(rotateArm()).andThen(shoot());
+    return (rotateArm().andThen(shoot()))
+      .deadlineWith(DriveCommands.joystickSpeakerPoint(
+        drive,
+        DriveControls.DRIVE_FORWARD,
+        DriveControls.DRIVE_STRAFE
+      )
+    );
   }
 
   public Command rotateArm(){
