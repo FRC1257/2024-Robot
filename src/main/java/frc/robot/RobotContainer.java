@@ -377,9 +377,7 @@ public class RobotContainer {
           () -> {
             pivot.setPID(getAngle());
             pivot.runPID();
-            if(pivot.atSetpoint()) {
             shooter.setRPM(getRPM(), getRPM());
-            }
           },
         (interrupted) -> {
           if (!interrupted) return;

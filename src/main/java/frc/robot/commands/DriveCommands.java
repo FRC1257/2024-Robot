@@ -214,10 +214,9 @@ public class DriveCommands {
         Pose2d speakerPose = FieldConstants.SpeakerPosition;
         Transform2d targetTransform = drive.getPose().minus(speakerPose);
         Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
-        double omega = angleController.calculate(drive.getRotation().getRadians(), targetDirection.getRadians());
-        omega = Math.copySign(omega * omega, omega);
+        
         // Convert to robot relative speeds and send command
-        if (Math.abs(omega * drive.getMaxAngularSpeedRadPerSec()) < 0.09) {
+        if (Math.abs(drive.getRotation().getDegrees() - targetDirection.getDegrees()) < 1) {
             return true;
         } else {
             return false;
