@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-// import static frc.robot.Constants.Intake;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 

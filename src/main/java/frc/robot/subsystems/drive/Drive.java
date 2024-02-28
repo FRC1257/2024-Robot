@@ -13,12 +13,13 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.Constants.useVision;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.useVision;
 import static frc.robot.Constants.DriveConstants.kMaxSpeedMetersPerSecond;
 import static frc.robot.Constants.DriveConstants.kPathConstraints;
 import static frc.robot.Constants.DriveConstants.kTrackWidthX;
 import static frc.robot.Constants.DriveConstants.kTrackWidthY;
+import static frc.robot.Constants.DriveConstants.periodicTime;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -39,8 +40,8 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -48,6 +49,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -81,6 +83,7 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
+  private Pose2d lastPose = new Pose2d();
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
@@ -163,8 +166,6 @@ public class Drive extends SubsystemBase {
             }, null, this));
   }
 
-    
-
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
@@ -201,6 +202,8 @@ public class Drive extends SubsystemBase {
       modulePositions[moduleIndex] = modules[moduleIndex].getPosition();
     }
 
+    Logger.recordOutput("FieldVelocity", getFieldVelocity());
+    
     // Update gyro angle
     if (gyroInputs.connected) {
       // Use the real gyro angle
@@ -294,6 +297,20 @@ public class Drive extends SubsystemBase {
     return positions;
   }
 
+  /**
+   * Gets the current field-relative velocity (x, y and omega) of the robot
+   *
+   * @return A ChassisSpeeds object of the current field-relative velocity
+   */
+  public ChassisSpeeds getFieldVelocity() {
+    // ChassisSpeeds has a method to convert from field-relative to robot-relative speeds,
+    // but not the reverse.  However, because this transform is a simple rotation, negating the
+    // angle
+    // given as the robot angle reverses the direction of rotation, and the conversion is reversed.
+    return ChassisSpeeds.fromFieldRelativeSpeeds(
+        kinematics.toChassisSpeeds(getModuleStates()), getRotation());
+  }
+
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
@@ -360,10 +377,6 @@ public class Drive extends SubsystemBase {
   }
 
   /* Configure trajectory following */
-  public Command followTrajectory(PathPlannerPath path) {
-    return AutoBuilder.followPath(path);
-  }
-
   public Command goToPose(Pose2d target_pose, double end_velocity, double time_before_turn) {
     return AutoBuilder.pathfindToPose(target_pose, kPathConstraints, end_velocity, time_before_turn);
   }

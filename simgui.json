@@ -52,12 +52,11 @@
         }
       },
       "/SmartDashboard/Field": {
-        "bottom": 544,
-        "builtin": "2024 Crescendo",
-        "height": 8.013679504394531,
-        "left": 46,
-        "right": 1088,
-        "top": 36,
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
         "traj": {
           "arrows": false,
           "style": "Line"
@@ -122,15 +121,6 @@
     "Clients": {
       "open": true
     },
-    "Connections": {
-      "open": true
-    },
-    "Server": {
-      "open": true
-    },
     "visible": true
-  },
-  "NetworkTables View": {
-    "visible": false
   }
 }
