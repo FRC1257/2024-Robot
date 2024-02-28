@@ -90,6 +90,7 @@ public class NoteShot {
         //shoot doesn't work for some reason, fix at home
         //try and figure out why a trajectory isn't being generated
         
+        //fixed velocity sim here, just had to add driver speed y to correct location
         return new PathPoint(
             shotPosition, 
             dx,
