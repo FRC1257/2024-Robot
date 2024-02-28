@@ -446,6 +446,9 @@ public final class Constants {
     public final static int GROUND_INTAKE_MOTOR = 0;
 
     public final static int INTAKE_BREAK_BEAM = 0;
+
+    // Ground Intake
+    public final static int GROUND_INTAKE_BREAK_BEAM = 1;
   };
 
   public static double PI = 3.141592653589793238462643;
@@ -530,5 +533,17 @@ public final class Constants {
     }
   }
 
-
+  public static final double[][] LookupTable = {
+    {0,5000,10},
+    {1,5000,30},
+    {2,5000,50},
+    {3,5000,60},
+    {4,5500,70},
+    {5,5500,70},
+    {6,5500,75},
+    {7,5500,77},
+    {8,6000,79},
+    {9,6500,83},
+    {10,6500,85}
+  };
 }

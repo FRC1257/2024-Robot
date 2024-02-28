@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.34,
+        "y": 5.55
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.019281605514777,
+        "y": 6.127736927838528
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.24,
+        "y": 6.17
+      },
+      "prevControl": {
+        "x": 4.832175134435738,
+        "y": 6.0458778467414485
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Shoot 3",
+      "waypointRelativePos": 0.85,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 10.539183728628212,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "4 Note Auto (Top)",
+  "previewStartingState": {
+    "rotation": -110.43507816734932,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

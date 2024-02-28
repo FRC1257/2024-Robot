@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 
@@ -171,8 +172,37 @@ public class DriveCommands {
         drive
         );
     }
-
-   
+    // turns robot to speaker from current location
+    public static Command turnSpeakerAngle(Drive drive) {
+        Pose2d speakerPose = FieldConstants.SpeakerPosition;
+        angleController.setTolerance(0.08, 0.01);
+            return new FunctionalCommand(
+                () -> {
+                    Transform2d targetTransform = drive.getPose().minus(speakerPose);
+                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+                    angleController.setSetpoint(targetDirection.getRadians());
+                },
+                () -> {
+                    // defines distance from speaker
+                    Transform2d targetTransform = drive.getPose().minus(speakerPose);
+                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+                    double omega = angleController.calculate(drive.getRotation().getRadians(), targetDirection.getRadians());
+                    omega = Math.copySign(omega * omega, omega); //no idea why squared
+                    // Convert to robot relative speeds and send command
+                    drive.runVelocity(
+                        ChassisSpeeds.fromFieldRelativeSpeeds(
+                            0,
+                            0,
+                            omega * drive.getMaxAngularSpeedRadPerSec(),
+                            drive.getRotation()));
+                },
+                (interrupted) -> {
+                    drive.stop();
+                },
+                () -> angleController.atSetpoint(),
+                drive);
+        }
+       
 
     public static Command turnToNote(Drive drive) {
         Pose2d notePose = drive.calculateNotePose(drive.getPose(), drive.calculateNoteTranslation());
@@ -232,8 +262,8 @@ public class DriveCommands {
     }
 
     /** 
-     * Toggle Slow Mode
-     */
+         * Toggle Slow Mode
+         */
     public static void toggleSlowMode() {
       if (slowMode == 1) {
         slowMode = kSlowModeConstant;
@@ -242,5 +272,17 @@ public class DriveCommands {
       }
     }
 
-  
+    public static boolean pointedAtSpeaker(Drive drive){
+        Pose2d speakerPose = FieldConstants.SpeakerPosition;
+        Transform2d targetTransform = drive.getPose().minus(speakerPose);
+        Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+        
+        // Convert to robot relative speeds and send command
+        if (Math.abs(drive.getRotation().getDegrees() - targetDirection.getDegrees()) < 1) {
+            return true;
+        } else {
+            return false;
+        }
+      }
+
 }

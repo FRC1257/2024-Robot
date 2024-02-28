@@ -53,6 +53,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.subsystems.vision.VisionIOPhoton;
@@ -393,6 +394,10 @@ public class Drive extends SubsystemBase {
 
   public Command runTrajectory(PathPlannerPath path) {
     return AutoBuilder.followPath(path);
+  }
+
+  public Command pathfindToTrajectory(PathPlannerPath path) {
+    return AutoBuilder.pathfindThenFollowPath(path, kPathConstraints);
   }
 
   public Command goToThaPose(Pose2d endPose) {

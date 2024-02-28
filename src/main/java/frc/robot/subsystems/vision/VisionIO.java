@@ -38,6 +38,7 @@ public interface VisionIO {
     public double[] noteConfidence = new double[0];
     public double[] notePitch = new double[0];
     public double[] noteYaw = new double[0];
+    public double[] noteSkew = new double[0];
     public double[] noteArea = new double[0];
   }
 
