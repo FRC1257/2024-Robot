@@ -1,7 +1,7 @@
 package frc.robot.subsystems.groundIntake;
 
 import static frc.robot.Constants.NEO_CURRENT_LIMIT;
-import static frc.robot.Constants.GroundIntake.GroundIntakeSimConstants.*;
+import static frc.robot.subsystems.GroundIntake.GroundIntakeConstants.*;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;

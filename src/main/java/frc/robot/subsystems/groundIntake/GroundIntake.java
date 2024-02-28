@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import static frc.robot.Constants.GroundIntake.*;
+import static frc.robot.subsystems.GroundIntake.GroundIntakeConstants.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
