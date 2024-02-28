@@ -7,7 +7,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import static frc.robot.Constants.PivotArm.PivotArmSimConstants.*;
+
+import static frc.robot.subsystems.pivotArm.PivotArmConstants;
 
 public class PivotArmIOSim implements PivotArmIO {
     // from here

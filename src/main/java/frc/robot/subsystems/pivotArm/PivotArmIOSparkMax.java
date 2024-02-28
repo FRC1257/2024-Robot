@@ -1,6 +1,6 @@
 package frc.robot.subsystems.pivotArm;
 
-import static frc.robot.Constants.PivotArm.*;
+import static frc.robot.subsystems.pivotArm.PivotArmConstants;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;

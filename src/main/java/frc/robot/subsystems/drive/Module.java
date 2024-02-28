@@ -13,22 +13,22 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.Constants.ModuleConstants.kDrivingD;
-import static frc.robot.Constants.ModuleConstants.kDrivingFF;
-import static frc.robot.Constants.ModuleConstants.kDrivingI;
-import static frc.robot.Constants.ModuleConstants.kDrivingP;
-import static frc.robot.Constants.ModuleConstants.kTurningD;
-import static frc.robot.Constants.ModuleConstants.kTurningFF;
-import static frc.robot.Constants.ModuleConstants.kTurningI;
-import static frc.robot.Constants.ModuleConstants.kTurningP;
-import static frc.robot.Constants.ModuleConstants.kWheelDiameterMeters;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingD;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingFF;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingI;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingP;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningD;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningFF;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningI;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningP;
+import static frc.robot.subsystems.drive.ModuleConstants.kWheelDiameterMeters;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.Constants;
+import frc.robot.subsystems.drive.DriveConstants;
 
 public class Module {
   private static final double WHEEL_RADIUS = kWheelDiameterMeters / 2;
