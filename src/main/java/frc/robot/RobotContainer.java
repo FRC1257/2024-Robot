@@ -4,26 +4,15 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.PivotArm.PIVOT_ARM_MIN_ANGLE;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import static frc.robot.Constants.ShooterConstants.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -32,38 +21,50 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ShooterConstants;
-
-import frc.robot.subsystems.shooter.*;
-import frc.robot.subsystems.groundIntake.*;
-import frc.robot.subsystems.intake.*;
-import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.pivotArm.*;
-import frc.robot.Constants.PivotArm.PivotArmSimConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.TurnAngleCommand;
+import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.groundIntake.GroundIntake;
+import frc.robot.subsystems.groundIntake.GroundIntakeIO;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmIO;
+import frc.robot.subsystems.pivotArm.PivotArmIOSim;
+import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.DriveControls;
-
-import frc.robot.subsystems.vision.*;
-//import frc.robot.commands.SpinAuto;
-import frc.robot.util.CommandSnailController;
+import frc.robot.util.Lookup;
+import frc.robot.util.LookupTuner;
 import frc.robot.util.note.NoteVisualizer;
 
 /**
@@ -80,6 +81,9 @@ public class RobotContainer {
   private final PivotArm pivot;
   private final Intake intake;
   private final GroundIntake groundIntake;
+
+  // LEDs
+  private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
 
   // Mechanisms
   private Mechanism2d mech = new Mechanism2d(3, 3);
@@ -191,6 +195,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", intake.IntakeLoopCommand(3).deadlineWith(groundIntake.GroundIntakeManualCommand(() -> 2)));
     NamedCommands.registerCommand("PrepShoot", prepShoot());
     NamedCommands.registerCommand("Zero", zeroPosition());
+    NamedCommands.registerCommand("AmpShooter", setAmpShooterSpeed());
     DriveControls.configureControls();
 
     // Set up auto routines
@@ -219,6 +224,8 @@ public class RobotContainer {
     // Configure the button bindings
     System.out.println("[Init] Creating Button Bindings");
     configureButtonBindings();
+
+    LookupTuner.setupTuner();
   }
 
   /**
@@ -250,7 +257,7 @@ public class RobotContainer {
     shooter.setDefaultCommand(
         shooter.runSpeed(0));
 
-    DriveControls.DRIVE_SPEAKER_AIM.whileTrue(DriveCommands.joystickDriveRobotRelative(
+    DriveControls.DRIVE_TOGGLE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(
         drive,
         DriveControls.DRIVE_FORWARD,
         DriveControls.DRIVE_STRAFE,
@@ -275,9 +282,10 @@ public class RobotContainer {
     DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
 
+   // NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond, shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
-    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(NoteVisualizer.shoot(drive));
-
+    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
+    DriveControls.SHOOTER_SHOOT.onTrue(shootNote());
     DriveControls.SHOOTER_PREP.whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
     if (Constants.tuningMode) {
@@ -291,6 +299,7 @@ public class RobotContainer {
       SmartDashboard.putData("Sysid Quasi Turn Forward", drive.turnQuasistatic(SysIdRoutine.Direction.kForward));
       SmartDashboard.putData("Sysid Quasi Turn Backward", drive.turnQuasistatic(SysIdRoutine.Direction.kReverse));
     }
+
 
   }
 
@@ -325,11 +334,121 @@ public class RobotContainer {
         .alongWith(groundIntake.stop());
   }
 
+  public Command setAmpShooterSpeed() {
+    return new FunctionalCommand(
+        () -> {
+          shooter.setRPM(ShooterConstants.defaultShooterSpeedRPM, ShooterConstants.defaultShooterSpeedRPM); // placeholder speed
+        },
+        () -> {
+          shooter.setRPM(ShooterConstants.defaultShooterSpeedRPM, ShooterConstants.defaultShooterSpeedRPM); // placeholder speed
+        },
+        (interrupted) -> {
+          if (!interrupted) return;
+
+          shooter.stop();
+        },
+        () -> {
+          return shooter.atSetpoint();
+        },
+        shooter
+    );
+  }
+
+  public Command shootAmp() {
+    return drive.pathfindToTrajectory(PathPlannerPath.fromPathFile("amp score"));
+  }
+  
   public Command shootAnywhere() {
     // implement this later using swerve to turn to desired target
     // move pivot arm
     // and calculate the speed required to shoot
-    return new InstantCommand();
+    /* if (DriveCommands.pointedAtSpeaker(drive)){
+       return rotateArm().andThen(shoot());
+    } else {
+    return DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot()); */
+
+    // return DriveCommands.turnSpeakerAngle(drive).onlyIf(() -> !DriveCommands.pointedAtSpeaker(drive)).alongWith(rotateArm()).andThen(shoot());
+    return (rotateArm().alongWith(shoot()))
+      .deadlineWith(DriveCommands.joystickSpeakerPoint(
+        drive,
+        DriveControls.DRIVE_FORWARD,
+        DriveControls.DRIVE_STRAFE
+      )
+    );
+  }
+
+  public Command rotateArm(){
+    return new FunctionalCommand(
+          () -> {},
+          () -> {
+            pivot.setPID(getAngle());
+            pivot.runPID();
+            shooter.setRPM(getRPM(), getRPM());
+          },
+        (interrupted) -> {
+          if (!interrupted) return;
+
+          shooter.stop();
+          pivot.stop();
+        },
+        () -> {
+          return pivot.atSetpoint() && shooter.atSetpoint();
+        },
+        shooter, pivot
+    );
+}
+
+public Command shoot() {
+  if(pivot.atSetpoint() == true) {
+    return intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)));
+  } else {
+    return null;
+  }
+}
+
+
+  public Command shootNote() {
+    return new FunctionalCommand(
+        () -> {},
+        () -> { 
+
+       
+            shooter.setRPM(getRPM(), getRPM());
+            //shooter.setRPM(1000, 1000);
+          },
+        (interrupted) -> {
+          if (!interrupted) return;
+
+          shooter.stop();
+        },
+        () -> {
+          return shooter.atSetpoint();
+        },
+        shooter
+    ).andThen(
+      intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(NoteVisualizer.shoot(drive)))
+    );
+  }
+  // Returns the estimated transformation over the next tick (The change in position)
+  private Transform2d getEstimatedTransform() {
+    return new Transform2d(new Translation2d(drive.getFieldVelocity().vxMetersPerSecond * 0.02, drive.getFieldVelocity().vyMetersPerSecond * 0.02), new Rotation2d(0.0));
+  }
+  //Returns the estimated robot position
+  private Pose2d getEstimatedPosition() {
+    return drive.getPose().plus(getEstimatedTransform().inverse());
+  }
+  //Returns the distance between the robot's next estimated position and the speaker position
+  private double getEstimatedDistance() {
+    Transform2d targetTransform = getEstimatedPosition().minus(FieldConstants.SpeakerPosition);
+    return targetTransform.getTranslation().getNorm();
+  }
+    // Gets RPM based on distance from speaker, taking into account the actual shooting position
+  private double getRPM() {
+    return Lookup.getRPM(getEstimatedDistance());
+  }
+  // Gets angle based on distance from speaker, taking into account the actual shooting position
+  private double getAngle() {
+    return Lookup.getAngle(getEstimatedDistance());
   }
 
   public Command prepShoot() {
@@ -337,5 +456,14 @@ public class RobotContainer {
     // move pivot arm
     // and calculate the speed required to shoot
     return new InstantCommand();
+  }
+
+  public void LEDPeriodic() {
+    BlinkinLEDController.isEndgame = DriverStation.getMatchTime() <= 30;
+    BlinkinLEDController.isEnabled = DriverStation.isEnabled();
+    BlinkinLEDController.noteInIntake = intake.isIntaked();
+    BlinkinLEDController.pivotArmDown = pivot.getAngle().getRadians() < (PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
+    BlinkinLEDController.shooting = shooter.getLeftCharacterizationVelocity() > 100;
+    ledController.periodic();
   }
 }

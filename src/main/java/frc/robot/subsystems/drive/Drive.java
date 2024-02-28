@@ -53,6 +53,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.LocalADStarAK;
@@ -166,17 +167,6 @@ public class Drive extends SubsystemBase {
             }, null, this));
   }
 
-  public double getVelocityX() {
-    //return (getPose().getX() - lastPose.getX())/(Timer.getFPGATimestamp()/100000 - lastTime);
-
-    return (getPose().getX() - lastPose.getX())/(periodicTime);
-  }
-
-  public double getVelocityY() {
-    //return (getPose().getY() - lastPose.getY())/(Timer.getFPGATimestamp()/100000 - lastTime);
-    return (getPose().getY() - lastPose.getY())/(periodicTime);
-  }
-
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
@@ -213,13 +203,8 @@ public class Drive extends SubsystemBase {
       modulePositions[moduleIndex] = modules[moduleIndex].getPosition();
     }
 
-    double Xvelocity = getVelocityX();
-    double Yvelocity = getVelocityY();
-    Logger.recordOutput("Xvelocity",Xvelocity);
-    Logger.recordOutput("Yvelocity", Yvelocity);
-    lastPose = getPose();
-
-
+    Logger.recordOutput("FieldVelocity", getFieldVelocity());
+    
     // Update gyro angle
     if (gyroInputs.connected) {
       // Use the real gyro angle
@@ -313,6 +298,20 @@ public class Drive extends SubsystemBase {
     return positions;
   }
 
+  /**
+   * Gets the current field-relative velocity (x, y and omega) of the robot
+   *
+   * @return A ChassisSpeeds object of the current field-relative velocity
+   */
+  public ChassisSpeeds getFieldVelocity() {
+    // ChassisSpeeds has a method to convert from field-relative to robot-relative speeds,
+    // but not the reverse.  However, because this transform is a simple rotation, negating the
+    // angle
+    // given as the robot angle reverses the direction of rotation, and the conversion is reversed.
+    return ChassisSpeeds.fromFieldRelativeSpeeds(
+        kinematics.toChassisSpeeds(getModuleStates()), getRotation());
+  }
+
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
@@ -379,10 +378,6 @@ public class Drive extends SubsystemBase {
   }
 
   /* Configure trajectory following */
-  public Command followTrajectory(PathPlannerPath path) {
-    return AutoBuilder.followPath(path);
-  }
-
   public Command goToPose(Pose2d target_pose, double end_velocity, double time_before_turn) {
     return AutoBuilder.pathfindToPose(target_pose, kPathConstraints, end_velocity, time_before_turn);
   }
@@ -395,23 +390,12 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.buildAuto(nameString);
   }
 
-  public Command goPose(Pose2d targetPose) {
-    // See the "Follow a single path" example for more info on what gets passed here
-    return new PathfindHolonomic(
-        targetPose,
-        kPathConstraints,
-        0.0, // Goal end velocity in m/s. Optional
-        this::getPose,
-        () -> kinematics.toChassisSpeeds(getModuleStates()),
-        this::runVelocity,
-        config, // HolonomicPathFollwerConfig, see the API or "Follow a single path" example for more info
-        0.0, // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate. Optional
-        this // Reference to drive subsystem to set requirements
-    );
-  }
-
   public Command runTrajectory(PathPlannerPath path) {
     return AutoBuilder.followPath(path);
+  }
+
+  public Command pathfindToTrajectory(PathPlannerPath path) {
+    return AutoBuilder.pathfindThenFollowPath(path, kPathConstraints);
   }
 
   public Command goToThaPose(Pose2d endPose) {
@@ -428,5 +412,7 @@ public class Drive extends SubsystemBase {
     );
     return AutoBuilder.followPath(path);
   }
+
+  
 
 }
