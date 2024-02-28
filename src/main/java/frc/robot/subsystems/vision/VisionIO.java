@@ -16,6 +16,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
@@ -170,7 +171,9 @@ public interface VisionIO {
     return kSingleTagStdDevs;
   }
 
-  public default void NoteDetect() {
-  } // the plan is to get the center of the ring, then set a PID loop turning it to
-    // the center of the camera
+  public default Translation2d calculateNoteTranslation(VisionIOInputs inputs) {return null;} 
+
+  public default Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation) {return null;}
+
+  public default Rotation2d getAngleToNote() {return null;}
 }

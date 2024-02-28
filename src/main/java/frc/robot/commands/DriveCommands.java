@@ -29,6 +29,9 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
+
 import static frc.robot.Constants.DriveConstants.*;
 
 public class DriveCommands {
@@ -199,10 +202,69 @@ public class DriveCommands {
                 () -> angleController.atSetpoint(),
                 drive);
         }
-        /** 
+       
+
+    public static Command turnToNote(Drive drive) {
+        Pose2d notePose = drive.calculateNotePose(drive.getPose(), drive.calculateNoteTranslation());
+           angleController.setTolerance(0.08, 0.01);
+               return new FunctionalCommand(
+                   () -> {
+                       Transform2d targetTransform = drive.getPose().minus(notePose);
+                       Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+                       angleController.setSetpoint(targetDirection.getRadians());
+                   },
+                   () -> {
+                       // defines distance from speaker
+                       Transform2d targetTransform = drive.getPose().minus(notePose);
+                       Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+                       double omega = angleController.calculate(drive.getRotation().getRadians(), targetDirection.getRadians());
+                       omega = Math.copySign(omega * omega, omega);
+                       // Convert to robot relative speeds and send command
+                       drive.runVelocity(
+                           ChassisSpeeds.fromFieldRelativeSpeeds(
+                               0,
+                               0,
+                               omega * drive.getMaxAngularSpeedRadPerSec(),
+                               drive.getRotation()));
+                   },
+                   (interrupted) -> {
+                       drive.stop();
+                   },
+                   () -> angleController.atSetpoint(),
+                   drive);
+    }
+
+    public static Command driveNote(Drive drive) {
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
+        return Commands.run(
+            () -> { 
+                Rotation2d targetDirection = drive.getAngleToNote();
+
+                double linearMagnitude = slowMode * targetDirection.getCos();
+                double omega = angleController.calculate(targetDirection.getRadians(), 0);
+
+                // Square values
+                linearMagnitude = linearMagnitude * linearMagnitude;
+                omega = Math.copySign(omega * omega, omega);
+
+                // Convert to robot relative speeds & send command
+                drive.runVelocity(
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        linearMagnitude,
+                        0,
+                        omega * drive.getMaxAngularSpeedRadPerSec(),
+                        drive.getRotation()
+                    )
+                );
+            },
+        drive
+        );
+    }
+
+    /** 
          * Toggle Slow Mode
          */
-        public static void toggleSlowMode() {
+    public static void toggleSlowMode() {
       if (slowMode == 1) {
         slowMode = kSlowModeConstant;
       } else {

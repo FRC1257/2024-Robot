@@ -56,7 +56,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
+import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.commands.DriveCommands;
 
 public class Drive extends SubsystemBase {
   // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
@@ -413,6 +415,21 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.followPath(path);
   }
 
-  
+  public Command goToNote(){
+    return DriveCommands.turnToNote(this).andThen(goToPose(visionIO.calculateNotePose(getPose(), visionIO.calculateNoteTranslation(visionInputs))));
+    //might have to negate direction or angle due to orientation of the robot's intake
+  }
 
+  public Translation2d calculateNoteTranslation() {
+    return visionIO.calculateNoteTranslation(visionInputs);
+  }
+
+  public Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation) {
+    return visionIO.calculateNotePose(robotPose, noteTranslation);
+  }
+
+  public Rotation2d getAngleToNote() {
+    return visionIO.getAngleToNote();
+  }
+  
 }
