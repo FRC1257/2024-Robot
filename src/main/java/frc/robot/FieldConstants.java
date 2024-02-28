@@ -2,8 +2,13 @@ package frc.robot;
 
 import static edu.wpi.first.apriltag.AprilTagFields.k2024Crescendo;
 
+import java.io.IOException;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.util.AllianceFlipUtil;
@@ -93,7 +98,7 @@ public class FieldConstants {
       new Translation3d(0.0, Units.inchesToMeters(238.815), Units.inchesToMeters(78.324));
   public static Translation3d bottomLeftSpeaker =
       new Translation3d(0.0, Units.inchesToMeters(197.765), Units.inchesToMeters(78.324));
-
+  public static final Pose2d SpeakerPosition = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
   public static double aprilTagWidth = Units.inchesToMeters(6.50);
   public static AprilTagFieldLayout aprilTags;
 

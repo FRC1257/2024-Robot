@@ -19,6 +19,7 @@ public class DriveControls {
     public static DoubleSupplier DRIVE_ROTATE;
     public static Trigger DRIVE_SLOW;
     public static Trigger DRIVE_STOP;
+    public static Trigger DRIVE_TOGGLE_ROBOT_RELATIVE;
 
     public static Trigger DRIVE_SPEAKER_AIM;
 
@@ -51,6 +52,7 @@ public class DriveControls {
     public static Trigger SHOOTER_PREP;
     public static Trigger SHOOTER_FIRE_AMP;
     public static Trigger SHOOTER_FIRE_SPEAKER;
+    public static Trigger SHOOTER_SHOOT;
 
     // Setup the controls
     public static void configureControls() {
@@ -62,6 +64,7 @@ public class DriveControls {
                 DRIVE_SLOW = driver.x();
                 DRIVE_SPEAKER_AIM = driver.leftBumper();
                 DRIVE_STOP = driver.rightBumper();
+                DRIVE_TOGGLE_ROBOT_RELATIVE = EMPTY_TRIGGER;
 
                 DRIVE_AMP = EMPTY_TRIGGER;
                 DRIVE_SOURCE = EMPTY_TRIGGER;
@@ -76,6 +79,7 @@ public class DriveControls {
                 DRIVE_SLOW = driver.x();
                 DRIVE_SPEAKER_AIM = driver.b();
                 DRIVE_STOP = driver.rightBumper();
+                DRIVE_TOGGLE_ROBOT_RELATIVE = EMPTY_TRIGGER;
 
                 DRIVE_AMP = driver.leftBumper();
                 DRIVE_SOURCE = driver.a();
@@ -117,14 +121,15 @@ public class DriveControls {
                 INTAKE_OUT = EMPTY_TRIGGER;
                 INTAKE_ROTATE = operator::getLeftY;
 
-                GROUND_INTAKE_IN = operator.y();
+                //GROUND_INTAKE_IN = operator.y();
                 GROUND_INTAKE_OUT = operator.b();
                 GROUND_INTAKE_ROTATE = operator::getRightY;
 
                 SHOOTER_SPEED = operator::getRightY;
                 SHOOTER_PREP = operator.rightBumper();
                 SHOOTER_FIRE_AMP = operator.leftBumper();
-                SHOOTER_FIRE_SPEAKER = operator.x();
+                SHOOTER_FIRE_SPEAKER = operator.y();// commented out for testing
+                SHOOTER_SHOOT = operator.x();
                 break;
         }
     }

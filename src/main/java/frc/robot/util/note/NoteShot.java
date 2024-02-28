@@ -84,9 +84,13 @@ public class NoteShot {
         double dx = shotStraightSpeed * Math.cos(shotPosition.getRotation().getZ() + Math.PI) * Math.cos(shotPosition.getRotation().getY())
              + shotTangentSpeed * Math.cos(shotPosition.getRotation().getZ()) + chassisSpeeds.vxMetersPerSecond;
         double dy = -shotStraightSpeed * Math.sin(shotPosition.getRotation().getZ()) * Math.cos(shotPosition.getRotation().getY())
-            + shotTangentSpeed * Math.sin(shotPosition.getRotation().getZ() + Math.PI / 2) + chassisSpeeds.vyMetersPerSecond;
+            + shotTangentSpeed * Math.sin(shotPosition.getRotation().getZ() + Math.PI / 2)  + chassisSpeeds.vyMetersPerSecond;
         double dz = shotStraightSpeed * Math.sin(shotPosition.getRotation().getY());
+
+        //shoot doesn't work for some reason, fix at home
+        //try and figure out why a trajectory isn't being generated
         
+        //fixed velocity sim here, just had to add driver speed y to correct location
         return new PathPoint(
             shotPosition, 
             dx,
