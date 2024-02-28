@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.drive.AllianceFlipUtil;
 
 import java.io.IOException;
 

@@ -57,7 +57,7 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.subsystems.vision.VisionIOPhoton;
-import frc.robot.util.LocalADStarAK;
+import frc.robot.util.autonomous.LocalADStarAK;
 import frc.robot.commands.DriveCommands;
 
 public class Drive extends SubsystemBase {

@@ -16,7 +16,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.util.PolynomialRegression;
+import frc.robot.util.misc.PolynomialRegression;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;

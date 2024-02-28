@@ -78,11 +78,11 @@ import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
-import frc.robot.util.AutoChooser;
-import frc.robot.util.DriveControls;
-import frc.robot.util.Lookup;
-import frc.robot.util.LookupTuner;
-import frc.robot.util.MakeAutos;
+import frc.robot.util.autonomous.AutoChooser;
+import frc.robot.util.autonomous.MakeAutos;
+import frc.robot.util.drive.DriveControls;
+import frc.robot.util.misc.Lookup;
+import frc.robot.util.misc.LookupTuner;
 import frc.robot.util.note.NoteVisualizer;
 
 /**
