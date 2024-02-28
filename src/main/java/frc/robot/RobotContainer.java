@@ -402,8 +402,7 @@ public class RobotContainer {
     return DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot()); */
 
     // return DriveCommands.turnSpeakerAngle(drive).onlyIf(() -> !DriveCommands.pointedAtSpeaker(drive)).alongWith(rotateArm()).andThen(shoot());
-    return (rotateArm().alongWith(shoot()))
-      .deadlineWith(DriveCommands.joystickSpeakerPoint(
+    return (rotateArm().alongWith(shoot())).deadlineWith(DriveCommands.joystickSpeakerPoint(
         drive,
         DriveControls.DRIVE_FORWARD,
         DriveControls.DRIVE_STRAFE
