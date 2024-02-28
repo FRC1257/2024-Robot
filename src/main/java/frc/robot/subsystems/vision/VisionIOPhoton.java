@@ -137,6 +137,15 @@ public class VisionIOPhoton implements VisionIO {
         return new Pose2d(robotPose.getX() + noteTranslation.getX(), robotPose.getY() + noteTranslation.getY(), robotPose.getRotation());
     }
 
+    @Override
+    public Rotation2d getAngleToNote() {
+        PhotonPipelineResult note_result = getLatestResult(noteCamera);
+        if (note_result.hasTargets()) {
+            return Rotation2d.fromDegrees(-note_result.getBestTarget().getYaw());
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public boolean goodResult(PhotonPipelineResult result) {

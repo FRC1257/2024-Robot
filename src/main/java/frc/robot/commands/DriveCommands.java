@@ -174,8 +174,8 @@ public class DriveCommands {
 
    
 
-    public static Command turnToNote(Drive drive, VisionIO visionIO, VisionIOInputsAutoLogged visionInputs) {
-        Pose2d notePose = visionIO.calculateNotePose(drive.getPose(), visionIO.calculateNoteTranslation(visionInputs));
+    public static Command turnToNote(Drive drive) {
+        Pose2d notePose = drive.calculateNotePose(drive.getPose(), drive.calculateNoteTranslation());
            angleController.setTolerance(0.08, 0.01);
                return new FunctionalCommand(
                    () -> {
@@ -203,6 +203,34 @@ public class DriveCommands {
                    () -> angleController.atSetpoint(),
                    drive);
     }
+
+    public static Command driveNote(Drive drive) {
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
+        return Commands.run(
+            () -> { 
+                Rotation2d targetDirection = drive.getAngleToNote();
+
+                double linearMagnitude = slowMode * targetDirection.getCos();
+                double omega = angleController.calculate(targetDirection.getRadians(), 0);
+
+                // Square values
+                linearMagnitude = linearMagnitude * linearMagnitude;
+                omega = Math.copySign(omega * omega, omega);
+
+                // Convert to robot relative speeds & send command
+                drive.runVelocity(
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        linearMagnitude,
+                        0,
+                        omega * drive.getMaxAngularSpeedRadPerSec(),
+                        drive.getRotation()
+                    )
+                );
+            },
+        drive
+        );
+    }
+
     /** 
      * Toggle Slow Mode
      */

@@ -273,7 +273,7 @@ public class RobotContainer {
             DriveControls.DRIVE_FORWARD,
             DriveControls.DRIVE_STRAFE));
 
-    DriveControls.DRIVE_NOTE_GOTO.whileTrue(drive.goToNote(visionIO));
+    DriveControls.DRIVE_NOTE_GOTO.whileTrue(drive.goToNote());
 
     DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
