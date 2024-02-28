@@ -20,6 +20,7 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
     private CANSparkMax GroundIntakeMotor;
     private RelativeEncoder GroundintakeEncoder;
     private SparkPIDController velocityPID;
+    private DigitalInput breakBeam;
 
     private double desiredSpeed;
 
@@ -33,6 +34,9 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
         GroundIntakeMotor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
 
         GroundintakeEncoder = GroundIntakeMotor.getEncoder();
+        
+        // :C _________/  /__________
+        breakBeam = new DigitalInput(ElectricalLayout.GROUND_INTAKE_BREAK_BEAM);
 
 
         velocityPID = GroundIntakeMotor.getPIDController();
@@ -46,6 +50,7 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
         inputs.tempCelcius = new double[] { GroundIntakeMotor.getMotorTemperature() };
         inputs.velocityRadsPerSec = GroundintakeEncoder.getVelocity();
         inputs.speedSetpoint = desiredSpeed;
+        inputs.breakBeam = breakBeam.get();
     }
 
     /** sets voltage to run motor if necessary */
@@ -107,5 +112,10 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
         velocityPID.setP(p);
         velocityPID.setI(i);
         velocityPID.setD(d);
+    }
+
+    @Override
+    public boolean isIntaked() {
+        return breakBeam.get();
     }
 }

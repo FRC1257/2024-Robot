@@ -11,6 +11,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -95,6 +96,7 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
+    public static final double periodicTime = 0.02;
     public static final double kMaxSpeedMetersPerSecond = 4.8;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
@@ -317,22 +319,38 @@ public final class Constants {
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
-
-
-
+  
   public static class Vision {
     public static final String kRaspberryCameraName = "Front_Camera";
     public static final String kOrangeCameraName = "Orange_tag";
     public static final String kNoteCameraName = "Note_Camera";
+    public static final String kRaspberryCameraName2 = "Camera";
     // Cam mounted facing forward, half a meter forward of center, half a meter up
     // from center.
-    public static final Transform3d kRaspberryRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),
+    private static double cameraPitchAngle = Rotation2d.fromDegrees(61).getRadians();
+    public static final Transform3d kRaspberryRobotToCam = new Transform3d(new Translation3d(0.5, 0.45, 0.23),
+        new Rotation3d(0, 0, Rotation2d.fromDegrees(245).getRadians()));
+    public static final Transform3d kOrangeRobotToCam = new Transform3d(new Translation3d(0.5, -0.45, 0.23),
         new Rotation3d(0, 0, 0));
-    public static final Transform3d kOrangeRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5),
-        new Rotation3d(0, 0, 135));
+    public static final Transform3d kRaspberryRobotToCam2 = new Transform3d(new Translation3d(-0.5, 0.45, 0.23),
+        new Rotation3d(0, 0, Rotation2d.fromDegrees(155).getRadians()));
+    public static final Transform3d kNoteCameraNameToCam  = new Transform3d(new Translation3d(-0.5, -0.45, 0.23),
+        new Rotation3d(0, 0, Rotation2d.fromDegrees(155).getRadians()));
+        //Change CameraNameToCam angle and stuff as needed, ask MAURICIO SANCHEZ
+
+    public static final double NoteCameraHeight = 6.0;
+
+    public static final double NoteHeight = 0.0;
+
+    // Note Camera Angle (used in sim)
+    public static final Transform3d kNoteRobotToCam = new Transform3d(new Translation3d(0.5, 0.45, 0.23),
+        new Rotation3d(0, 0, 0));
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+
+    public static final double AMBIGUITY_THRESHOLD = 0.5;
+    public static final double MAX_DISTANCE = 4; // meters
 
     // The standard deviations of our vision estimated poses, which affect
     // correction rate
@@ -428,6 +446,9 @@ public final class Constants {
     public final static int GROUND_INTAKE_MOTOR = 0;
 
     public final static int INTAKE_BREAK_BEAM = 0;
+
+    // Ground Intake
+    public final static int GROUND_INTAKE_BREAK_BEAM = 1;
   };
 
   public static double PI = 3.141592653589793238462643;
@@ -512,5 +533,17 @@ public final class Constants {
     }
   }
 
-
+  public static final double[][] LookupTable = {
+    {0,5000,10},
+    {1,5000,30},
+    {2,5000,50},
+    {3,5000,60},
+    {4,5500,70},
+    {5,5500,70},
+    {6,5500,75},
+    {7,5500,77},
+    {8,6000,79},
+    {9,6500,83},
+    {10,6500,85}
+  };
 }

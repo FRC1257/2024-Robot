@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "s3-n8"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n8-sc5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "sc5-n6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n6-sc5"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -14,7 +14,6 @@ import static frc.robot.Constants.GroundIntake.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-
 public class GroundIntake extends SubsystemBase {
     private final GroundIntakeIO io;
     GroundIntakeIOInputsAutoLogged inputs = new GroundIntakeIOInputsAutoLogged();
