@@ -1,12 +1,6 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.36,
-      "y": 7.15
-    },
-    "rotation": -0.3450294130357337
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
@@ -18,31 +12,43 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Note 1"
+                  "pathName": "s3-n3"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Note 2a"
+                  "pathName": "n3-sc1-n8"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Note 2b"
+                  "pathName": "n8-sc2"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Note 3a"
+                  "pathName": "sc2-n5"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Note 3b"
+                  "pathName": "n5-sc3"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "sc3-n6"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "n6-sc4 (4)"
                 }
               }
             ]

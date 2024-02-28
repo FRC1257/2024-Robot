@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2504306243766896,
-        "y": 4.124147725730131
+        "x": 2.48,
+        "y": 4.09
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2504306243766883,
-        "y": 4.124147725730131
+        "x": 2.446567628177991,
+        "y": 2.7715146028582662
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6251465329533996,
-        "y": 4.270394098982973
+        "x": 7.849266980585242,
+        "y": 0.7835083476434771
       },
       "prevControl": {
-        "x": 1.8451658756049112,
-        "y": 4.679883944090929
+        "x": 7.5686057879845245,
+        "y": 0.8068788178923252
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot First Note",
+      "name": "Shoot 1",
       "waypointRelativePos": 0,
       "command": {
         "type": "sequential",
@@ -49,22 +49,19 @@
       }
     },
     {
-      "name": "Ground Intake",
-      "waypointRelativePos": 0.9,
+      "name": "Intake 8",
+      "waypointRelativePos": 0.85,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
-          "commands": []
-        }
-      }
-    },
-    {
-      "name": "Intake Intake",
-      "waypointRelativePos": 0.9,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
         }
       }
     }
@@ -77,13 +74,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -25.083594006190836,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "4 Note Auto (Bottom)",
   "previewStartingState": {
-    "rotation": -48.468229258917106,
+    "rotation": -36.229706721775834,
     "velocity": 0
   },
   "useDefaultConstraints": true

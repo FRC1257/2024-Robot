@@ -208,11 +208,9 @@ public class RobotContainer {
     autoChooser.addOption("Drive Trajectory",
         drive.getAuto("Forward And Spin"));
 
-    autoChooser.addOption("Drive Try Trajectory",
-        drive.getAuto("thinger"));
-
     // this is defined later
     autoChooser.addOption("Custom", new InstantCommand());
+
 
     // autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings

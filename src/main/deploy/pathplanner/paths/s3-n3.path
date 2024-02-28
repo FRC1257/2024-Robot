@@ -3,37 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2504306243766896,
-        "y": 4.124147725730131
+        "x": 0.8093860062363999,
+        "y": 4.163118981508619
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2504306243766883,
-        "y": 4.124147725730131
+        "x": 2.2009903848867527,
+        "y": 4.092954054853979
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6251465329533996,
-        "y": 4.270394098982973
+        "x": 2.481650091505311,
+        "y": 4.092954054853979
       },
       "prevControl": {
-        "x": 1.8451658756049112,
-        "y": 4.679883944090929
+        "x": 1.9554131415955136,
+        "y": 4.1046482092964185
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot First Note",
-      "waypointRelativePos": 0,
+      "name": "Intake 3",
+      "waypointRelativePos": 0.85,
       "command": {
         "type": "sequential",
         "data": {
@@ -41,30 +47,10 @@
             {
               "type": "named",
               "data": {
-                "name": "Shoot"
+                "name": "Intake"
               }
             }
           ]
-        }
-      }
-    },
-    {
-      "name": "Ground Intake",
-      "waypointRelativePos": 0.9,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
-        }
-      }
-    },
-    {
-      "name": "Intake Intake",
-      "waypointRelativePos": 0.9,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
         }
       }
     }
@@ -77,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -25.083594006190836,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "4 Note Auto (Bottom)",
   "previewStartingState": {
-    "rotation": -48.468229258917106,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2504306243766896,
-        "y": 4.124147725730131
+        "x": 3.34,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2504306243766883,
-        "y": 4.124147725730131
+        "x": 5.019281605514777,
+        "y": 6.127736927838528
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6251465329533996,
-        "y": 4.270394098982973
+        "x": 5.24,
+        "y": 6.17
       },
       "prevControl": {
-        "x": 1.8451658756049112,
-        "y": 4.679883944090929
+        "x": 4.832175134435738,
+        "y": 6.0458778467414485
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot First Note",
-      "waypointRelativePos": 0,
+      "name": "Shoot 3",
+      "waypointRelativePos": 0.85,
       "command": {
         "type": "sequential",
         "data": {
@@ -47,26 +47,6 @@
           ]
         }
       }
-    },
-    {
-      "name": "Ground Intake",
-      "waypointRelativePos": 0.9,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
-        }
-      }
-    },
-    {
-      "name": "Intake Intake",
-      "waypointRelativePos": 0.9,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
-        }
-      }
     }
   ],
   "globalConstraints": {
@@ -77,13 +57,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -25.083594006190836,
+    "rotation": 10.539183728628212,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "4 Note Auto (Top)",
   "previewStartingState": {
-    "rotation": -48.468229258917106,
+    "rotation": -110.43507816734932,
     "velocity": 0
   },
   "useDefaultConstraints": true
