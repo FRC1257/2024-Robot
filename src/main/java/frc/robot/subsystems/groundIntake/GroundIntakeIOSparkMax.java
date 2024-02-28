@@ -20,7 +20,7 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
     private CANSparkMax GroundIntakeMotor;
     private RelativeEncoder GroundintakeEncoder;
     private SparkPIDController velocityPID;
-    private DigitalInput breakBreak;
+    private DigitalInput breakBeam;
 
     private double desiredSpeed;
 
