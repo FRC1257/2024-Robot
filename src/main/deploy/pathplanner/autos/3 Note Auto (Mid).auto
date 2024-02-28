@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.9091890867867262,
-      "y": 6.766332202498135
+      "x": 1.3674277229789629,
+      "y": 5.5768617000416905
     },
     "rotation": 0
   },
@@ -18,13 +18,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "s1-n1"
+                  "pathName": "s2-n2"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "n1-sc1-n4"
+                  "pathName": "sc2-n4"
                 }
               },
               {
@@ -36,19 +36,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "sc2-n2"
+                  "pathName": "sc2-n5"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "n2-sc3"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "sc3-n5"
+                  "pathName": "sc2-n5 (2)"
                 }
               },
               {

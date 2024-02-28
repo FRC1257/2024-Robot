@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.02,
-        "y": 6.17
+        "x": 5.306330042588828,
+        "y": 6.386091632040746
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.891315535600193,
-        "y": 6.50308873064302
+        "x": 6.047311667069891,
+        "y": 6.220345742354193
       },
       "isLocked": false,
       "linkedName": null
@@ -47,6 +47,23 @@
           ]
         }
       }
+    },
+    {
+      "name": "Shoot 4",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -63,7 +80,7 @@
   "reversed": false,
   "folder": "4 Note Auto (Top)",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 7.43140797117247,
     "velocity": 0
   },
   "useDefaultConstraints": true
