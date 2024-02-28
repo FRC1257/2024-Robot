@@ -59,12 +59,30 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOSparkMax;
+import frc.robot.subsystems.groundIntake.GroundIntake;
+import frc.robot.subsystems.groundIntake.GroundIntakeIO;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmIO;
+import frc.robot.subsystems.pivotArm.PivotArmIOSim;
+import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
+import frc.robot.util.AutoChooser;
 import frc.robot.util.DriveControls;
 import frc.robot.util.Lookup;
 import frc.robot.util.LookupTuner;
+import frc.robot.util.MakeAutos;
 import frc.robot.util.note.NoteVisualizer;
 
 /**
@@ -159,6 +177,7 @@ public class RobotContainer {
     }
 
     System.out.println("[Init] Setting up Logs");
+    AutoChooser.setupChoosers();
 
     // Set up robot state manager
 
@@ -217,8 +236,9 @@ public class RobotContainer {
     autoChooser.addOption("Drive Trajectory",
         drive.getAuto("Forward And Spin"));
 
-    autoChooser.addOption("Drive Try Trajectory",
-        drive.getAuto("thinger"));
+    // this is defined later
+    autoChooser.addOption("Custom", new InstantCommand());
+
 
     // autoChooser.addOption("Spin", new SpinAuto(drive));
     // Configure the button bindings
@@ -271,8 +291,8 @@ public class RobotContainer {
 
     DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
-    DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose));
-    DriveControls.DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose));
+    DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose()));
+    DriveControls.DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose()));
     DriveControls.DRIVE_STOP.onTrue(new InstantCommand(drive::stopWithX, drive));
 
     DriveControls.TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
@@ -324,6 +344,20 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    AutoChooser.setupChoosers();
+    if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
+      return MakeAutos.makeAutoCommand(
+        drive, 
+        this::shootAnywhere, 
+        () -> {
+          return intake.IntakeManualCommand(() -> 2);
+        }, 
+        () -> {
+          // use a vision command later
+          return intake.IntakeLoopCommand(8).withTimeout(1);
+        }
+      );
+    }
     return autoChooser.get();
   }
 

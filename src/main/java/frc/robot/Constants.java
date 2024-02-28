@@ -439,6 +439,9 @@ public final class Constants {
     public final static int GROUND_INTAKE_MOTOR = 0;
 
     public final static int INTAKE_BREAK_BEAM = 0;
+
+    // Ground Intake
+    public final static int GROUND_INTAKE_BREAK_BEAM = 1;
   };
 
   public static double PI = 3.141592653589793238462643;
