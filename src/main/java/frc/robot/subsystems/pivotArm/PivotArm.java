@@ -13,7 +13,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import static frc.robot.Constants.PivotArm.*;
+
+import static frc.robot.subsystems.pivotArm.PivotArmConstants;
 
 import java.util.function.DoubleSupplier;
 

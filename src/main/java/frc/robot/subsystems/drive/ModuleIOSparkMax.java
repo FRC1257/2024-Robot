@@ -28,9 +28,8 @@ import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants.ModuleConstants;
 
-import static frc.robot.Constants.ModuleConstants.*;
+import static frc.robot.subsystems.drive.ModuleConstants;
 
 /**
  * Module IO implementation for SparkMax drive motor controller, SparkMax turn motor controller (NEO
