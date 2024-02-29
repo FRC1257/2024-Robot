@@ -175,7 +175,9 @@ public class RobotContainer {
     });
 
     // Named Commands
-    NamedCommands.registerCommand("Shoot", shootAnywhere());
+    //command calling drivng subystem is probably here
+    //NamedCommands.registerCommand("Shoot", shootAnywhere());
+    NamedCommands.registerCommand("Shoot", shootSpeaker());
     NamedCommands.registerCommand("Intake", intake.IntakeLoopCommand(3).deadlineWith(groundIntake.GroundIntakeManualCommand(() -> 2)));
     NamedCommands.registerCommand("PrepShoot", prepShoot());
     NamedCommands.registerCommand("Zero", zeroPosition());
@@ -254,7 +256,7 @@ public class RobotContainer {
             DriveControls.DRIVE_FORWARD,
             DriveControls.DRIVE_STRAFE));
 
-    DriveControls.DRIVE_NOTE_GOTO.whileTrue(drive.goToNote());
+    //DriveControls.DRIVE_NOTE_GOTO.whileTrue(drive.goToNote());
 
     DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
@@ -369,13 +371,17 @@ public class RobotContainer {
     return DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot()); */
 
     // return DriveCommands.turnSpeakerAngle(drive).onlyIf(() -> !DriveCommands.pointedAtSpeaker(drive)).alongWith(rotateArm()).andThen(shoot());
-    return (rotateArm().alongWith(shoot()))
+    return (rotateArm().andThen(shootNote())) //problem is here, both of these commands can't be robotContainer
       .deadlineWith(DriveCommands.joystickSpeakerPoint(
         drive,
         DriveControls.DRIVE_FORWARD,
         DriveControls.DRIVE_STRAFE
       )
     );
+  }
+
+  public Command shootSpeaker(){
+    return (rotateArm().andThen(shootNote()));
   }
 
   public Command rotateArm(){

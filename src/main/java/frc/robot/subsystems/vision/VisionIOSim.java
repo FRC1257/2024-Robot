@@ -162,7 +162,8 @@ public class VisionIOSim implements VisionIO {
 
     @Override
     public Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation){
-        return new Pose2d(robotPose.getX() + noteTranslation.getX(), robotPose.getY() + noteTranslation.getY(), robotPose.getRotation());
+        //return new Pose2d(robotPose.getX() + noteTranslation.getX(), robotPose.getY() + noteTranslation.getY(), robotPose.getRotation());
+        return null;
     }
     
 }

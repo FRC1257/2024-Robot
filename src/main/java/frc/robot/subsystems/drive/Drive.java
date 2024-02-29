@@ -411,7 +411,7 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.followPath(path);
   }
 
-  public Command goToNote(){
+  public Command goToNote(){ //not supported for Sim yet
     return DriveCommands.turnToNote(this).andThen(goToPose(visionIO.calculateNotePose(getPose(), visionIO.calculateNoteTranslation(visionInputs))));
     //might have to negate direction or angle due to orientation of the robot's intake
   }
