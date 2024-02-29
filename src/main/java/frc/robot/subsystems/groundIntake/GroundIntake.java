@@ -3,15 +3,12 @@ package frc.robot.subsystems.groundIntake;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import static frc.robot.Constants.GroundIntake.*;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class GroundIntake extends SubsystemBase {

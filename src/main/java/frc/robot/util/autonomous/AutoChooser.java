@@ -1,10 +1,7 @@
 package frc.robot.util.autonomous;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 public class AutoChooser {
     public static LoggedDashboardBoolean shootOnStart = new LoggedDashboardBoolean("ShootOnStart", true);
