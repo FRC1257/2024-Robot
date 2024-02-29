@@ -30,7 +30,6 @@ import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
 

@@ -174,100 +174,7 @@ public final class Constants {
   };
 
 
-  public static class Shooter {
-    public static final double RIGHT_MOTOR_MIN_SPEED = 0;
-    public static final double RIGHT_MOTOR_MAX_SPEED = 0;
-    public static final double LEFT_MOTOR_MIN_SPEED = 0;
-    public static final double LEFT_MOTOR_MAX_SPEED = 0;
-
-    public static class ShooterSimConstants {
-      public static final double RIGHT_MOTOR_MIN_SPEED = 0;
-      public static final double RIGHT_MOTOR_MAX_SPEED = 0;
-      public static final double LEFT_MOTOR_MIN_SPEED = 0;
-      public static final double LEFT_MOTOR_MAX_SPEED = 0;
-
-      public static final double rightEncoder = 0.0;
-      public static final double leftEncoder = 0.0;
-
-      public static class ShooterPhysicalConstants {
-        public static final double RIGHT_MOTOR_MIN_SPEED = 0;
-        public static final double RIGHT_MOTOR_MAX_SPEED = 0;
-        public static final double LEFT_MOTOR_MIN_SPEED = 0;
-        public static final double LEFT_MOTOR_MAX_SPEED = 0;
-
-      }
-    }
-  }
-
-
-
  
-  
- 
-
-  public static final class Intake {
-    public static class IntakeSimConstants {
-      public static final int kMotorPort = 0;
-      public static final int kBreakBeamSensorChannel = 0;
-      public static final int kJoystickPort = 0;
-
-      public static final double kIntakeP = 0.001;
-      public static final double kIntakeI = 0.0;
-      public static final double kIntakeD = 0.0;
-
-      public static final double kIntakeS = 0.0;
-      public static final double kIntakeG = 0.0;
-      public static final double kIntakeV = 0.0;
-      public static final double kIntakeA = 0.0;
-      // Not sure what these three are or if they're needed
-      public static final double kIntakeGearing = 0.0;
-      public static final double kIntakeDrumRadius = 0.03; 
-      public static final double kCarriageMass = 0.15; // Mass in Kg
-      public static final double kMomentOfInertia = 0.5 * kCarriageMass * kIntakeDrumRadius * kIntakeDrumRadius; // Moment of inertia represents how resistant to force something is
-
-      // distance per pulse = (distance per revolution) / (pulses per revolution)
-      // = (Pi * D) / ppr
-      public static final double kIntakeEncoderDistPerPulse = 2.0 * Math.PI * kIntakeDrumRadius / 4096;
-    }
-
-    public static class IntakePhysicalConstants {
-      // Not sure if these two necessary
-      public static final double GROUND_STOP_BUFFER = 0.0;
-      public static final double GROUND_TOLERANCE = 0.0;
-    }
-  }
-
-  public static final class GroundIntake {
-    public static class GroundIntakeSimConstants {
-      public static final int kMotorPort = 0;
-      public static final int kBreakBeamSensorChannel = 0;
-      public static final int kJoystickPort = 0;
-
-      public static final double kGroundIntakeP = 0.001;
-      public static final double kGroundIntakeI = 0.0;
-      public static final double kGroundIntakeD = 0.0;
-
-      public static final double kGroundIntakeS = 0.0;
-      public static final double kGroundIntakeG = 0.0;
-      public static final double kGroundIntakeV = 0.0;
-      public static final double kGroundIntakeA = 0.0;
-      // Not sure what these three are or if they're needed
-      public static final double kGroundIntakeGearing = 0.0;
-      public static final double kGroundIntakeDrumRadius = 0.03; 
-      public static final double kCarriageMass = 0.15; // Mass in Kg
-      public static final double kMomentOfInertia = 0.5 * kCarriageMass * kGroundIntakeDrumRadius * kGroundIntakeDrumRadius; // Moment of inertia represents how resistant to force something is
-
-      // distance per pulse = (distance per revolution) / (pulses per revolution)
-      // = (Pi * D) / ppr
-      public static final double kGroundIntakeEncoderDistPerPulse = 2.0 * Math.PI * kGroundIntakeDrumRadius / 4096;
-    }
-
-    public static class GroundIntakePhysicalConstants {
-      // Not sure if these two necessary
-      public static final double GROUND_STOP_BUFFER = 0.0;
-      public static final double GROUND_TOLERANCE = 0.0;
-    }
-  }
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
@@ -312,42 +219,7 @@ public final class Constants {
   public final static int NEO_CURRENT_LIMIT = 80; // amps
 
 
-  public static class ShooterConstants {
-    // encoder / flywheelReduction = flywheel
-    public static double flywheelReduction = (1.0 / 2.0);
-    public static double shooterToleranceRPM = 50.0;
-    public static double defaultShooterSpeedRPM = 1000;
-    
-    public static double wheelRadiusM = 0.05;
-    public static double wheelMassKg = 0.2;
-    public static double momentOfInertia = 0.5 * wheelMassKg * wheelRadiusM * wheelRadiusM;
   
-    public static FlywheelConstants leftShooter =
-        switch (Constants.currentMode) {
-          default -> new FlywheelConstants(2, false, 0.001, 0.01, 0.0, 0.33329, 0.00083, 0.0);
-        };
-  
-    public static FlywheelConstants rightShooter =
-        switch (Constants.currentMode) {
-          default -> new FlywheelConstants(1, false, 0.001, 0.01, 0.0, 0.33329, 0.00083, 0.0);
-        };
-        
-    public record FlywheelConstants(
-        int id,
-        boolean inverted,
-        double kP,
-        double kI,
-        double kD,
-        double kS,
-        double kV,
-        double kA) {}
-  
-    public record FeederConstants(int id, boolean inverted) {}
-  }
-  
-
-  
- 
   public static final double[][] LookupTable = {
     {0,5000,10},
     {1,5000,30},
