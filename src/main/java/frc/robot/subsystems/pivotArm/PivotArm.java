@@ -22,6 +22,7 @@ public class PivotArm extends SubsystemBase {
     private LoggedDashboardNumber logP;
     private LoggedDashboardNumber logI;
     private LoggedDashboardNumber logD;
+    private LoggedDashboardNumber logFF;
 
     private double setpoint = 0;
 
@@ -38,6 +39,7 @@ public class PivotArm extends SubsystemBase {
         logP = new LoggedDashboardNumber("PivotArm/P", io.getP());
         logI = new LoggedDashboardNumber("PivotArm/I", io.getI());
         logD = new LoggedDashboardNumber("PivotArm/D", io.getD());
+        logFF = new LoggedDashboardNumber("PivotArm/FF", io.getFF());
         
     }
 
@@ -61,6 +63,9 @@ public class PivotArm extends SubsystemBase {
         
         if (logD.get() != io.getD())
             io.setD(logD.get());
+        
+        if (logFF.get() != io.getFF())
+            io.setFF(logFF.get());
         
         // Log Inputs
         Logger.processInputs("PivotArm", inputs);

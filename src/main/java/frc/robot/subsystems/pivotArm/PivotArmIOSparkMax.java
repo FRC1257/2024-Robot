@@ -56,6 +56,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         pidController.setP(PivotArmConstants.PIVOT_ARM_PID_REAL[0]);
         pidController.setI(PivotArmConstants.PIVOT_ARM_PID_REAL[1]);
         pidController.setD(PivotArmConstants.PIVOT_ARM_PID_REAL[2]);
+        pidController.setFF(PivotArmConstants.PIVOT_ARM_PID_REAL[3]);
     }
 
     /** Updates the set of loggable inputs. */
@@ -114,6 +115,11 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     }
 
     @Override
+    public void setFF(double ff) {
+        pidController.setFF(ff);
+    }
+
+    @Override
     public double getP() {
         return pidController.getP();
     }
@@ -126,6 +132,11 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     @Override
     public double getD() {
         return pidController.getD();
+    }
+
+    @Override
+    public double getFF() {
+        return pidController.getFF();
     }
 
 }
