@@ -96,7 +96,6 @@ public class RobotContainer {
             new VisionIOPhoton());
         intake = new Intake(new IntakeIOSparkMax());
         groundIntake = new GroundIntake(new GroundIntakeIOSparkMax());
-        visionIO = new VisionIOPhoton();
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -114,7 +113,6 @@ public class RobotContainer {
             new VisionIOSim());
         intake = new Intake(new IntakeIOSim());
         groundIntake = new GroundIntake(new GroundIntakeIOSim());
-        visionIO = new VisionIOSim();
         break;
 
       // Replayed robot, disable IO implementations, only reads log files
@@ -140,7 +138,6 @@ public class RobotContainer {
         });
         groundIntake = new GroundIntake(new GroundIntakeIO() {
         });
-        visionIO = new VisionIO(){};
         break;
     }
 
