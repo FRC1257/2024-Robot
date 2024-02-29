@@ -1,10 +1,8 @@
+package frc.robot.subsystems.pivotArm;
 
-public static class PivotArm {
-    // CHANGE CONSTANTS, THESE ARE TEMPORARY
-    public static final int PIVOT_ARM_ID = 0;
-    public static final int LEFT_SLAVE_ID = 1;
-    public static final int RIGHT_SLAVE_FRONT_ID = 2;
-    public static final int RIGHT_SLAVE_BACK_ID = 3;
+import edu.wpi.first.math.util.Units;
+
+public class PivotArmConstants {
 
     public static final double POSITION_CONVERSION_FACTOR = 1;
     public static final double PIVOT_ARM_ROTATION_DIAM_M = 1;

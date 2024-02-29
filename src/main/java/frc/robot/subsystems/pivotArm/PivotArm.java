@@ -14,8 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
-import static frc.robot.subsystems.pivotArm.PivotArmConstants;
-
 import java.util.function.DoubleSupplier;
 
 public class PivotArm extends SubsystemBase {
@@ -70,9 +68,9 @@ public class PivotArm extends SubsystemBase {
 
     public void setVoltage(double motorVolts) {
         // limit the arm if its past the limit
-        if (io.getAngle() > PIVOT_ARM_MAX_ANGLE && motorVolts > 0) {
+        if (io.getAngle() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE && motorVolts > 0) {
             motorVolts = 0;
-        } else if (io.getAngle() < PIVOT_ARM_MIN_ANGLE && motorVolts < 0) {
+        } else if (io.getAngle() < PivotArmConstants.PIVOT_ARM_MIN_ANGLE && motorVolts < 0) {
             motorVolts = 0;
         }
         
@@ -93,7 +91,7 @@ public class PivotArm extends SubsystemBase {
     }
 
     public boolean atSetpoint() {
-        return Math.abs(io.getAngle() - setpoint) < PIVOT_ARM_PID_TOLERANCE;
+        return Math.abs(io.getAngle() - setpoint) < PivotArmConstants.PIVOT_ARM_PID_TOLERANCE;
     }
     public void setMechanism(MechanismLigament2d mechanism) {
         armMechanism = mechanism;

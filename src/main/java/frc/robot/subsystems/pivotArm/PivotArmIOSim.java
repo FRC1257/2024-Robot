@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
-import static frc.robot.subsystems.pivotArm.PivotArmConstants;
-
 public class PivotArmIOSim implements PivotArmIO {
     // from here
     // https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/armsimulation/subsystems/Arm.java
@@ -20,7 +18,7 @@ public class PivotArmIOSim implements PivotArmIO {
 
     // Standard classes for controlling our arm
     private final ProfiledPIDController m_controller;
-    private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(kArmMass, kArmLength);
+    private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(PivotArmConstants.PivotArmSimConstants.kArmMass, PivotArmConstants.PivotArmSimConstants.kArmLength);
     private final Encoder m_encoder;
 
     // Simulation classes help us simulate what's going on, including gravity.
@@ -30,21 +28,21 @@ public class PivotArmIOSim implements PivotArmIO {
 
     private SingleJointedArmSim sim = new SingleJointedArmSim(
             m_armGearbox,
-            kArmReduction,
-            SingleJointedArmSim.estimateMOI(kArmLength, kArmMass),
-            kArmLength,
-            kMinAngleRads,
-            kMaxAngleRads,
+            PivotArmConstants.PivotArmSimConstants.kArmReduction,
+            SingleJointedArmSim.estimateMOI(PivotArmConstants.PivotArmSimConstants.kArmLength, PivotArmConstants.PivotArmSimConstants.kArmMass),
+            PivotArmConstants.PivotArmSimConstants.kArmLength,
+            PivotArmConstants.PivotArmSimConstants.kMinAngleRads,
+            PivotArmConstants.PivotArmSimConstants.kMaxAngleRads,
             true, // change this to true later
             0.1);
 
     private final EncoderSim m_encoderSim;
 
     public PivotArmIOSim() {
-        m_encoder = new Encoder(kEncoderAChannel, kEncoderBChannel);
+        m_encoder = new Encoder(PivotArmConstants.PivotArmSimConstants.kEncoderAChannel, PivotArmConstants.PivotArmSimConstants.kEncoderBChannel);
         m_encoderSim = new EncoderSim(m_encoder);
-        m_encoderSim.setDistancePerPulse(kArmEncoderDistPerPulse);
-        m_controller = new ProfiledPIDController(kPivotSimPID[0], kPivotSimPID[1], kPivotSimPID[2],
+        m_encoderSim.setDistancePerPulse(PivotArmConstants.PivotArmSimConstants.kArmEncoderDistPerPulse);
+        m_controller = new ProfiledPIDController(PivotArmConstants.PivotArmSimConstants.kPivotSimPID[0], PivotArmConstants.PivotArmSimConstants.kPivotSimPID[1], PivotArmConstants.PivotArmSimConstants.kPivotSimPID[2],
                 new TrapezoidProfile.Constraints(2.45, 2.45));
         
         m_controller.setTolerance(0.1, 0.05);

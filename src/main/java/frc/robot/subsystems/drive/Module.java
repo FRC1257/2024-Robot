@@ -30,6 +30,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.subsystems.drive.DriveConstants;
 
+import frc.robot.Constants;
+
 public class Module {
   private static final double WHEEL_RADIUS = kWheelDiameterMeters / 2;
   public static final double ODOMETRY_FREQUENCY = 250.0;

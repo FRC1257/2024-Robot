@@ -295,6 +295,12 @@ public final class Constants {
 
     // Ground Intake
     public final static int GROUND_INTAKE_BREAK_BEAM = 1;
+    
+    // CHANGE CONSTANTS, THESE ARE TEMPORARY
+    public static final int PIVOT_ARM_ID = 0;
+    public static final int LEFT_SLAVE_ID = 1;
+    public static final int RIGHT_SLAVE_FRONT_ID = 2;
+    public static final int RIGHT_SLAVE_BACK_ID = 3;
   };
 
   public static double PI = 3.141592653589793238462643;

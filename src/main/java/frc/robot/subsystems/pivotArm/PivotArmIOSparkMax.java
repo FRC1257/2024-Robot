@@ -1,13 +1,13 @@
 package frc.robot.subsystems.pivotArm;
 
-import static frc.robot.subsystems.pivotArm.PivotArmConstants;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
+
+import static frc.robot.Constants.ElectricalLayout.*;
 
 public class PivotArmIOSparkMax implements PivotArmIO {
     // Motor and Encoders
@@ -45,17 +45,17 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         configurePID();
 
         absoluteEncoder = pivotMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
-        absoluteEncoder.setPositionConversionFactor(POSITION_CONVERSION_FACTOR);
-        absoluteEncoder.setVelocityConversionFactor(POSITION_CONVERSION_FACTOR / 60.0);
+        absoluteEncoder.setPositionConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR);
+        absoluteEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0);
         
     }
 
     private void configurePID() {
         pidController = pivotMotor.getPIDController();
-        pidController.setOutputRange(PIVOT_ARM_MIN_ANGLE, PIVOT_ARM_MAX_ANGLE);
-        pidController.setP(PIVOT_ARM_PID_REAL[0]);
-        pidController.setI(PIVOT_ARM_PID_REAL[1]);
-        pidController.setD(PIVOT_ARM_PID_REAL[2]);
+        pidController.setOutputRange(PivotArmConstants.PIVOT_ARM_MIN_ANGLE, PivotArmConstants.PIVOT_ARM_MAX_ANGLE);
+        pidController.setP(PivotArmConstants.PIVOT_ARM_PID_REAL[0]);
+        pidController.setI(PivotArmConstants.PIVOT_ARM_PID_REAL[1]);
+        pidController.setD(PivotArmConstants.PIVOT_ARM_PID_REAL[2]);
     }
 
     /** Updates the set of loggable inputs. */
@@ -95,7 +95,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
     @Override
     public boolean atSetpoint() {
-        return Math.abs(absoluteEncoder.getPosition() - setpoint) < PIVOT_ARM_PID_TOLERANCE;
+        return Math.abs(absoluteEncoder.getPosition() - setpoint) < PivotArmConstants.PIVOT_ARM_PID_TOLERANCE;
     }
 
     @Override
