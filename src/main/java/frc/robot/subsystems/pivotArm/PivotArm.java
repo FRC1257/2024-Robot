@@ -93,6 +93,7 @@ public class PivotArm extends SubsystemBase {
     public boolean atSetpoint() {
         return Math.abs(io.getAngle() - setpoint) < PivotArmConstants.PIVOT_ARM_PID_TOLERANCE;
     }
+
     public void setMechanism(MechanismLigament2d mechanism) {
         armMechanism = mechanism;
     }
@@ -130,7 +131,7 @@ public class PivotArm extends SubsystemBase {
             this
         );
     }
-
+    // Allows manual control of the pivot arm for PID tuning
     public Command ManualCommand(DoubleSupplier speedSupplier) {
         return new FunctionalCommand(
             () -> move(speedSupplier.getAsDouble()), 

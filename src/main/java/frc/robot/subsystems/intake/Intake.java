@@ -69,9 +69,7 @@ public class Intake extends SubsystemBase {
         ).withTimeout(5);
     }
 
-    /**
-     * Same dependence as IntakeLoopCommand
-     */ 
+    // The above command in reverse
     public Command EjectLoopCommand(double voltage) {
         return new FunctionalCommand(
             () -> {},
@@ -81,7 +79,10 @@ public class Intake extends SubsystemBase {
             this
         ).withTimeout(2);
     }
-
+    /**
+     * Uses input from controller to set speed of the flywheel
+     * and is used as the default command for the ground intake
+    */
     public Command IntakeSpeedCommand(DoubleSupplier speed) {
         return new FunctionalCommand(
             () -> {},
@@ -91,7 +92,7 @@ public class Intake extends SubsystemBase {
             this
         );
     }
-
+    // Allows manual command of the flywheel for testing
     public Command IntakeManualCommand(DoubleSupplier voltage) {
         return new FunctionalCommand(
             () -> {},

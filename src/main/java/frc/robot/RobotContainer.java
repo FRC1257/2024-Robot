@@ -233,7 +233,7 @@ public class RobotContainer {
             DriveControls.INTAKE_ROTATE));
 
     groundIntake.setDefaultCommand(
-        groundIntake.GroundIntakeSpeedCommand(
+        groundIntake.GroundIntakeManualCommand(
             DriveControls.GROUND_INTAKE_ROTATE));
 
     pivot.setDefaultCommand(
