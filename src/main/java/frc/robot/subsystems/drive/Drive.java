@@ -15,11 +15,7 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.useVision;
-import static frc.robot.Constants.DriveConstants.kMaxSpeedMetersPerSecond;
-import static frc.robot.Constants.DriveConstants.kPathConstraints;
-import static frc.robot.Constants.DriveConstants.kTrackWidthX;
-import static frc.robot.Constants.DriveConstants.kTrackWidthY;
-import static frc.robot.Constants.DriveConstants.periodicTime;
+import static frc.robot.subsystems.drive.DriveConstants.*;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;

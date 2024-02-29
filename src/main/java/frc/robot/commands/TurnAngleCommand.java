@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 
-import static frc.robot.Constants.DriveConstants.*;
+import static frc.robot.subsystems.drive.DriveConstants.*;
 
 public class TurnAngleCommand extends Command {
     private Drive drive;

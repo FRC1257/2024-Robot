@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static frc.robot.Constants.PivotArm.PIVOT_ARM_MIN_ANGLE;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -37,47 +35,14 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.TurnAngleCommand;
 import frc.robot.subsystems.LED.BlinkinLEDController;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOReal;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOSparkMax;
-import frc.robot.subsystems.groundIntake.GroundIntake;
-import frc.robot.subsystems.groundIntake.GroundIntakeIO;
-import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
-import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOSparkMax;
-import frc.robot.subsystems.pivotArm.PivotArm;
-import frc.robot.subsystems.pivotArm.PivotArmIO;
-import frc.robot.subsystems.pivotArm.PivotArmIOSim;
-import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIO;
-import frc.robot.subsystems.shooter.ShooterIOSim;
-import frc.robot.subsystems.shooter.ShooterIOSparkMax;
-import frc.robot.subsystems.groundIntake.GroundIntake;
-import frc.robot.subsystems.groundIntake.GroundIntakeIO;
-import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
-import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOSparkMax;
-import frc.robot.subsystems.pivotArm.PivotArm;
-import frc.robot.subsystems.pivotArm.PivotArmIO;
-import frc.robot.subsystems.pivotArm.PivotArmIOSim;
-import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIO;
-import frc.robot.subsystems.shooter.ShooterIOSim;
-import frc.robot.subsystems.shooter.ShooterIOSparkMax;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhoton;
-import frc.robot.subsystems.vision.VisionIOSim;
+
+import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.groundIntake.*;
+import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.pivotArm.*;
+import frc.robot.subsystems.shooter.*;
+import frc.robot.subsystems.vision.*;
+
 import frc.robot.util.autonomous.AutoChooser;
 import frc.robot.util.autonomous.MakeAutos;
 import frc.robot.util.drive.DriveControls;
@@ -99,7 +64,6 @@ public class RobotContainer {
   private final PivotArm pivot;
   private final Intake intake;
   private final GroundIntake groundIntake;
-  private final VisionIO visionIO;
 
   // LEDs
   private final BlinkinLEDController ledController = BlinkinLEDController.getInstance();
@@ -305,7 +269,7 @@ public class RobotContainer {
     DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
     // Operator controls
-    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MAX_ANGLE));
+    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MAX_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
 
    // NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond, shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
@@ -368,7 +332,7 @@ public class RobotContainer {
   }
 
   public Command zeroPosition() {
-    return pivot.PIDCommand(Constants.PivotArm.PIVOT_ARM_MIN_ANGLE)
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MIN_ANGLE)
         .alongWith(intake.stop())
         .alongWith(shooter.stop())
         .alongWith(groundIntake.stop());
@@ -502,7 +466,7 @@ public Command shoot() {
     BlinkinLEDController.isEndgame = DriverStation.getMatchTime() <= 30;
     BlinkinLEDController.isEnabled = DriverStation.isEnabled();
     BlinkinLEDController.noteInIntake = intake.isIntaked();
-    BlinkinLEDController.pivotArmDown = pivot.getAngle().getRadians() < (PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
+    BlinkinLEDController.pivotArmDown = pivot.getAngle().getRadians() < (PivotArmConstants.PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
     BlinkinLEDController.shooting = shooter.getLeftCharacterizationVelocity() > 100;
     ledController.periodic();
   }

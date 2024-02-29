@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Twist3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.subsystems.drive.Drive;
 
-import static frc.robot.Constants.PivotArm.PivotArmSimConstants.kArmLength;
+import static frc.robot.subsystems.pivotArm.PivotArmConstants.PivotArmSimConstants.kArmLength;
 
 import org.littletonrobotics.junction.Logger;
 

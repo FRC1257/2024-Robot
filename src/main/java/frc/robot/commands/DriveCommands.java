@@ -32,7 +32,7 @@ import java.util.function.DoubleSupplier;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 
-import static frc.robot.Constants.DriveConstants.*;
+import static frc.robot.subsystems.drive.DriveConstants.*;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
