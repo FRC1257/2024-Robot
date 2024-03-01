@@ -5,13 +5,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.*;
 import frc.robot.util.misc.LoggedTunableNumber;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import java.util.function.DoubleSupplier;
 
