@@ -65,7 +65,7 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
         GroundIntakeMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
-
+    /** sets speed of motor */
     @Override
     public void setSpeed(double speed) {
         desiredSpeed = speed;

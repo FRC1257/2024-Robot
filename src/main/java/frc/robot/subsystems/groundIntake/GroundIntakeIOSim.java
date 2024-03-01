@@ -7,6 +7,7 @@ import frc.robot.Constants.ElectricalLayout;
 import edu.wpi.first.wpilibj.DigitalInput;
 import static frc.robot.subsystems.groundIntake.GroundIntakeConstants.GroundIntakeSimConstants.*;
 
+
 public class GroundIntakeIOSim implements GroundIntakeIO {
     private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.2, 2);
     private PIDController controller = new PIDController(0, 0, 0);

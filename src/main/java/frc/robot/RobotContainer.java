@@ -235,7 +235,7 @@ public class RobotContainer {
             DriveControls.INTAKE_ROTATE));
 
     groundIntake.setDefaultCommand(
-        groundIntake.GroundIntakeSpeedCommand(
+        groundIntake.GroundIntakeManualCommand(
             DriveControls.GROUND_INTAKE_ROTATE));
 
     pivot.setDefaultCommand(
@@ -293,14 +293,6 @@ public class RobotContainer {
   }
 
   public void setPivotPose3d() {
-    Pose2d armPose = drive.getPose().plus(new Transform2d(
-        new Translation2d(0.098, drive.getRotation().plus(Rotation2d.fromDegrees(180))), new Rotation2d()));
-
-    Rotation3d rotation = new Rotation3d(0, pivot.getAngle().getRadians(),
-        armPose.getRotation().plus(Rotation2d.fromDegrees(180)).getRadians());
-    Translation3d translation = new Translation3d(armPose.getTranslation().getX(), armPose.getTranslation().getY(),
-        0.28);
-    Pose3d pose = new Pose3d(translation, rotation);
     Logger.recordOutput("PivotPoseThing",
         new Pose3d(
             new Translation3d(0, 0, 0.28),

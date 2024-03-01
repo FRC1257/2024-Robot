@@ -10,7 +10,6 @@ import frc.robot.util.misc.LoggedTunableNumber;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
