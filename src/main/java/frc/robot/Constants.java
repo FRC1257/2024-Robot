@@ -103,78 +103,7 @@ public final class Constants {
     public static String GIT_DATE = "Snail";
     public static String GIT_BRANCH = "PivotArm";
   }
-  public static class Drivetrain {
-    // drivetrain constants
-    public static double DRIVE_TRACK_WIDTH_M = 0.86;// 0.66; // m
-    public static double DRIVE_WHEEL_DIAM_M = 0.1524; // m
-    public static double DRIVE_GEARBOX_REDUCTION = 10.71;
 
-    // driving modifiers
-    public static double DRIVE_SLOW_TURN_MULT = 0.25;
-    public static double DRIVE_SLOW_FORWARD_MULT = 0.25;
-
-    // closed loop driving
-    public static double DRIVE_CLOSED_MAX_VEL = 4.0; // m/s
-    public static double DRIVE_CLOSED_MAX_ROT_TELEOP = 360.00; //
-    public static double DRIVE_CLOSED_MAX_ROT_AUTO = 100.0; // deg/s
-    public static double DRIVE_CLOSED_MAX_ACC = 1.5; // m/s^2
-
-    // trajectory following
-    public static double DRIVE_TRAJ_MAX_VEL = 8.0; // m/s
-    public static double DRIVE_TRAJ_MAX_ACC = 0.7515; // .75; // m/s^2
-    public static double DRIVE_TRAJ_RAMSETE_B = 2.0; // don't change
-    public static double DRIVE_TRAJ_RAMSETE_ZETA = 0.7;
-
-    public static double DRIVE_TRAJ_KV = 0.0; // don't change
-    public static double DRIVE_TRAJ_KA = 0.0; // don't change
-    public static double DRIVE_TRAJ_KS = 0.0; // don't change
-
-    // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
-    // These characterization values MUST be determined either experimentally or
-    // theoretically
-    // for *your* robot's drive.
-    // The Robot Characterization Toolsuite provides a convenient tool for obtaining
-    // these
-    // values for your robot.
-    public static final double ksVolts = 0.22;
-    public static final double kvVoltSecondsPerMeter = 1.98;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.2;
-
-    // aligning
-    public static double DRIVE_ALIGN_MAX_VEL = 0.75; // m/s
-    public static double DRIVE_ALIGN_MAX_ACC = 0.350; // .75; // m/s^2
-
-    // linear position PID
-    public static double[] DRIVE_DIST_PID = { 3.50, 0.0, 0.0 };
-    public static double DRIVE_DIST_ANGLE_P = 0.1;
-    public static double DRIVE_DIST_TOLERANCE = 0.01;
-    public static double DRIVE_DIST_MAX_OUTPUT = 0.6;
-
-    // angular position PID works for test bot
-    public static double[] DRIVE_ANGLE_PID = { 0.045, 0.1, 0.005 }; // 0.055
-    public static double DRIVE_ANGLE_TOLERANCE = 0.5;
-    public static double DRIVE_ANGLE_MAX_OUTPUT = 0.6;
-
-    // velocity PID (for closed loop, profiling, and trajectory)
-    public static int DRIVE_VEL_SLOT = 0;
-    public static double DRIVE_VEL_LEFT_P = 0.25;
-    public static double DRIVE_VEL_LEFT_F = 0.25;
-    public static double DRIVE_VEL_RIGHT_P = 0.25;
-    public static double DRIVE_VEL_RIGHT_F = 0.25;
-
-    // profiling position PID (for further refinement of tracking)
-    public static double DRIVE_PROFILE_LEFT_P = 0.1;
-    public static double DRIVE_PROFILE_RIGHT_P = 0.1;
-
-    // vision PID
-    public static final double TRACKED_TAG_ROTATION_KP = 0.375;
-    public static final double TRACKED_TAG_DISTANCE_DRIVE_KP = 0.3; // P (Proportional) constant of a PID loop
-    public static final double TRACKED_TAG_AREA_DRIVE_KP = 0.2; // P (Proportional) constant of a PID loop
-    public static final double APRILTAG_POWER_CAP = 0.75;
-  };
-
-
- 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }

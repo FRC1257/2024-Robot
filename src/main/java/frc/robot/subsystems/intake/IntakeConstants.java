@@ -29,5 +29,9 @@ public final class IntakeConstants {
     // Not sure if these two necessary
     public static final double GROUND_STOP_BUFFER = 0.0;
     public static final double GROUND_TOLERANCE = 0.0;
+
+    public static final double kIntakeP = 0.001;
+    public static final double kIntakeI = 0.0;
+    public static final double kIntakeD = 0.0;
   }
 }

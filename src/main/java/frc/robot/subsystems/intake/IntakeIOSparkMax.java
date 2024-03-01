@@ -1,7 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import static frc.robot.Constants.NEO_CURRENT_LIMIT;
-import frc.robot.subsystems.intake.IntakeConstants.*;
+import static frc.robot.subsystems.intake.IntakeConstants.IntakePhysicalConstants.*;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;

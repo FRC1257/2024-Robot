@@ -30,5 +30,14 @@ public class GroundIntakeConstants {
       // Not sure if these two necessary
       public static final double GROUND_STOP_BUFFER = 0.0;
       public static final double GROUND_TOLERANCE = 0.0;
+      
+      public static final double kGroundIntakeP = 0.001;
+      public static final double kGroundIntakeI = 0.0;
+      public static final double kGroundIntakeD = 0.0;
+
+      public static final double kGroundIntakeS = 0.0;
+      public static final double kGroundIntakeG = 0.0;
+      public static final double kGroundIntakeV = 0.0;
+      public static final double kGroundIntakeA = 0.0;
     }
   }

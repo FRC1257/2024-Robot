@@ -1,6 +1,6 @@
 package frc.robot.subsystems.shooter;
 
-import frc.robot.subsystems.shooter.ShooterConstants.*;
+import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
