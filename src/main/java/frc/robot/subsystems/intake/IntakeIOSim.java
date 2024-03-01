@@ -3,7 +3,9 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import static frc.robot.Constants.Intake.IntakeSimConstants.*;
+import frc.robot.Constants.ElectricalLayout;
+import edu.wpi.first.wpilibj.DigitalInput;
+import static frc.robot.subsystems.intake.IntakeConstants.IntakeSimConstants.*;
 
 public class IntakeIOSim implements IntakeIO {
     private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.2, kMomentOfInertia);

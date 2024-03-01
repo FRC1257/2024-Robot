@@ -61,7 +61,7 @@ public class Drive extends SubsystemBase {
 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
-  private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+  private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   //private final SysIdRoutine sysId;
 
@@ -406,7 +406,7 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.followPath(path);
   }
 
-  public Command goToNote(){
+  public Command goToNote(){ //not supported for Sim yet
     return DriveCommands.turnToNote(this).andThen(goToPose(visionIO.calculateNotePose(getPose(), visionIO.calculateNoteTranslation(visionInputs))));
     //might have to negate direction or angle due to orientation of the robot's intake
   }

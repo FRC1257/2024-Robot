@@ -48,40 +48,6 @@ public class NoteVisualizer {
     pivotAngle = pivotAngleSupplier;
   }
 
-  /* public static Command shoot() {
-    return new ScheduleCommand( // Branch off and exit immediately
-        Commands.defer(
-                () -> {
-                  final Pose3d startPose =
-                      new Pose3d(robotPoseSupplier.get()).transformBy(launcherTransform);
-                  final boolean isRed =
-                      DriverStation.getAlliance().isPresent()
-                          && DriverStation.getAlliance().get().equals(Alliance.Red);
-                  final Pose3d endPose =
-                      new Pose3d(isRed ? redSpeaker : blueSpeaker, startPose.getRotation());
-
-                  final double duration =
-                      startPose.getTranslation().getDistance(endPose.getTranslation()) / shotSpeed;
-                  final Timer timer = new Timer();
-                  timer.start();
-                  return Commands.run(
-                          () -> {
-                            Logger.recordOutput(
-                                "NoteVisualizer",
-                                new Pose3d[] {
-                                  startPose.interpolate(endPose, timer.get() / duration)
-                                });
-                          })
-                      .until(() -> timer.hasElapsed(duration))
-                      .finallyDo(
-                          () -> {
-                            Logger.recordOutput("NoteVisualizer", new Pose3d[] {});
-                          });
-                },
-                Set.of())
-            .ignoringDisable(false));
-  } */
-
   public static Command shoot(Drive drive) {
     return new ScheduleCommand( // Branch off and exit immediately
         Commands.defer(

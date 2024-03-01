@@ -96,12 +96,7 @@ public class PivotArmIOSim implements PivotArmIO {
     public void setD(double d) {
         m_controller.setD(d);
     }
-
-   /*  @Override
-    public void setFF(double ff) {
-        m_controller.setFF(ff);
-    }
-*/
+    
     @Override
     public double getP() {
         return m_controller.getP();

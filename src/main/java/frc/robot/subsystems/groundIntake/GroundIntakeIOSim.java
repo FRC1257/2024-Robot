@@ -3,7 +3,10 @@ package frc.robot.subsystems.groundIntake;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import static frc.robot.Constants.GroundIntake.GroundIntakeSimConstants.*;
+import frc.robot.Constants.ElectricalLayout;
+import edu.wpi.first.wpilibj.DigitalInput;
+import static frc.robot.subsystems.groundIntake.GroundIntakeConstants.GroundIntakeSimConstants.*;
+
 
 public class GroundIntakeIOSim implements GroundIntakeIO {
     private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.2, 2);
