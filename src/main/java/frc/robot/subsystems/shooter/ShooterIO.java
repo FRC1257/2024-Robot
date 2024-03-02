@@ -23,9 +23,18 @@ public interface ShooterIO {
 
   default void setRightRPM(double rpm) {}
 
+  default void setRightVoltage(double voltage) {}
+
+  default void setLeftVoltage (double voltage) {}
+
   default void setRPM(double leftRpm, double rightRpm) {
     setLeftRPM(leftRpm);
     setRightRPM(rightRpm);
+  }
+
+  default void setVoltage(double leftVoltage, double rightVoltage){
+    setRightVoltage(rightVoltage);
+    setLeftVoltage(leftVoltage);
   }
 
   //make a setRPM that doesn't rely on PID

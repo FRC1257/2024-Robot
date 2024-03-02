@@ -49,6 +49,7 @@ public class Shooter extends SubsystemBase {
   private boolean characterizing = false;
  
   private double leftSetpointRPM, rightSetpointRPM = 0;
+  private double leftMotorVoltage, rightMotorVoltage = 0;
 
   public Shooter(ShooterIO io) {
     shooterIO = io;
@@ -140,7 +141,7 @@ public class Shooter extends SubsystemBase {
   public Command runSpeed(DoubleSupplier speed) {
     return new FunctionalCommand(
       //() -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
-      () -> setRPM(speed, speed), //no PID for now
+      () -> setVoltage(speed, speed), //no PID for now
       () -> {},
       (interrupted) -> {
         if (interrupted) {
@@ -152,6 +153,12 @@ public class Shooter extends SubsystemBase {
     );
   }
 
+  public void setVoltage(DoubleSupplier leftVoltage, DoubleSupplier rightVoltage){
+    leftMotorVoltage = leftVoltage.getAsDouble();
+    rightMotorVoltage = rightVoltage.getAsDouble();
+    shooterIO.setVoltage(leftMotorVoltage, defaultShooterSpeedRPM);
+  }
+  
   public void setRPM(double leftRPM, double rightRPM) {
     leftSetpointRPM = leftRPM;
     rightSetpointRPM = rightRPM;
