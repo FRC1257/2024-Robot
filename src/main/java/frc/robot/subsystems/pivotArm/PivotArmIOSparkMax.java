@@ -73,6 +73,9 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
         inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
         inputs.setpointAngleRads = setpoint;
+        //needx to figure out how to log
+        //if (pivotMotor.getIdleMode() == BREA)
+        //inputs.BreakModeOn = pivotMotor.getIdleMode();
     }
 
     /** Run open loop at the specified voltage. */

@@ -11,6 +11,7 @@ public interface PivotArmIO {
         public double setpointAngleRads = 0.0;
         public double[] currentAmps = new double[] {};
         public double[] tempCelsius = new double[] {};
+        public boolean BreakModeOn = false;
     }
 
 
