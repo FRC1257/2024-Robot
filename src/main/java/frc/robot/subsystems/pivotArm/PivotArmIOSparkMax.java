@@ -33,16 +33,13 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         //leftSlave.setInverted(false);
         //rightSlaveFront.setInverted(true);
         //rightSlaveBack.setInverted(true);
-        setBrake(true);
+        
 
         leftSlave.follow(pivotMotor, false);
         rightSlaveFront.follow(pivotMotor, true);
         rightSlaveBack.follow(pivotMotor, true);
 
-        // pivotMotor.setInverted(true);
-        // leftSlave.setInverted(true);
-        // rightSlaveFront.setInverted(true);
-        // rightSlaveBack.setInverted(true);
+        setBrake(true);
         //can't invert like this
         
         

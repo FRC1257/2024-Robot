@@ -56,7 +56,7 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
     /** sets voltage to run motor if necessary */
     @Override
     public void setVoltage(double voltage) {
-        GroundIntakeMotor.setVoltage(voltage);
+        GroundIntakeMotor.setVoltage(voltage * 3);
     }
 
     /** sets brake mode to stop */
