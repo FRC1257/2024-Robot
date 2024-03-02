@@ -33,19 +33,25 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         //leftSlave.setInverted(false);
         //rightSlaveFront.setInverted(true);
         //rightSlaveBack.setInverted(true);
-        
+        //can't invert like this
+        setBrake(true);
 
         leftSlave.follow(pivotMotor, false);
         rightSlaveFront.follow(pivotMotor, true);
         rightSlaveBack.follow(pivotMotor, true);
 
         setBrake(true);
-        //can't invert like this
+        
         
         
         pivotMotor.enableVoltageCompensation(12.0);
         pivotMotor.setSmartCurrentLimit(80);// increased current limit and got it moving
         pivotMotor.burnFlash();
+        leftSlave.burnFlash();
+        rightSlaveFront.burnFlash();
+        rightSlaveBack.burnFlash();
+
+        //wasn't burning the flash to all the motors, this might be the issue
 
         configurePID();
 
