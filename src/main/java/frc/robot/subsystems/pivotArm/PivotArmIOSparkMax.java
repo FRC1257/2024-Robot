@@ -39,7 +39,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         rightSlaveBack.follow(pivotMotor);
 
         pivotMotor.enableVoltageCompensation(12.0);
-        pivotMotor.setSmartCurrentLimit(30);
+        pivotMotor.setSmartCurrentLimit(80);// increased current limit and got it moving
         pivotMotor.burnFlash();
 
         configurePID();

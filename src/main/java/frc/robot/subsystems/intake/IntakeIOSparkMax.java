@@ -27,7 +27,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     public IntakeIOSparkMax() {
         /** ID needs to be assigned from constants */
-        setPIDConstants(kIntakeP, kIntakeI, kIntakeD);
+        //setPIDConstants(kIntakeP, kIntakeI, kIntakeD);
         IntakeMotor = new CANSparkMax(ElectricalLayout.INTAKE_MOTOR, CANSparkMax.MotorType.kBrushless);
         IntakeMotor.restoreFactoryDefaults();
         IntakeMotor.setIdleMode(IdleMode.kBrake);
@@ -36,7 +36,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
         intakeEncoder = IntakeMotor.getEncoder();
 
-        breakBeam = new DigitalInput(ElectricalLayout.INTAKE_BREAK_BEAM);
+        //breakBeam = new DigitalInput(ElectricalLayout.INTAKE_BREAK_BEAM);
 
         velocityPID = IntakeMotor.getPIDController();
     }
@@ -49,7 +49,7 @@ public class IntakeIOSparkMax implements IntakeIO {
         inputs.tempCelcius = new double[] { IntakeMotor.getMotorTemperature() };
         inputs.velocityRadsPerSec = intakeEncoder.getVelocity();
         inputs.speedSetpoint = desiredSpeed;
-        inputs.breakBeam = breakBeam.get();
+        //inputs.breakBeam = breakBeam.get();
     }
 
     /** sets voltage to run motor if necessary */

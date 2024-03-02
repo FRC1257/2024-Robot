@@ -28,6 +28,8 @@ public interface ShooterIO {
     setRightRPM(rightRpm);
   }
 
+  //make a setRPM that doesn't rely on PID
+
   default void setLeftBrakeMode(boolean enabled) {}
 
   default void setRightBrakeMode(boolean enabled) {}

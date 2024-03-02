@@ -231,8 +231,11 @@ public class RobotContainer {
             DriveControls.DRIVE_ROTATE));
 
     intake.setDefaultCommand(
-        intake.IntakeSpeedCommand(
+        //intake.IntakeSpeedCommand(
+          //  DriveControls.INTAKE_ROTATE));
+          intake.IntakeManualCommand(
             DriveControls.INTAKE_ROTATE));
+    //banished to no PID command
 
     groundIntake.setDefaultCommand(
         groundIntake.GroundIntakeManualCommand(
@@ -242,7 +245,9 @@ public class RobotContainer {
         pivot.ManualCommand(DriveControls.PIVOT_ROTATE));
 
     shooter.setDefaultCommand(
-        shooter.runSpeed(0));
+        //shooter.runPIDSpeed(0)
+        shooter.runSpeed(DriveControls.SHOOTER_SPEED)
+        );
 
     DriveControls.DRIVE_TOGGLE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(
         drive,
@@ -271,11 +276,11 @@ public class RobotContainer {
     DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MAX_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
 
-   // NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond, shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
-    NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
-    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
-    DriveControls.SHOOTER_SHOOT.onTrue(shootNote());
-    DriveControls.SHOOTER_PREP.whileTrue(shooter.runSpeed(ShooterConstants.defaultShooterSpeedRPM));
+    NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond, shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
+    //NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0, pivot::getAngle);
+    //DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
+    //DriveControls.SHOOTER_SHOOT.onTrue(shootNote());
+    //DriveControls.SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
     if (Constants.tuningMode) {
       SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
@@ -376,18 +381,18 @@ public class RobotContainer {
     return (rotateArm().andThen(shootNote()));
   }
 
-  public Command rotateArm(){
+  public Command rotateArm(){ //commented out shooter temperarily
     return new FunctionalCommand(
           () -> {},
           () -> {
             pivot.setPID(getAngle());
             pivot.runPID();
-            shooter.setRPM(getRPM(), getRPM());
+            //shooter.setRPM(getRPM(), getRPM());
           },
         (interrupted) -> {
           if (!interrupted) return;
 
-          shooter.stop();
+          //shooter.stop();
           pivot.stop();
         },
         () -> {
@@ -460,7 +465,7 @@ public Command shoot() {
   public void LEDPeriodic() {
     BlinkinLEDController.isEndgame = DriverStation.getMatchTime() <= 30;
     BlinkinLEDController.isEnabled = DriverStation.isEnabled();
-    BlinkinLEDController.noteInIntake = intake.isIntaked();
+    //BlinkinLEDController.noteInIntake = intake.isIntaked();
     BlinkinLEDController.pivotArmDown = pivot.getAngle().getRadians() < (PivotArmConstants.PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
     BlinkinLEDController.shooting = shooter.getLeftCharacterizationVelocity() > 100;
     ledController.periodic();

@@ -129,16 +129,18 @@ public class Shooter extends SubsystemBase {
             <= shooterTolerance.get();
   }
 
-  public Command runSpeed(double speed) {
+  public Command runPIDSpeed(double speed) {
     return new RunCommand(
       () -> setRPM(speed, speed),
       this
     );
   }
 
+  
   public Command runSpeed(DoubleSupplier speed) {
     return new FunctionalCommand(
-      () -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
+      //() -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
+      () -> setRPM(speed, speed), //no PID for now
       () -> {},
       (interrupted) -> {
         if (interrupted) {
@@ -163,7 +165,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command stop() {
-    return runSpeed(0);
+    return runPIDSpeed(0);
   }
 
   public double getLeftSpeedMetersPerSecond() {

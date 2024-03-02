@@ -125,9 +125,10 @@ public class DriveControls {
 
                 //GROUND_INTAKE_IN = operator.y();
                 GROUND_INTAKE_OUT = operator.b();
-                GROUND_INTAKE_ROTATE = operator::getRightY;
+                GROUND_INTAKE_ROTATE = operator::getLeftX;
 
-                SHOOTER_SPEED = operator::getRightY;
+                //SHOOTER_SPEED = operator::getRightX;
+                SHOOTER_SPEED = operator::getRightX;
                 SHOOTER_PREP = operator.rightBumper();
                 SHOOTER_FIRE_AMP = operator.leftBumper();
                 SHOOTER_FIRE_SPEAKER = operator.y();// commented out for testing
