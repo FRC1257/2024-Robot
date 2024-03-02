@@ -55,7 +55,7 @@ public class IntakeIOSparkMax implements IntakeIO {
     /** sets voltage to run motor if necessary */
     @Override
     public void setVoltage(double voltage) {
-        IntakeMotor.setVoltage(voltage);
+        IntakeMotor.setVoltage(voltage * 10);
     }
 
     /** sets brake mode to stop */

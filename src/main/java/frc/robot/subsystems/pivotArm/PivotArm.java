@@ -83,7 +83,7 @@ public class PivotArm extends SubsystemBase {
     }
 
     public void move(double speed) {
-        setVoltage(speed * 12);
+        setVoltage(speed);
     }
 
     public void runPID() {

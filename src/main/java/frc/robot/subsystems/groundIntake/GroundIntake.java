@@ -94,7 +94,7 @@ public class GroundIntake extends SubsystemBase {
     public Command GroundIntakeManualCommand(DoubleSupplier voltage) {
         return new FunctionalCommand(
             () -> {},
-            () -> io.setVoltage(voltage.getAsDouble()),
+            () -> io.setVoltage(voltage.getAsDouble() * 5),
             (stop) -> io.stop(),
             () -> false,
             this

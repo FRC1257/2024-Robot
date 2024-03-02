@@ -142,7 +142,7 @@ public class Shooter extends SubsystemBase {
     return new FunctionalCommand(
       //() -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
       () -> setVoltage(speed, speed), //no PID for now
-      () -> {},
+      () -> {setVoltage(speed, speed);},
       (interrupted) -> {
         if (interrupted) {
           shooterIO.stop();
@@ -154,11 +154,12 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setVoltage(DoubleSupplier leftVoltage, DoubleSupplier rightVoltage){
-    leftMotorVoltage = leftVoltage.getAsDouble();
-    rightMotorVoltage = rightVoltage.getAsDouble();
-    shooterIO.setVoltage(leftMotorVoltage, defaultShooterSpeedRPM);
+    leftMotorVoltage = leftVoltage.getAsDouble() * 10;
+    rightMotorVoltage = rightVoltage.getAsDouble() * 10;
+    //shooterIO.setVoltage(leftMotorVoltage, defaultShooterSpeedRPM); bruh I love autcorrect
+    shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
   }
-  
+
   public void setRPM(double leftRPM, double rightRPM) {
     leftSetpointRPM = leftRPM;
     rightSetpointRPM = rightRPM;

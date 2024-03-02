@@ -28,16 +28,24 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         leftSlave.restoreFactoryDefaults();
         rightSlaveFront.restoreFactoryDefaults();
         rightSlaveBack.restoreFactoryDefaults();
+        //I swear to go these inverts might have to be after the following
+        //pivotMotor.setInverted(false);
+        //leftSlave.setInverted(false);
+        //rightSlaveFront.setInverted(true);
+        //rightSlaveBack.setInverted(true);
+        setBrake(true);
+
+        leftSlave.follow(pivotMotor, false);
+        rightSlaveFront.follow(pivotMotor, true);
+        rightSlaveBack.follow(pivotMotor, true);
+
+        // pivotMotor.setInverted(true);
+        // leftSlave.setInverted(true);
+        // rightSlaveFront.setInverted(true);
+        // rightSlaveBack.setInverted(true);
+        //can't invert like this
         
-        pivotMotor.setInverted(false);
-        leftSlave.setInverted(false);
-        rightSlaveFront.setInverted(true);
-        rightSlaveBack.setInverted(true);
-
-        leftSlave.follow(pivotMotor);
-        rightSlaveFront.follow(pivotMotor);
-        rightSlaveBack.follow(pivotMotor);
-
+        
         pivotMotor.enableVoltageCompensation(12.0);
         pivotMotor.setSmartCurrentLimit(80);// increased current limit and got it moving
         pivotMotor.burnFlash();
@@ -92,6 +100,9 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     @Override
     public void setBrake(boolean brake) {
         pivotMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        leftSlave.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        rightSlaveFront.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        rightSlaveBack.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
     @Override
