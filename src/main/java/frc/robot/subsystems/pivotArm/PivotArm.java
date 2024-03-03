@@ -42,10 +42,6 @@ public class PivotArm extends SubsystemBase {
         logFF = new LoggedDashboardNumber("PivotArm/FF", io.getFF());
         
     }
-
-    public void PivotManualPIDCommand (double volts) {
-
-    }
     
     @Override
     public void periodic() {

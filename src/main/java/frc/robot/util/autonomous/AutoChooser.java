@@ -33,5 +33,5 @@ public class AutoChooser {
         NoteTwoShotChooser.setScorePosition();
         NoteThreeShotChooser.setScorePosition();
         NoteFourShotChooser.setScorePosition();
-    
-}}
+    }
+}
