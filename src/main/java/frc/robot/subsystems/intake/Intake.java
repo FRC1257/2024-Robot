@@ -62,7 +62,7 @@ public class Intake extends SubsystemBase {
     public Command IntakeLoopCommand(double voltage) {
         return new FunctionalCommand(
             () -> {},
-            () -> setVoltage(voltage * 5),
+            () -> setVoltage(voltage),
             (stop) -> setVoltage(0.0),
             this::isIntaked,
             this

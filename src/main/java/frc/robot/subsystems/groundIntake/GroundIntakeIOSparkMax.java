@@ -17,8 +17,8 @@ import frc.robot.Constants.ElectricalLayout;
 
 public class GroundIntakeIOSparkMax implements GroundIntakeIO {
 
-    private CANSparkMax GroundIntakeMotor;
-    private RelativeEncoder GroundintakeEncoder;
+    private CANSparkMax motor;
+    private RelativeEncoder encoder;
     private SparkPIDController velocityPID;
     private DigitalInput breakBeam;
 
@@ -27,28 +27,27 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
     public GroundIntakeIOSparkMax() {
         /** ID needs to be assigned from constants */
         //setPIDConstants(kGroundIntakeP, kGroundIntakeI, kGroundIntakeD);
-        GroundIntakeMotor = new CANSparkMax(ElectricalLayout.GROUND_INTAKE_MOTOR, CANSparkMax.MotorType.kBrushless);
-        GroundIntakeMotor.restoreFactoryDefaults();
-        GroundIntakeMotor.setIdleMode(IdleMode.kBrake);
-        /** Current limit should be added to Constants.java when known */
-        GroundIntakeMotor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
+        motor = new CANSparkMax(ElectricalLayout.GROUND_INTAKE_MOTOR, CANSparkMax.MotorType.kBrushless);
+        motor.restoreFactoryDefaults();
+        motor.setIdleMode(IdleMode.kBrake);
+        
+        motor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
 
-        GroundintakeEncoder = GroundIntakeMotor.getEncoder();
+        encoder = motor.getEncoder();
         
         // :C _________/  /__________
-        //breakBeam = new DigitalInput(ElectricalLayout.GROUND_INTAKE_BREAK_BEAM);
+        // breakBeam = new DigitalInput(ElectricalLayout.GROUND_INTAKE_BREAK_BEAM);
 
-
-        velocityPID = GroundIntakeMotor.getPIDController();
+        velocityPID = motor.getPIDController();
     }
 
     /** updates inputs from robot */
     @Override
     public void updateInputs(GroundIntakeIOInputs inputs) {
-        inputs.appliedVoltage = GroundIntakeMotor.getAppliedOutput() * GroundIntakeMotor.getBusVoltage();
-        inputs.currentAmps = new double[] { GroundIntakeMotor.getOutputCurrent() };
-        inputs.tempCelcius = new double[] { GroundIntakeMotor.getMotorTemperature() };
-        inputs.velocityRadsPerSec = GroundintakeEncoder.getVelocity();
+        inputs.appliedVoltage = motor.getAppliedOutput() * motor.getBusVoltage();
+        inputs.currentAmps = new double[] { motor.getOutputCurrent() };
+        inputs.tempCelcius = new double[] { motor.getMotorTemperature() };
+        inputs.velocityRadsPerSec = encoder.getVelocity();
         inputs.speedSetpoint = desiredSpeed;
         //inputs.breakBeam = breakBeam.get();
     }
@@ -56,13 +55,13 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
     /** sets voltage to run motor if necessary */
     @Override
     public void setVoltage(double voltage) {
-        GroundIntakeMotor.setVoltage(voltage * 3);
+        motor.setVoltage(voltage);
     }
 
     /** sets brake mode to stop */
     @Override
     public void setBrake(boolean brake) {
-        GroundIntakeMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        motor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
     /** sets speed of motor */
