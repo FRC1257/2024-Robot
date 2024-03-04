@@ -121,6 +121,11 @@ public class FieldConstants {
     new Pose2d(8.29,0.77,Rotation2d.fromDegrees(0)),
   };
 
+  private static Pose2d[] VISION_POSITIONS = new Pose2d[] {
+  new Pose2d(5.41,7.13,Rotation2d.fromDegrees(-17.10)),
+  new Pose2d(5.24,1.15,Rotation2d.fromDegrees(24.02)),
+  }
+
   private static Pose2d[] START_POSITIONS = new Pose2d[] {
     new Pose2d(0.73,6.74,Rotation2d.fromDegrees(0)),
     new Pose2d(1.51,5.57,Rotation2d.fromDegrees(0)),

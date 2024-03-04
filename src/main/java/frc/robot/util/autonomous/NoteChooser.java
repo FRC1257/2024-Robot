@@ -21,6 +21,13 @@ public class NoteChooser {
         }
     }
 
+     public void setVisionPosition(){
+        Pose2d[] VISION_POSITIONS = FieldConstants.VISION_POSITIONS();
+        position.addDefaultOption("Upper", VISION_POSITIONS[0]);
+        position.addOption("Lower", VISION_POSITIONS[1]);
+    }
+
+
     public void setStartPosition(){
         Pose2d[] START_POSITIONS = FieldConstants.START_POSITIONS();
         position.addDefaultOption("Top", START_POSITIONS[0]);
