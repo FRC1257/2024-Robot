@@ -114,6 +114,10 @@ public final class Constants {
 
     // LED
     public static final int BLINKIN_LED_CONTROLLER_PORT = 1;
+
+    // Shooter
+    public static final int SHOOTER_LEFT_ID = 14; // master
+    public static final int SHOOTER_RIGHT_ID = 15;
   };
 
   public static double PI = 3.141592653589793238462643;

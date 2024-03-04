@@ -329,11 +329,11 @@ public class RobotContainer {
   public Command setAmpShooterSpeed() {
     return new FunctionalCommand(
         () -> {
-          shooter.setRPM(ShooterConstants.defaultShooterSpeedRPM, ShooterConstants.defaultShooterSpeedRPM); // placeholder
+          shooter.setRPM(ShooterConstants.defaultShooterSpeedRPM); // placeholder
                                                                                                             // speed
         },
         () -> {
-          shooter.setRPM(ShooterConstants.defaultShooterSpeedRPM, ShooterConstants.defaultShooterSpeedRPM); // placeholder
+          shooter.setRPM(ShooterConstants.defaultShooterSpeedRPM); // placeholder
                                                                                                             // speed
         },
         (interrupted) -> {
@@ -415,7 +415,7 @@ public class RobotContainer {
         },
         () -> {
 
-          shooter.setRPM(getRPM(), getRPM());
+          shooter.setRPM(getRPM());
           // shooter.setRPM(1000, 1000);
         },
         (interrupted) -> {
@@ -476,7 +476,7 @@ public class RobotContainer {
     // BlinkinLEDController.noteInIntake = intake.isIntaked();
     BlinkinLEDController.pivotArmDown = pivot.getAngle()
         .getRadians() < (PivotArmConstants.PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
-    BlinkinLEDController.shooting = shooter.getLeftCharacterizationVelocity() > 100;
+    BlinkinLEDController.shooting = shooter.getLeftSpeedMetersPerSecond() > 10_000;
     ledController.periodic();
   }
 

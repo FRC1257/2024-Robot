@@ -16,30 +16,18 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import java.util.function.DoubleSupplier;
 
 public class Shooter extends SubsystemBase {
-  private static final LoggedTunableNumber leftkP =
-      new LoggedTunableNumber("Shooter/leftkP", leftShooter.kP());
-  private static final LoggedTunableNumber leftkI =
-      new LoggedTunableNumber("Shooter/leftkI", leftShooter.kI());
-  private static final LoggedTunableNumber leftkD =
-      new LoggedTunableNumber("Shooter/leftkD", leftShooter.kD());
-  private static final LoggedTunableNumber leftkS =
-      new LoggedTunableNumber("Shooter/leftkS", leftShooter.kS());
-  private static final LoggedTunableNumber leftkV =
-      new LoggedTunableNumber("Shooter/leftkV", leftShooter.kV());
-  private static final LoggedTunableNumber leftkA =
-      new LoggedTunableNumber("Shooter/leftkA", leftShooter.kA());
-  private static final LoggedTunableNumber rightkP =
-      new LoggedTunableNumber("Shooter/rightkP", rightShooter.kP());
-  private static final LoggedTunableNumber rightkI =
-      new LoggedTunableNumber("Shooter/rightkI", rightShooter.kI());
-  private static final LoggedTunableNumber rightkD =
-      new LoggedTunableNumber("Shooter/rightkD", rightShooter.kD());
-  private static final LoggedTunableNumber rightkS =
-      new LoggedTunableNumber("Shooter/rightkS", rightShooter.kS());
-  private static final LoggedTunableNumber rightkV =
-      new LoggedTunableNumber("Shooter/rightkV", rightShooter.kV());
-  private static final LoggedTunableNumber rightkA =
-      new LoggedTunableNumber("Shooter/rightkA", rightShooter.kA());
+  private static final LoggedTunableNumber kP =
+      new LoggedTunableNumber("Shooter/kP", shooter.kP());
+  private static final LoggedTunableNumber kI =
+      new LoggedTunableNumber("Shooter/kI", shooter.kI());
+  private static final LoggedTunableNumber kD =
+      new LoggedTunableNumber("Shooter/kD", shooter.kD());
+  private static final LoggedTunableNumber kS =
+      new LoggedTunableNumber("Shooter/kS", shooter.kS());
+  private static final LoggedTunableNumber kV =
+      new LoggedTunableNumber("Shooter/kV", shooter.kV());
+  private static final LoggedTunableNumber kA =
+      new LoggedTunableNumber("Shooter/kA", shooter.kA());
   private static final LoggedTunableNumber shooterTolerance =
       new LoggedTunableNumber("Shooter/ToleranceRPM", shooterToleranceRPM);
 
@@ -48,15 +36,13 @@ public class Shooter extends SubsystemBase {
 
   private boolean characterizing = false;
  
-  private double leftSetpointRPM, rightSetpointRPM = 0;
-  private double leftMotorVoltage, rightMotorVoltage = 0;
+  private double setpoint = 0;
+  private double voltage = 0;
 
   public Shooter(ShooterIO io) {
     shooterIO = io;
-    shooterIO.setLeftPID(leftkP.get(), leftkI.get(), leftkD.get());
-    shooterIO.setLeftFF(leftkS.get(), leftkV.get(), leftkA.get());
-    shooterIO.setRightFF(rightkS.get(), rightkV.get(), rightkA.get());
-    shooterIO.setRightPID(rightkP.get(), rightkI.get(), rightkD.get());
+    shooterIO.setPID(kP.get(), kI.get(), kD.get());
+    shooterIO.setFF(kS.get(), kV.get(), kA.get());
   }
 
   @Override
@@ -64,28 +50,16 @@ public class Shooter extends SubsystemBase {
     // check controllers
     LoggedTunableNumber.ifChanged(
         hashCode(),
-        () -> shooterIO.setLeftPID(leftkP.get(), leftkI.get(), leftkD.get()),
-        leftkP,
-        leftkI,
-        leftkD);
+        () -> shooterIO.setPID(kP.get(), kI.get(), kD.get()),
+        kP,
+        kI,
+        kD);
     LoggedTunableNumber.ifChanged(
         hashCode(),
-        () -> shooterIO.setLeftFF(leftkS.get(), leftkV.get(), leftkA.get()),
-        leftkS,
-        leftkV,
-        leftkA);
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        () -> shooterIO.setRightPID(rightkP.get(), rightkI.get(), rightkD.get()),
-        rightkP,
-        rightkI,
-        rightkD);
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        () -> shooterIO.setRightFF(rightkS.get(), rightkV.get(), rightkA.get()),
-        rightkS,
-        rightkV,
-        rightkA);
+        () -> shooterIO.setFF(kS.get(), kV.get(), kA.get()),
+        kS,
+        kV,
+        kA);
 
     shooterIO.updateInputs(shooterInputs);
     Logger.processInputs("Shooter", shooterInputs);
@@ -94,7 +68,7 @@ public class Shooter extends SubsystemBase {
       shooterIO.stop();
     } else {
       if (!characterizing) {
-        // shooterIO.setRPM(leftSpeedRpm.get(), rightSpeedRpm.get());
+        // shooterIO.setRPM(SpeedRpm.get(), rightSpeedRpm.get());
       }
     }
 
@@ -102,15 +76,11 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/RightRPM", shooterInputs.rightFlywheelVelocityRPM);
   }
 
-  public void runLeftCharacterizationVolts(double volts) {
-    shooterIO.setLeftCharacterizationVoltage(volts);
+  public void runCharacterizationVolts(double volts) {
+    shooterIO.setCharacterizationVoltage(volts);
   }
 
-  public void runRightCharacterizationVolts(double volts) {
-    shooterIO.setRightCharacterizationVoltage(volts);
-  }
-
-  public double getLeftCharacterizationVelocity() {
+  public double getCharacterizationVelocity() {
     return shooterInputs.leftFlywheelVelocityRPM;
   }
 
@@ -124,22 +94,20 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/AtSetpoint")
   public boolean atSetpoint() {
-    return Math.abs(shooterInputs.leftFlywheelVelocityRPM - leftSetpointRPM)
-            <= shooterTolerance.get()
-        && Math.abs(shooterInputs.rightFlywheelVelocityRPM - rightSetpointRPM)
+    return Math.abs(shooterInputs.leftFlywheelVelocityRPM - setpoint)
             <= shooterTolerance.get();
   }
 
   public Command runSpeed(double speed) {
     return new RunCommand(
-      () -> setRPM(speed, speed),
+      () -> setRPM(speed),
       this
     );
   }
 
   public Command runSpeed(DoubleSupplier speed) {
     return new FunctionalCommand(
-      () -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
+      () -> setRPM(speed.getAsDouble()),
       () -> {},
       (interrupted) -> {
         if (interrupted) {
@@ -154,8 +122,8 @@ public class Shooter extends SubsystemBase {
   public Command runVoltage(DoubleSupplier volts) {
     return new FunctionalCommand(
       //() -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
-      () -> setVoltage(volts, volts), //no PID for now
-      () -> {setVoltage(volts, volts);},
+      () -> setVoltage(volts), //no PID for now
+      () -> {setVoltage(volts);},
       (interrupted) -> {
         if (interrupted) {
           shooterIO.stop();
@@ -166,23 +134,20 @@ public class Shooter extends SubsystemBase {
     );
   }
 
-  public void setVoltage(DoubleSupplier leftVoltage, DoubleSupplier rightVoltage){
-    leftMotorVoltage = leftVoltage.getAsDouble() * 10;
-    rightMotorVoltage = rightVoltage.getAsDouble() * 10;
-    //shooterIO.setVoltage(leftMotorVoltage, defaultShooterSpeedRPM); bruh I love autcorrect
-    shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
+  public void setVoltage(DoubleSupplier voltageSupplier){
+    voltage = voltageSupplier.getAsDouble();
+    
+    shooterIO.setVoltage(voltage);
   }
 
-  public void setRPM(double leftRPM, double rightRPM) {
-    leftSetpointRPM = leftRPM;
-    rightSetpointRPM = rightRPM;
-    shooterIO.setRPM(leftRPM, rightRPM);
+  public void setRPM(double RPM) {
+    setpoint = RPM;
+    shooterIO.setRPM(setpoint);
   }
 
-  public void setRPM(DoubleSupplier leftRPM, DoubleSupplier rightRPM) {
-    leftSetpointRPM = leftRPM.getAsDouble();
-    rightSetpointRPM = rightRPM.getAsDouble();
-    shooterIO.setRPM(leftSetpointRPM, rightSetpointRPM);
+  public void setRPM(DoubleSupplier RPM) {
+    setpoint = RPM.getAsDouble();
+    shooterIO.setRPM(setpoint);
   }
 
   public Command stop() {
