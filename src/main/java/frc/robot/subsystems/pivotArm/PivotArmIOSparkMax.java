@@ -1,20 +1,27 @@
 package frc.robot.subsystems.pivotArm;
 
-import com.revrobotics.AbsoluteEncoder;
+import static frc.robot.Constants.ElectricalLayout.LEFT_SLAVE_ID;
+import static frc.robot.Constants.ElectricalLayout.PIVOT_ARM_ID;
+import static frc.robot.Constants.ElectricalLayout.RIGHT_SLAVE_BACK_ID;
+import static frc.robot.Constants.ElectricalLayout.RIGHT_SLAVE_FRONT_ID;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkAbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-import static frc.robot.Constants.ElectricalLayout.*;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.Constants;
+import frc.robot.Constants.ElectricalLayout;
 
 public class PivotArmIOSparkMax implements PivotArmIO {
     // Motor and Encoders
     private CANSparkMax pivotMotor, leftSlave, rightSlaveFront, rightSlaveBack;
     private SparkPIDController pidController;
     
-    private AbsoluteEncoder absoluteEncoder;
+    private DutyCycleEncoder absoluteEncoder;
+    private RelativeEncoder motorEncoder;
 
     private double setpoint = 0;
 
@@ -42,10 +49,13 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
         setBrake(true);
         
-        
-        
         pivotMotor.enableVoltageCompensation(12.0);
-        pivotMotor.setSmartCurrentLimit(80);// increased current limit and got it moving
+
+        pivotMotor.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+        leftSlave.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+        rightSlaveFront.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+        rightSlaveBack.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+
         pivotMotor.burnFlash();
         leftSlave.burnFlash();
         rightSlaveFront.burnFlash();
@@ -55,10 +65,18 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
         configurePID();
 
+        /* 
         absoluteEncoder = pivotMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
         absoluteEncoder.setPositionConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR);
-        absoluteEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0);
-        
+        absoluteEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0); */
+
+        absoluteEncoder = new DutyCycleEncoder(ElectricalLayout.ABSOLUTE_ENCODER_ID);
+        absoluteEncoder.setDistancePerRotation(2 * Constants.PI);
+        absoluteEncoder.setDutyCycleRange(1/1024.0, 1023.0/1024.0);
+
+        motorEncoder = pivotMotor.getEncoder();
+        motorEncoder.setPositionConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR);
+        motorEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0);
     }
 
     private void configurePID() {
@@ -73,15 +91,12 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     /** Updates the set of loggable inputs. */
     @Override
     public void updateInputs(PivotArmIOInputs inputs) {
-        inputs.angleRads = absoluteEncoder.getPosition();
-        inputs.angVelocityRadsPerSec = absoluteEncoder.getVelocity();
+        inputs.angleRads = absoluteEncoder.getAbsolutePosition();
+        inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
         inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
         inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
         inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
         inputs.setpointAngleRads = setpoint;
-        //needx to figure out how to log
-        //if (pivotMotor.getIdleMode() == BREA)
-        //inputs.BreakModeOn = pivotMotor.getIdleMode();
     }
 
     /** Run open loop at the specified voltage. */
@@ -93,7 +108,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     /** Returns the current distance measurement. */
     @Override
     public double getAngle() {
-        return absoluteEncoder.getPosition();
+        return absoluteEncoder.getAbsolutePosition();
     }
 
     /** Go to Setpoint */
@@ -106,14 +121,14 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     @Override
     public void setBrake(boolean brake) {
         pivotMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
-        leftSlave.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        leftSlave.setIdleMode(brake ? IdleMode.kCoast : IdleMode.kCoast);
         rightSlaveFront.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
-        rightSlaveBack.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        rightSlaveBack.setIdleMode(brake ? IdleMode.kCoast : IdleMode.kCoast);
     }
 
     @Override
     public boolean atSetpoint() {
-        return Math.abs(absoluteEncoder.getPosition() - setpoint) < PivotArmConstants.PIVOT_ARM_PID_TOLERANCE;
+        return Math.abs(getAngle() - setpoint) < PivotArmConstants.PIVOT_ARM_PID_TOLERANCE;
     }
 
     @Override

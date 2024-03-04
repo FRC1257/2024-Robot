@@ -77,6 +77,8 @@ public class RobotContainer {
   // Field
   private final Field2d field;
 
+  private boolean brakeMode = true;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -203,6 +205,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     LookupTuner.setupTuner();
+    SmartDashboard.putBoolean("Brake Mode", true);
   }
 
   /**
@@ -475,5 +478,14 @@ public class RobotContainer {
         .getRadians() < (PivotArmConstants.PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
     BlinkinLEDController.shooting = shooter.getLeftCharacterizationVelocity() > 100;
     ledController.periodic();
+  }
+
+  public void disabledPeriodic() {
+    LEDPeriodic();
+    if (SmartDashboard.getBoolean("Brake Mode", true) != brakeMode) {
+      brakeMode = !brakeMode;
+      pivot.setBrake(brakeMode);
+    }
+    setPivotPose3d();
   }
 }

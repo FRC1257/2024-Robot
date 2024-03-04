@@ -51,32 +51,7 @@ public class GroundIntake extends SubsystemBase {
     public void setBrake(boolean brake) {
         io.setBrake(brake);
     }
-
-    public boolean isIntaked(){
-        return io.isIntaked();
-    }
-
-    // Uses the isIntaked boolean to start and stop the intake
-    public Command GroundIntakeLoopCommand(double voltage) {
-        return new FunctionalCommand(
-            () -> {},
-            () -> setVoltage(voltage),
-            (stop) -> setVoltage(0.0),
-            this::isIntaked,
-            this
-        );
-    }
-
-    // The above command in reverse
-    public Command EjectLoopCommand(double voltage) {
-        return new FunctionalCommand(
-            () -> {},
-            () -> setVoltage(-voltage), // Spins the other way
-            (stop) -> setVoltage(0.0),
-            this::isIntaked,
-            this
-        );
-    }
+    
     /**
      * Uses input from controller to set speed of the flywheel
      * and is used as the default command for the ground intake

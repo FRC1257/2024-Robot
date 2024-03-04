@@ -4,8 +4,6 @@ package frc.robot.subsystems.groundIntake;
 public class GroundIntakeConstants {
     public static class GroundIntakeSimConstants {
       public static final int kMotorPort = 0;
-      public static final int kBreakBeamSensorChannel = 0;
-      public static final int kJoystickPort = 0;
 
       public static final double kGroundIntakeP = 0.001;
       public static final double kGroundIntakeI = 0.0;

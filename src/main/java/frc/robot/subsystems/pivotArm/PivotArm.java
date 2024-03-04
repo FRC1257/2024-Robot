@@ -67,6 +67,10 @@ public class PivotArm extends SubsystemBase {
         Logger.processInputs("PivotArm", inputs);
     }
 
+    public void setBrake(boolean brake) {
+        io.setBrake(brake);
+    }
+
     public void setVoltage(double motorVolts) {
         // limit the arm if its past the limit
         if (io.getAngle() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE && motorVolts > 0) {
