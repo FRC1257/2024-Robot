@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -267,6 +268,7 @@ public class RobotContainer {
     // Operator controls
     DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MAX_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
+    DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
@@ -378,7 +380,38 @@ public class RobotContainer {
     return (rotateArm().andThen(shootNote()));
   }
 
-  public Command rotateArm() { // commented out shooter temperarily
+ 
+  public Command rotateArmtoSpeaker() {
+    return new FunctionalCommand(
+          () -> {},
+          () -> {
+            pivot.setPID(getAngle());
+            pivot.runPID();
+          },
+        (interrupted) -> {
+          if (!interrupted) return;
+          pivot.stop();
+        },
+        () -> {
+          return pivot.atSetpoint();
+          //shooter can never get to that setpoint with a comically high speed probably
+          //we pierce the heavens but bounce against the earth
+        },
+        pivot
+    );
+  }
+
+  public Command lockOnSpeakerFull(){
+    return (rotateArmtoSpeaker()) //problem is here, both of these commands can't be robotContainer
+      .alongWith(DriveCommands.joystickSpeakerPoint(
+        drive,
+        DriveControls.DRIVE_FORWARD,
+        DriveControls.DRIVE_STRAFE
+      )
+    );   
+  }
+
+  public Command rotateArm(){
     return new FunctionalCommand(
         () -> {
         },
@@ -396,6 +429,8 @@ public class RobotContainer {
         },
         () -> {
           return pivot.atSetpoint() && shooter.atSetpoint();
+          //shooter can never get to that setpoint with a comically high speed probably
+          //we pierce the heavens but bounce against the earth
         },
         shooter, pivot);
   }
@@ -454,13 +489,25 @@ public class RobotContainer {
   // Gets RPM based on distance from speaker, taking into account the actual
   // shooting position
   private double getRPM() {
-    return Lookup.getRPM(getEstimatedDistance());
+    //return Lookup.getRPM(getEstimatedDistance());
+    return 100000;
+    //with a comically high speed it keeps running the point arm command but can't run the shooter command
+    //will have to look into this later
   }
 
   // Gets angle based on distance from speaker, taking into account the actual
   // shooting position
   private double getAngle() {
-    return Lookup.getAngle(getEstimatedDistance());
+    double armLength = PivotArmConstants.PivotArmSimConstants.kArmLength;
+    double speakerHeight = Units.inchesToMeters(120.324);
+    //double speakerHeight = 80.324;
+    Transform2d targetTransform = drive.getPose().minus(FieldConstants.SpeakerPosition);
+    double targetDistance = targetTransform.getTranslation().getNorm();
+    double angle = Math.PI - (Math.acos(armLength/Math.sqrt(Math.pow(targetDistance, 2) + Math.pow(speakerHeight, 2))) + Math.atan(speakerHeight/targetDistance));
+    Logger.recordOutput("calculatedangle", angle);
+    return (angle);
+    //comically high radian
+    //return Lookup.getAngle(getEstimatedDistance());
   }
 
   public Command prepShoot() {
@@ -487,5 +534,8 @@ public class RobotContainer {
       pivot.setBrake(brakeMode);
     }
     setPivotPose3d();
+  }
+  public boolean alwaysRun(){
+    return true;
   }
 }

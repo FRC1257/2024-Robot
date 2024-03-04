@@ -20,6 +20,8 @@ public class DriveControls {
     public static Trigger DRIVE_SLOW;
     public static Trigger DRIVE_STOP;
     public static Trigger DRIVE_TOGGLE_ROBOT_RELATIVE;
+    public static Trigger LOCK_ON_SPEAKER_FULL;
+
 
     public static Trigger DRIVE_SPEAKER_AIM;
     public static Trigger DRIVE_NOTE_GOTO;
@@ -71,6 +73,7 @@ public class DriveControls {
                 DRIVE_SOURCE = EMPTY_TRIGGER;
                 TURN_90 = EMPTY_TRIGGER;
                 TURN_180 = EMPTY_TRIGGER;
+                LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
                 break;
             case PROGRAMMERS:
             default:
@@ -82,10 +85,11 @@ public class DriveControls {
                 DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
                 DRIVE_STOP = driver.rightBumper();
                 DRIVE_TOGGLE_ROBOT_RELATIVE = EMPTY_TRIGGER;
+                LOCK_ON_SPEAKER_FULL = driver.y();
 
                 DRIVE_AMP = driver.leftBumper();
                 DRIVE_SOURCE = driver.a();
-                TURN_90 = driver.y();
+                TURN_90 = EMPTY_TRIGGER;
                 TURN_180 = driver.start();
                 break;
         }
