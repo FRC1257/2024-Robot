@@ -74,6 +74,8 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         absoluteEncoder.setDistancePerRotation(2 * Constants.PI);
         absoluteEncoder.setDutyCycleRange(1/1024.0, 1023.0/1024.0);
 
+        //0 position for absolute encoder is at 0.2585 rad, so subtract that value from everything
+
         motorEncoder = pivotMotor.getEncoder();
         motorEncoder.setPositionConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR);
         motorEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0);
@@ -121,9 +123,9 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     @Override
     public void setBrake(boolean brake) {
         pivotMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
-        leftSlave.setIdleMode(brake ? IdleMode.kCoast : IdleMode.kCoast);
+        leftSlave.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
         rightSlaveFront.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
-        rightSlaveBack.setIdleMode(brake ? IdleMode.kCoast : IdleMode.kCoast);
+        rightSlaveBack.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
     @Override

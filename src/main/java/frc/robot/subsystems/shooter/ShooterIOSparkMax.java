@@ -31,7 +31,9 @@ public class ShooterIOSparkMax implements ShooterIO {
     rightMotor.restoreFactoryDefaults();
 
     leftMotor.setInverted(leftShooter.inverted());
-    rightMotor.setInverted(rightShooter.inverted());
+    //rightMotor.setInverted(rightShooter.inverted());
+    //invert rightMotor for now because they're running in opposite directions for some reason
+    //probably how they are oriented
     leftMotor.setSmartCurrentLimit(60);
     rightMotor.setSmartCurrentLimit(60);
     leftMotor.enableVoltageCompensation(12.0);

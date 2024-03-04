@@ -109,6 +109,7 @@ public final class Constants {
     public static final int LEFT_SLAVE_ID = 12;
     public static final int RIGHT_SLAVE_FRONT_ID = 10;
     public static final int RIGHT_SLAVE_BACK_ID = 11;
+    
     public static final int ABSOLUTE_ENCODER_ID = 0;
 
     // LED

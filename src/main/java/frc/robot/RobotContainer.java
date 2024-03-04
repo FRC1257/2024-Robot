@@ -235,11 +235,11 @@ public class RobotContainer {
             () -> DriveControls.GROUND_INTAKE_ROTATE.getAsDouble() * 12));
 
     pivot.setDefaultCommand(
-        pivot.ManualCommand(() -> DriveControls.PIVOT_ROTATE.getAsDouble() * 12));
+        pivot.ManualCommand(() -> DriveControls.PIVOT_ROTATE.getAsDouble() * 1.5));
 
     shooter.setDefaultCommand(
         // shooter.runPIDSpeed(0)
-        shooter.runSpeed(() -> DriveControls.SHOOTER_SPEED.getAsDouble() * 12));
+        shooter.runVoltage(() -> DriveControls.SHOOTER_SPEED.getAsDouble() * 1.5));
 
     DriveControls.DRIVE_TOGGLE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(
         drive,

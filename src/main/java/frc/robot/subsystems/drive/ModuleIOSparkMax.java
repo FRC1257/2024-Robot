@@ -13,23 +13,37 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.subsystems.drive.DriveConstants.kFrontLeftDrivingCanId;
+import static frc.robot.subsystems.drive.DriveConstants.kFrontLeftTurningCanId;
+import static frc.robot.subsystems.drive.DriveConstants.kFrontRightDrivingCanId;
+import static frc.robot.subsystems.drive.DriveConstants.kFrontRightTurningCanId;
+import static frc.robot.subsystems.drive.DriveConstants.kRearLeftDrivingCanId;
+import static frc.robot.subsystems.drive.DriveConstants.kRearLeftTurningCanId;
+import static frc.robot.subsystems.drive.DriveConstants.kRearRightDrivingCanId;
+import static frc.robot.subsystems.drive.DriveConstants.kRearRightTurningCanId;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingEncoderPositionFactor;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingEncoderVelocityFactor;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingMotorCurrentLimit;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingMotorIdleMode;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningEncoderPositionFactor;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningEncoderVelocityFactor;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningMotorCurrentLimit;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningMotorIdleMode;
+import static frc.robot.subsystems.drive.ModuleConstants.kWheelDiameterMeters;
 
 import java.util.Queue;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-
-import static frc.robot.subsystems.drive.ModuleConstants.*;
 
 /**
  * Module IO implementation for SparkMax drive motor controller, SparkMax turn motor controller (NEO
@@ -66,22 +80,22 @@ public class ModuleIOSparkMax implements ModuleIO {
       case 0: //Front Left
         driveSparkMax = new CANSparkMax(kFrontLeftDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(kFrontLeftTurningCanId, MotorType.kBrushless);
-        absoluteEncoderOffset = Math.PI; // MUST BE CALIBRATED
+        absoluteEncoderOffset = DriveConstants.kFrontLeftChassisAngularOffset; // MUST BE CALIBRATED
         break;
       case 1: //Front Right
         driveSparkMax = new CANSparkMax(kFrontRightDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(kFrontRightTurningCanId, MotorType.kBrushless);
-        absoluteEncoderOffset = 0; // MUST BE CALIBRATED
+        absoluteEncoderOffset = DriveConstants.kFrontRightChassisAngularOffset; // MUST BE CALIBRATED
         break;
       case 2: //Back Left
         driveSparkMax = new CANSparkMax(kRearLeftDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(kRearLeftTurningCanId, MotorType.kBrushless);
-        absoluteEncoderOffset = Math.PI; // MUST BE CALIBRATED
+        absoluteEncoderOffset = DriveConstants.kBackLeftChassisAngularOffset; // MUST BE CALIBRATED
         break;
       case 3: //Back Right
         driveSparkMax = new CANSparkMax(kRearRightDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(kRearRightTurningCanId, MotorType.kBrushless);
-        absoluteEncoderOffset = 0; // MUST BE CALIBRATED
+        absoluteEncoderOffset = DriveConstants.kBackRightChassisAngularOffset; // MUST BE CALIBRATED
         break;
       default:
         throw new RuntimeException("Invalid module index");
