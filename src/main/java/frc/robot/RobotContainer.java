@@ -175,6 +175,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("PrepShoot", prepShoot());
     NamedCommands.registerCommand("Zero", zeroPosition());
     NamedCommands.registerCommand("AmpShooter", setAmpShooterSpeed());
+    NamedCommands.registerCommand("ShootSlowly", shootSlowly());
     DriveControls.configureControls();
 
     // Set up auto routines
@@ -325,6 +326,11 @@ public class RobotContainer {
         .alongWith(shooter.stop())
         .alongWith(groundIntake.stop());
   }
+
+  public Command shootSlowly() {
+    return(shootNote);
+  } //still need to make it actually shoot slower
+
 
   public Command setAmpShooterSpeed() {
     return new FunctionalCommand(

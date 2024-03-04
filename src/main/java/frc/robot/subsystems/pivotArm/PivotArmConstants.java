@@ -5,7 +5,6 @@ import edu.wpi.first.math.util.Units;
 public class PivotArmConstants {
 
     public static final double POSITION_CONVERSION_FACTOR = 1;
-    public static final double PIVOT_ARM_ROTATION_DIAM_M = 1;
 
     public static final double[] PIVOT_ARM_PID_REAL = {0.25, 0, 0, 0};
     public static final double PIVOT_ARM_PID_TOLERANCE = Units.degreesToRadians(1);
@@ -20,8 +19,6 @@ public class PivotArmConstants {
       public static final int kEncoderAChannel = 2;
       public static final int kEncoderBChannel = 3;
 
-      // The P gain for the PID controller that drives this arm.
-      public static final double kDefaultArmSetpointDegrees = Units.degreesToRadians(75.0);
 
       // distance per pulse = (angle per revolution) / (pulses per revolution)
       // = (2 * PI rads) / (4096 pulses)
