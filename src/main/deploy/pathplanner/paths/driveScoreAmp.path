@@ -32,12 +32,36 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
+      "name": "setAngle",
       "waypointRelativePos": 0.0,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "AmpAngle"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "shoot",
+      "waypointRelativePos": 0.75,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "AmpShooter"
+              }
+            }
+          ]
         }
       }
     }

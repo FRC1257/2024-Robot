@@ -215,6 +215,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("PrepShoot", prepShoot());
     NamedCommands.registerCommand("Zero", zeroPosition());
     NamedCommands.registerCommand("AmpShooter", setAmpShooterSpeed());
+    NamedCommands.registerCommand("AmpAngle", ampPivotAngle());
     DriveControls.configureControls();
 
     // Set up auto routines
@@ -368,6 +369,13 @@ public class RobotContainer {
         .alongWith(groundIntake.stop());
   }
 
+  public Command ampPivotAngle() {
+    return pivot.PIDCommand(Units.degreesToRadians(90))
+        .alongWith(intake.stop())
+        .alongWith(shooter.stop())
+        .alongWith(groundIntake.stop());
+  }
+
   public Command setAmpShooterSpeed() {
     return new FunctionalCommand(
         () -> {
@@ -386,6 +394,10 @@ public class RobotContainer {
         },
         shooter
     );
+  }
+
+  public Command ampAngleAndShoot() {
+    return ampPivotAngle().andThen(shootAmp());
   }
 
   public Command shootAmp() {
