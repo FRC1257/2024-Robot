@@ -43,7 +43,8 @@ public class DriveControls {
     // Intake Controls
     public static Trigger INTAKE_IN;
     public static Trigger INTAKE_OUT;
-    public static DoubleSupplier INTAKE_ROTATE;
+    public static DoubleSupplier 
+    INTAKE_ROTATE;
 
     // Ground Intake
     public static Trigger GROUND_INTAKE_IN;
@@ -85,11 +86,11 @@ public class DriveControls {
                 DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
                 DRIVE_STOP = driver.rightBumper();
                 DRIVE_TOGGLE_ROBOT_RELATIVE = EMPTY_TRIGGER;
-                LOCK_ON_SPEAKER_FULL = driver.y();
+                LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
 
                 DRIVE_AMP = driver.leftBumper();
                 DRIVE_SOURCE = driver.a();
-                TURN_90 = EMPTY_TRIGGER;
+                TURN_90 = driver.y();
                 TURN_180 = driver.start();
                 break;
         }
@@ -131,8 +132,8 @@ public class DriveControls {
                 GROUND_INTAKE_OUT = operator.b();
                 GROUND_INTAKE_ROTATE = operator::getLeftX;
 
-                //SHOOTER_SPEED = operator::getRightX;
                 SHOOTER_SPEED = operator::getRightX;
+                //SHOOTER_SPEED = operator::getRightTriggerAxis;
                 SHOOTER_PREP = operator.rightBumper();
                 SHOOTER_FIRE_AMP = operator.leftBumper();
                 SHOOTER_FIRE_SPEAKER = operator.y();// commented out for testing

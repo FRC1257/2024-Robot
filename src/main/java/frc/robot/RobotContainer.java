@@ -31,19 +31,37 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.TurnAngleCommand;
 import frc.robot.subsystems.LED.BlinkinLEDController;
-
-import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.groundIntake.*;
-import frc.robot.subsystems.intake.*;
-import frc.robot.subsystems.pivotArm.*;
-import frc.robot.subsystems.shooter.*;
-import frc.robot.subsystems.vision.*;
-
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOReal;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.groundIntake.GroundIntake;
+import frc.robot.subsystems.groundIntake.GroundIntakeIO;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.subsystems.pivotArm.PivotArmIO;
+import frc.robot.subsystems.pivotArm.PivotArmIOSim;
+import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhoton;
+import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.autonomous.AutoChooser;
 import frc.robot.util.autonomous.MakeAutos;
 import frc.robot.util.drive.DriveControls;
@@ -240,7 +258,7 @@ public class RobotContainer {
 
     shooter.setDefaultCommand(
         // shooter.runPIDSpeed(0)
-        shooter.runVoltage(() -> DriveControls.SHOOTER_SPEED.getAsDouble() * 1.5));
+        shooter.runVoltage(DriveControls.SHOOTER_SPEED));
 
     DriveControls.DRIVE_TOGGLE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(
         drive,
@@ -269,6 +287,8 @@ public class RobotContainer {
     DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MAX_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
     DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
+
+    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
@@ -328,6 +348,12 @@ public class RobotContainer {
         .alongWith(groundIntake.stop());
   }
 
+  public Command zeroShooter() {
+    return (intake.stop())
+        .alongWith(shooter.stop())
+        .alongWith(groundIntake.stop());
+  }
+
   public Command setAmpShooterSpeed() {
     return new FunctionalCommand(
         () -> {
@@ -373,7 +399,11 @@ public class RobotContainer {
         .deadlineWith(DriveCommands.joystickSpeakerPoint(
             drive,
             DriveControls.DRIVE_FORWARD,
-            DriveControls.DRIVE_STRAFE));
+            DriveControls.DRIVE_STRAFE)) //.andThen(zeroShooter())
+            ;
+      //the rotate arm method just keeps going, I don't know what's wrong with it
+      //Maybe it's the shooter setRPM?
+
   }
 
   public Command shootSpeaker() {
@@ -418,17 +448,17 @@ public class RobotContainer {
         () -> {
           pivot.setPID(getAngle());
           pivot.runPID();
-          // shooter.setRPM(getRPM(), getRPM());
+          //shooter.setRPM(getRPM());
         },
         (interrupted) -> {
           if (!interrupted)
             return;
 
-          // shooter.stop();
+            //shooter.stop();
           pivot.stop();
         },
         () -> {
-          return pivot.atSetpoint() && shooter.atSetpoint();
+          return pivot.atSetpoint();
           //shooter can never get to that setpoint with a comically high speed probably
           //we pierce the heavens but bounce against the earth
         },
@@ -436,6 +466,7 @@ public class RobotContainer {
   }
 
   public Command shoot() {
+    Logger.recordOutput("DistanceAway", getEstimatedDistance());
     if (pivot.atSetpoint() == true) {
       return intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM())
           .alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)));
@@ -451,6 +482,7 @@ public class RobotContainer {
         () -> {
 
           shooter.setRPM(getRPM());
+          Logger.recordOutput("DistanceAway", getEstimatedDistance());
           // shooter.setRPM(1000, 1000);
         },
         (interrupted) -> {
@@ -464,7 +496,8 @@ public class RobotContainer {
         },
         shooter).andThen(
             intake.EjectLoopCommand(2)
-                .deadlineWith(shooter.runSpeed(() -> getRPM()).alongWith(NoteVisualizer.shoot(drive))));
+                .deadlineWith(shooter.runSpeed(() -> getRPM())
+                .alongWith(NoteVisualizer.shoot(drive))));
   }
 
   // Returns the estimated transformation over the next tick (The change in
@@ -489,8 +522,8 @@ public class RobotContainer {
   // Gets RPM based on distance from speaker, taking into account the actual
   // shooting position
   private double getRPM() {
-    //return Lookup.getRPM(getEstimatedDistance());
-    return 100000;
+    return Lookup.getRPM(getEstimatedDistance());
+    //return 100000;
     //with a comically high speed it keeps running the point arm command but can't run the shooter command
     //will have to look into this later
   }
@@ -499,7 +532,7 @@ public class RobotContainer {
   // shooting position
   private double getAngle() {
     double armLength = PivotArmConstants.PivotArmSimConstants.kArmLength;
-    double speakerHeight = Units.inchesToMeters(120.324);
+    double speakerHeight = Units.inchesToMeters(100.324);
     //double speakerHeight = 80.324;
     Transform2d targetTransform = drive.getPose().minus(FieldConstants.SpeakerPosition);
     double targetDistance = targetTransform.getTranslation().getNorm();

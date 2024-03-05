@@ -34,4 +34,8 @@ public interface ShooterIO {
   default void setFF(double s, double v, double a) {}
 
   default void stop() {}
+
+  default void run(double speed) {
+    setVoltage(speed * 12);
+  }
 }

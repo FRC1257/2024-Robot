@@ -117,7 +117,7 @@ public final class Constants {
 
     // Shooter
     public static final int SHOOTER_LEFT_ID = 14; // master
-    public static final int SHOOTER_RIGHT_ID = 15;
+    public static final int SHOOTER_RIGHT_ID = 13;
   };
 
   public static double PI = 3.141592653589793238462643;
@@ -131,11 +131,11 @@ public final class Constants {
 
   
   public static final double[][] LookupTable = {
-    {0,5000,10},
-    {1,5000,30},
-    {2,5000,50},
-    {3,6000,60},
-    {4,6500,70},
+    {0,1000,10},
+    {1,2000,30},
+    {2,3000,50},
+    {3,4000,60},
+    {4,5500,70},
     {5,6500,70},
     {6,6500,75},
     {7,6500,77},

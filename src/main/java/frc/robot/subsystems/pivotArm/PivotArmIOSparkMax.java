@@ -5,6 +5,8 @@ import static frc.robot.Constants.ElectricalLayout.PIVOT_ARM_ID;
 import static frc.robot.Constants.ElectricalLayout.RIGHT_SLAVE_BACK_ID;
 import static frc.robot.Constants.ElectricalLayout.RIGHT_SLAVE_FRONT_ID;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -71,8 +73,9 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         absoluteEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0); */
 
         absoluteEncoder = new DutyCycleEncoder(ElectricalLayout.ABSOLUTE_ENCODER_ID);
-        absoluteEncoder.setDistancePerRotation(2 * Constants.PI);
+        absoluteEncoder.setDistancePerRotation(2 * Constants.PI * PivotArmConstants.POSITION_CONVERSION_FACTOR);
         absoluteEncoder.setDutyCycleRange(1/1024.0, 1023.0/1024.0);
+        // absoluteEncoder.reset();
 
         //0 position for absolute encoder is at 0.2585 rad, so subtract that value from everything
 
@@ -94,6 +97,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     @Override
     public void updateInputs(PivotArmIOInputs inputs) {
         inputs.angleRads = absoluteEncoder.getAbsolutePosition();
+        Logger.recordOutput("PivotOtgerThing", absoluteEncoder.getDistance());
         inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
         inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
         inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};

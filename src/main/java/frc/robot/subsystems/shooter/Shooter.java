@@ -72,8 +72,7 @@ public class Shooter extends SubsystemBase {
       }
     }
 
-    Logger.recordOutput("Shooter/LeftRPM", shooterInputs.leftFlywheelVelocityRPM);
-    Logger.recordOutput("Shooter/RightRPM", shooterInputs.rightFlywheelVelocityRPM);
+    Logger.recordOutput("Shooter/setpoint", setpoint);
   }
 
   public void runCharacterizationVolts(double volts) {
@@ -134,10 +133,30 @@ public class Shooter extends SubsystemBase {
     );
   }
 
+  public Command runCommmand(DoubleSupplier speedSupplier) {
+    return new FunctionalCommand(
+      //() -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
+      () -> run(speedSupplier), //no PID for now
+      () -> {run(speedSupplier);},
+      (interrupted) -> {
+        if (interrupted) {
+          shooterIO.stop();
+        }
+      },
+      () -> false,
+      this
+    );
+  }
+
   public void setVoltage(DoubleSupplier voltageSupplier){
-    voltage = voltageSupplier.getAsDouble();
+    voltage = voltageSupplier.getAsDouble() * 24;
     
     shooterIO.setVoltage(voltage);
+  }
+
+  public void run(DoubleSupplier speed){
+    Logger.recordOutput("ShooterSpeed", speed.getAsDouble()*24);
+    shooterIO.run(speed.getAsDouble()*24);
   }
 
   public void setRPM(double RPM) {

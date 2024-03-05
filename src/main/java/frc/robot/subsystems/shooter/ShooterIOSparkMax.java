@@ -1,14 +1,18 @@
 package frc.robot.subsystems.shooter;
 
+import static frc.robot.Constants.ElectricalLayout.SHOOTER_LEFT_ID;
+import static frc.robot.Constants.ElectricalLayout.SHOOTER_RIGHT_ID;
 import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.flywheelReduction;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import static frc.robot.Constants.ElectricalLayout.*;
 
 public class ShooterIOSparkMax implements ShooterIO {
   private CANSparkFlex leftMotor;
@@ -35,8 +39,8 @@ public class ShooterIOSparkMax implements ShooterIO {
 
     leftMotor.setSmartCurrentLimit(60);
     rightMotor.setSmartCurrentLimit(60);
-    leftMotor.enableVoltageCompensation(12.0);
-    rightMotor.enableVoltageCompensation(12.0);
+    //leftMotor.enableVoltageCompensation(12.0);
+    //rightMotor.enableVoltageCompensation(12.0);
 
     leftEncoder.setPosition(0.0);
     rightEncoder.setPosition(0.0);
@@ -81,7 +85,15 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   @Override
   public void setVoltage(double volts){
+    Logger.recordOutput("thing", true);
     leftMotor.setVoltage(volts);
+    rightMotor.setVoltage(volts);
+  } //you didn't change the default voltage little bro
+
+  @Override
+  public void run(double speed) {
+    Logger.recordOutput("trytry", MathUtil.clamp(speed, -1, 1));
+    leftMotor.set(MathUtil.clamp(speed, -1, 1));
   }
 
   @Override

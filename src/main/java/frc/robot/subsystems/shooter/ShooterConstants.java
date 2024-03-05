@@ -29,15 +29,15 @@ public class ShooterConstants {
 
     // encoder / flywheelReduction = flywheel
     public static double flywheelReduction = (1.0 / 2.0);
-    public static double shooterToleranceRPM = 50.0;
+    public static double shooterToleranceRPM = 100.0;
 
     public static double wheelRadiusM = 0.05;
     public static double wheelMassKg = 0.2;
     public static double momentOfInertia = 0.5 * wheelMassKg * wheelRadiusM * wheelRadiusM;
 
     public static FlywheelConstants shooter = switch (Constants.currentMode) {
-      case REAL -> new FlywheelConstants(false, 0.007, 0.4, 0.00001, 0.33329, 0.00083, 0.0);
-      default -> new FlywheelConstants(false, 0.007, 0.4, 0.00001, 0.33329, 0.00083, 0.0);
+      case REAL -> new FlywheelConstants(false, 0.0008, 0.4, 0.00001, 0.33329, 0.00083, 0.0);
+      default -> new FlywheelConstants(false, 0.0008, 0.4, 0.00001, 0.33329, 0.00083, 0.0);
     };
 
     public record FlywheelConstants(

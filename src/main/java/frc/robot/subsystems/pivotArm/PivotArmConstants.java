@@ -4,7 +4,7 @@ import edu.wpi.first.math.util.Units;
 
 public class PivotArmConstants {
 
-    public static final double POSITION_CONVERSION_FACTOR = 1;
+    public static final double POSITION_CONVERSION_FACTOR = 24.0/35.0;
     public static final double PIVOT_ARM_ROTATION_DIAM_M = 1;
 
     public static final double[] PIVOT_ARM_PID_REAL = {0.25, 0, 0, 0};
