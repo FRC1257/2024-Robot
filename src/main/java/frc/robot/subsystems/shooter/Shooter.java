@@ -149,14 +149,14 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setVoltage(DoubleSupplier voltageSupplier){
-    voltage = voltageSupplier.getAsDouble() * 24;
+    voltage = voltageSupplier.getAsDouble() * 12;
     
     shooterIO.setVoltage(voltage);
   }
 
   public void run(DoubleSupplier speed){
-    Logger.recordOutput("ShooterSpeed", speed.getAsDouble()*24);
-    shooterIO.run(speed.getAsDouble()*24);
+    Logger.recordOutput("ShooterSpeed", speed.getAsDouble()*12);
+    shooterIO.run(speed.getAsDouble()*12);
   }
 
   public void setRPM(double RPM) {

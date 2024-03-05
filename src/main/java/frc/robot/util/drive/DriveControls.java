@@ -52,7 +52,8 @@ public class DriveControls {
     public static DoubleSupplier GROUND_INTAKE_ROTATE;
 
     // Shooter Controls
-    public static DoubleSupplier SHOOTER_SPEED;
+    public static DoubleSupplier 
+    SHOOTER_SPEED;
     public static Trigger SHOOTER_PREP;
     public static Trigger SHOOTER_FIRE_AMP;
     public static Trigger SHOOTER_FIRE_SPEAKER;

@@ -64,12 +64,12 @@ public class ShooterIOSparkMax implements ShooterIO {
   public void updateInputs(ShooterIOInputs inputs) {
     inputs.leftShooterPositionRotations = leftEncoder.getPosition();
     inputs.leftFlywheelVelocityRPM = leftEncoder.getVelocity();
-    inputs.leftFlywheelAppliedVolts = leftMotor.getAppliedOutput();
+    inputs.leftFlywheelAppliedVolts = leftMotor.getAppliedOutput() * 12;
     inputs.leftFlywheelOutputCurrent = leftMotor.getOutputCurrent();
 
     inputs.rightFlywheelPositionRotations = rightEncoder.getPosition();
     inputs.rightFlywheelVelocityRPM = rightEncoder.getVelocity();
-    inputs.rightFlywheelAppliedVolts = rightMotor.getAppliedOutput();
+    inputs.rightFlywheelAppliedVolts = rightMotor.getAppliedOutput() * 12;
     inputs.rightFlywheelOutputCurrent = rightMotor.getOutputCurrent();
   }
 
@@ -85,7 +85,7 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   @Override
   public void setVoltage(double volts){
-    Logger.recordOutput("thing", true);
+    Logger.recordOutput("thing", volts);
     leftMotor.setVoltage(volts);
     rightMotor.setVoltage(volts);
   } //you didn't change the default voltage little bro
