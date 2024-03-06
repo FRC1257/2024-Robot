@@ -2,6 +2,7 @@ package frc.robot.util.drive;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
@@ -59,6 +60,10 @@ public class DriveControls {
     public static Trigger SHOOTER_FIRE_SPEAKER;
     public static Trigger SHOOTER_SHOOT;
 
+    // Rumble Controls
+    public static Trigger TIMED_RUMBLE;
+    public static Trigger INTAKE_RUMBLE;
+
     // Setup the controls
     public static void configureControls() {
         switch (Constants.driver) {
@@ -75,7 +80,11 @@ public class DriveControls {
                 DRIVE_SOURCE = EMPTY_TRIGGER;
                 TURN_90 = EMPTY_TRIGGER;
                 TURN_180 = EMPTY_TRIGGER;
+<<<<<<< Updated upstream
                 LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
+=======
+
+>>>>>>> Stashed changes
                 break;
             case PROGRAMMERS:
             default:
@@ -116,6 +125,7 @@ public class DriveControls {
                 SHOOTER_PREP = operator.rightBumper();
                 SHOOTER_FIRE_AMP = operator.leftBumper();
                 SHOOTER_FIRE_SPEAKER = operator.x();
+                TIMED_RUMBLE = EMPTY_TRIGGER;
                 break;
             case PROGRAMMERS:
             default:

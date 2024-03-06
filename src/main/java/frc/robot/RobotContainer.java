@@ -22,7 +22,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -30,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -96,7 +99,11 @@ public class RobotContainer {
   // Field
   private final Field2d field;
 
+<<<<<<< Updated upstream
   private boolean brakeMode = true;
+=======
+  
+>>>>>>> Stashed changes
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -227,6 +234,8 @@ public class RobotContainer {
     SmartDashboard.putBoolean("Brake Mode", true);
   }
 
+  
+
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -298,6 +307,9 @@ public class RobotContainer {
     // DriveControls.SHOOTER_SHOOT.onTrue(shootNote());
     // DriveControls.SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
+    new Trigger(() -> (Timer.getMatchTime() == 90.0)).onTrue(DriveControls.driver.BeginRumble().alongWith(DriveControls.operator.BeginRumble()));
+    new Trigger(() -> intake.isIntaked()).onTrue(DriveControls.driver.BeginRumble());
+    
     if (Constants.tuningMode) {
       SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
       SmartDashboard.putData("Sysid Dynamic Drive Backward", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
