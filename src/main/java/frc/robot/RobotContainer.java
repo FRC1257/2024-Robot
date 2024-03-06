@@ -247,26 +247,28 @@ public class RobotContainer {
         DriveControls.DRIVE_STRAFE,
         DriveControls.DRIVE_ROTATE));
 
-    DriveControls.DRIVE_SPEAKER_AIM.whileTrue(
-        DriveCommands.joystickSpeakerPoint(
-            drive,
-            DriveControls.DRIVE_FORWARD,
-            DriveControls.DRIVE_STRAFE));
+    // DriveControls.DRIVE_SPEAKER_AIM.whileTrue(
+    //     DriveCommands.joystickSpeakerPoint(
+    //         drive,
+    //         DriveControls.DRIVE_FORWARD,
+    //         DriveControls.DRIVE_STRAFE));
 
     // DriveControls.DRIVE_NOTE_GOTO.whileTrue(drive.goToNote());
 
-    DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
+    //DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
-    DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose()));
-    DriveControls.DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose()));
+    DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose));
+    DriveControls.DRIVE_AND_SHOOT_AMP.onTrue(driveAndShootAmp());
+    //DriveControls.DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose()));
     DriveControls.DRIVE_STOP.onTrue(new InstantCommand(drive::stopWithX, drive));
 
     DriveControls.TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
     DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
     // Operator controls
-    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MAX_ANGLE));
+    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_AMP_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
+    DriveControls.ROTATE_AND_SHOOT_AMP.onTrue(shootAmp());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
@@ -348,8 +350,22 @@ public class RobotContainer {
         shooter);
   }
 
+  public Command driveToAmp() {
+    //return drive.pathfindToTrajectory(PathPlannerPath.fromPathFile("amp score")); // this doesnt work for some reason
+    return drive.goToPose(FieldConstants.ampPose);
+  }
+
   public Command shootAmp() {
-    return drive.pathfindToTrajectory(PathPlannerPath.fromPathFile("amp score"));
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_AMP_ANGLE)
+      .andThen(shooter.runSpeed(ShooterConstants.shooterAmpSpeedRPM).until(() -> !intake.isIntaked()))
+      .andThen(shooter.stop());
+  }
+
+  public Command driveAndShootAmp() {
+    return (/*drive.pathfindToTrajectory(PathPlannerPath.fromPathFile("amp score"))*/drive.goToPose(FieldConstants.ampPose)
+      .alongWith(pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_AMP_ANGLE)))
+      .andThen(shooter.runSpeed(ShooterConstants.shooterAmpSpeedRPM).until(() -> !intake.isIntaked()))
+      .andThen(shooter.stop());
   }
 
   public Command shootAnywhere() {

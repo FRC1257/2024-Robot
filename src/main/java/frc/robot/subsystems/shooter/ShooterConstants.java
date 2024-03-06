@@ -9,6 +9,7 @@ public class ShooterConstants {
   public static final double LEFT_MOTOR_MAX_SPEED = 0;
   
   public static double defaultShooterSpeedRPM = 1000;
+  public static double shooterAmpSpeedRPM = 100;
 
   public static class ShooterSimConstants {
     public static final double RIGHT_MOTOR_MIN_SPEED = 0;

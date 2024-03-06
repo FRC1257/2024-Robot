@@ -27,6 +27,7 @@ public class DriveControls {
     // Drive Trajectories
     public static Trigger DRIVE_AMP;
     public static Trigger DRIVE_SOURCE;
+    public static Trigger DRIVE_AND_SHOOT_AMP;
 
     // Drive Turns
     public static Trigger TURN_90;
@@ -42,6 +43,7 @@ public class DriveControls {
     public static Trigger INTAKE_IN;
     public static Trigger INTAKE_OUT;
     public static DoubleSupplier INTAKE_ROTATE;
+    public static Trigger ROTATE_AND_SHOOT_AMP;
 
     // Ground Intake
     public static Trigger GROUND_INTAKE_IN;
@@ -83,7 +85,8 @@ public class DriveControls {
                 DRIVE_STOP = driver.rightBumper();
                 DRIVE_TOGGLE_ROBOT_RELATIVE = EMPTY_TRIGGER;
 
-                DRIVE_AMP = driver.leftBumper();
+                DRIVE_AND_SHOOT_AMP = driver.x();
+                DRIVE_AMP = driver.a();
                 DRIVE_SOURCE = driver.a();
                 TURN_90 = driver.y();
                 TURN_180 = driver.start();
@@ -130,7 +133,7 @@ public class DriveControls {
                 //SHOOTER_SPEED = operator::getRightX;
                 SHOOTER_SPEED = operator::getRightX;
                 SHOOTER_PREP = operator.rightBumper();
-                SHOOTER_FIRE_AMP = operator.leftBumper();
+                ROTATE_AND_SHOOT_AMP = driver.b();
                 SHOOTER_FIRE_SPEAKER = operator.y();// commented out for testing
                 SHOOTER_SHOOT = operator.x();
                 break;
