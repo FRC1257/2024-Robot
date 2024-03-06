@@ -104,8 +104,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     /** Updates the set of loggable inputs. */
     @Override
     public void updateInputs(PivotArmIOInputs inputs) {
-        inputs.angleRads = absoluteEncoder.getAbsolutePosition();
-        Logger.recordOutput("PivotOtgerThing", absoluteEncoder.getDistance());
+        inputs.angleRads = getAngle();
         inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
         inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
         inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
@@ -122,7 +121,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     /** Returns the current distance measurement. */
     @Override
     public double getAngle() {
-        return absoluteEncoder.getAbsolutePosition();
+        return -absoluteEncoder.getDistance() + PivotArmConstants.PIVOT_ARM_OFFSET;
     }
 
     /** Go to Setpoint */
