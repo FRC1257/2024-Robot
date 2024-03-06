@@ -3,14 +3,14 @@ package frc.robot.subsystems.intake;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.util.function.BooleanSupplier;
+
 import java.util.function.DoubleSupplier;
 
 public class Intake extends SubsystemBase {
@@ -66,12 +66,10 @@ public class Intake extends SubsystemBase {
             (stop) -> setVoltage(0.0),
             this::isIntaked,
             this
-        );
+        ).withTimeout(5);
     }
 
-    /**
-     * Same dependence as IntakeLoopCommand
-     */ 
+    // The above command in reverse
     public Command EjectLoopCommand(double voltage) {
         return new FunctionalCommand(
             () -> {},
@@ -79,9 +77,12 @@ public class Intake extends SubsystemBase {
             (stop) -> setVoltage(0.0),
             this::isIntaked,
             this
-        );
+        ).withTimeout(2);
     }
-
+    /**
+     * Uses input from controller to set speed of the flywheel
+     * and is used as the default command for the ground intake
+    */
     public Command IntakeSpeedCommand(DoubleSupplier speed) {
         return new FunctionalCommand(
             () -> {},
@@ -91,7 +92,7 @@ public class Intake extends SubsystemBase {
             this
         );
     }
-
+    // Allows manual command of the flywheel for testing
     public Command IntakeManualCommand(DoubleSupplier voltage) {
         return new FunctionalCommand(
             () -> {},

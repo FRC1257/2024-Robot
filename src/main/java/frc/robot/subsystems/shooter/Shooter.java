@@ -5,12 +5,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.LoggedTunableNumber;
+import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.*;
+import frc.robot.util.misc.LoggedTunableNumber;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import java.util.function.DoubleSupplier;
 
@@ -41,15 +42,14 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/rightkA", rightShooter.kA());
   private static final LoggedTunableNumber shooterTolerance =
       new LoggedTunableNumber("Shooter/ToleranceRPM", shooterToleranceRPM);
-  private final LoggedDashboardNumber leftSpeedRpm =
-      new LoggedDashboardNumber("Left Speed RPM", 6000);
-  private final LoggedDashboardNumber rightSpeedRpm =
-      new LoggedDashboardNumber("Right Speed RPM", 4000);
 
   private final ShooterIO shooterIO;
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
 
   private boolean characterizing = false;
+ 
+  private double leftSetpointRPM, rightSetpointRPM = 0;
+  private double leftMotorVoltage, rightMotorVoltage = 0;
 
   public Shooter(ShooterIO io) {
     shooterIO = io;
@@ -94,7 +94,7 @@ public class Shooter extends SubsystemBase {
       shooterIO.stop();
     } else {
       if (!characterizing) {
-        shooterIO.setRPM(leftSpeedRpm.get(), rightSpeedRpm.get());
+        // shooterIO.setRPM(leftSpeedRpm.get(), rightSpeedRpm.get());
       }
     }
 
@@ -124,20 +124,80 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/AtSetpoint")
   public boolean atSetpoint() {
-    return Math.abs(shooterInputs.leftFlywheelVelocityRPM - leftSpeedRpm.get())
+    return Math.abs(shooterInputs.leftFlywheelVelocityRPM - leftSetpointRPM)
             <= shooterTolerance.get()
-        && Math.abs(shooterInputs.rightFlywheelVelocityRPM - rightSpeedRpm.get())
+        && Math.abs(shooterInputs.rightFlywheelVelocityRPM - rightSetpointRPM)
             <= shooterTolerance.get();
   }
 
   public Command runSpeed(double speed) {
     return new RunCommand(
-      () -> shooterIO.setRPM(speed, speed),
+      () -> setRPM(speed, speed),
       this
     );
   }
 
+  public Command runSpeed(DoubleSupplier speed) {
+    return new FunctionalCommand(
+      () -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
+      () -> {},
+      (interrupted) -> {
+        if (interrupted) {
+          shooterIO.stop();
+        }
+      },
+      () -> false,
+      this
+    );
+  }
+
+  public Command runVoltage(DoubleSupplier volts) {
+    return new FunctionalCommand(
+      //() -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
+      () -> setVoltage(volts, volts), //no PID for now
+      () -> {setVoltage(volts, volts);},
+      (interrupted) -> {
+        if (interrupted) {
+          shooterIO.stop();
+        }
+      },
+      () -> false,
+      this
+    );
+  }
+
+  public void setVoltage(DoubleSupplier leftVoltage, DoubleSupplier rightVoltage){
+    leftMotorVoltage = leftVoltage.getAsDouble() * 10;
+    rightMotorVoltage = rightVoltage.getAsDouble() * 10;
+    //shooterIO.setVoltage(leftMotorVoltage, defaultShooterSpeedRPM); bruh I love autcorrect
+    shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
+  }
+
+  public void setRPM(double leftRPM, double rightRPM) {
+    leftSetpointRPM = leftRPM;
+    rightSetpointRPM = rightRPM;
+    shooterIO.setRPM(leftRPM, rightRPM);
+  }
+
+  public void setRPM(double rpm) {
+    setRPM(rpm, rpm);
+  }
+
+  public void setRPM(DoubleSupplier leftRPM, DoubleSupplier rightRPM) {
+    leftSetpointRPM = leftRPM.getAsDouble();
+    rightSetpointRPM = rightRPM.getAsDouble();
+    shooterIO.setRPM(leftSetpointRPM, rightSetpointRPM);
+  }
+
   public Command stop() {
-    return runSpeed(0);
+    return runVoltage(() -> 0);
+  }
+
+  public double getLeftSpeedMetersPerSecond() {
+    return shooterInputs.leftFlywheelVelocityRPM * wheelRadiusM * 2 * Math.PI / 60;
+  }
+
+  public double getRightSpeedMetersPerSecond() {
+    return shooterInputs.rightFlywheelVelocityRPM * wheelRadiusM * 2 * Math.PI / 60;
   }
 }

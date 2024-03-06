@@ -1,31 +1,25 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
-import java.util.ArrayList;
-import java.util.List;
+import edu.wpi.first.math.geometry.Pose2d;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.proto.Photon;
+import org.photonvision.PhotonUtils;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
-import static frc.robot.Constants.Vision.*;
+import static frc.robot.subsystems.vision.VisionConstants.*;
 
 public class VisionIOSim implements VisionIO {
     private final PhotonCamera camera;
@@ -139,4 +133,28 @@ public class VisionIOSim implements VisionIO {
                         .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE;
     }
 
+    @Override
+    public Translation2d calculateNoteTranslation(VisionIOInputs inputs) {
+        PhotonPipelineResult note_result = getLatestResult(noteCamera);
+        //height of the note shouldn't matter, because ideally it's going to be on the ground
+          if (note_result.hasTargets()) {
+                double range =
+                        PhotonUtils.calculateDistanceToTargetMeters(
+                                NoteCameraHeight, //need to set
+                                NoteHeight, //should be 0 or the height of the note
+                                0, //CAMERA_PITCH_RADIANS
+                                Units.degreesToRadians(note_result.getBestTarget().getPitch()));            
+                return PhotonUtils.estimateCameraToTargetTranslation(
+                range, Rotation2d.fromDegrees(-note_result.getBestTarget().getYaw()));
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation){
+        //return new Pose2d(robotPose.getX() + noteTranslation.getX(), robotPose.getY() + noteTranslation.getY(), robotPose.getRotation());
+        return null;
+    }
+    
 }

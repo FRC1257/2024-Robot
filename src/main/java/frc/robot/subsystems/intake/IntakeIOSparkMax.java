@@ -1,7 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import static frc.robot.Constants.NEO_CURRENT_LIMIT;
-import static frc.robot.Constants.Intake.IntakeSimConstants.*;
+import static frc.robot.subsystems.intake.IntakeConstants.IntakePhysicalConstants.*;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -17,8 +17,8 @@ import frc.robot.Constants.ElectricalLayout;
 
 public class IntakeIOSparkMax implements IntakeIO {
 
-    private CANSparkMax IntakeMotor;
-    private RelativeEncoder intakeEncoder;
+    private CANSparkMax motor;
+    private RelativeEncoder encoder;
     private SparkPIDController velocityPID;
 
     private DigitalInput breakBeam;
@@ -27,41 +27,41 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     public IntakeIOSparkMax() {
         /** ID needs to be assigned from constants */
-        setPIDConstants(kIntakeP, kIntakeI, kIntakeD);
-        IntakeMotor = new CANSparkMax(ElectricalLayout.INTAKE_MOTOR, CANSparkMax.MotorType.kBrushless);
-        IntakeMotor.restoreFactoryDefaults();
-        IntakeMotor.setIdleMode(IdleMode.kBrake);
+        //setPIDConstants(kIntakeP, kIntakeI, kIntakeD);
+        motor = new CANSparkMax(ElectricalLayout.INTAKE_MOTOR, CANSparkMax.MotorType.kBrushless);
+        motor.restoreFactoryDefaults();
+        motor.setIdleMode(IdleMode.kCoast);
         /** Current limit should be added to Constants.java when known */
-        IntakeMotor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
+        motor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
 
-        intakeEncoder = IntakeMotor.getEncoder();
+        encoder = motor.getEncoder();
 
-        breakBeam = new DigitalInput(ElectricalLayout.INTAKE_BREAK_BEAM);
+        //breakBeam = new DigitalInput(ElectricalLayout.INTAKE_BREAK_BEAM);
 
-        velocityPID = IntakeMotor.getPIDController();
+        velocityPID = motor.getPIDController();
     }
 
     /** updates inputs from robot */
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        inputs.appliedVoltage = IntakeMotor.getAppliedOutput() * IntakeMotor.getBusVoltage();
-        inputs.currentAmps = new double[] { IntakeMotor.getOutputCurrent() };
-        inputs.tempCelcius = new double[] { IntakeMotor.getMotorTemperature() };
-        inputs.velocityRadsPerSec = intakeEncoder.getVelocity();
+        inputs.appliedVoltage = motor.getAppliedOutput() * motor.getBusVoltage();
+        inputs.currentAmps = new double[] { motor.getOutputCurrent() };
+        inputs.tempCelcius = new double[] { motor.getMotorTemperature() };
+        inputs.velocityRadsPerSec = encoder.getVelocity();
         inputs.speedSetpoint = desiredSpeed;
-        inputs.breakBeam = breakBeam.get();
+        //inputs.breakBeam = breakBeam.get();
     }
 
     /** sets voltage to run motor if necessary */
     @Override
     public void setVoltage(double voltage) {
-        IntakeMotor.setVoltage(voltage);
+        motor.setVoltage(voltage * 10);
     }
 
     /** sets brake mode to stop */
     @Override
     public void setBrake(boolean brake) {
-        IntakeMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        motor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
     @Override

@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import static frc.robot.Constants.PivotArm.*;
 
 import java.util.function.DoubleSupplier;
 
@@ -22,6 +22,7 @@ public class PivotArm extends SubsystemBase {
     private LoggedDashboardNumber logP;
     private LoggedDashboardNumber logI;
     private LoggedDashboardNumber logD;
+    private LoggedDashboardNumber logFF;
 
     private double setpoint = 0;
 
@@ -38,11 +39,8 @@ public class PivotArm extends SubsystemBase {
         logP = new LoggedDashboardNumber("PivotArm/P", io.getP());
         logI = new LoggedDashboardNumber("PivotArm/I", io.getI());
         logD = new LoggedDashboardNumber("PivotArm/D", io.getD());
+        logFF = new LoggedDashboardNumber("PivotArm/FF", io.getFF());
         
-    }
-
-    public void PivotManualPIDCommand (double volts) {
-
     }
     
     @Override
@@ -62,15 +60,22 @@ public class PivotArm extends SubsystemBase {
         if (logD.get() != io.getD())
             io.setD(logD.get());
         
+        if (logFF.get() != io.getFF())
+            io.setFF(logFF.get());
+        
         // Log Inputs
         Logger.processInputs("PivotArm", inputs);
     }
 
+    public void setBrake(boolean brake) {
+        io.setBrake(brake);
+    }
+
     public void setVoltage(double motorVolts) {
         // limit the arm if its past the limit
-        if (io.getAngle() > PIVOT_ARM_MAX_ANGLE && motorVolts > 0) {
+        if (io.getAngle() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE && motorVolts > 0) {
             motorVolts = 0;
-        } else if (io.getAngle() < PIVOT_ARM_MIN_ANGLE && motorVolts < 0) {
+        } else if (io.getAngle() < PivotArmConstants.PIVOT_ARM_MIN_ANGLE && motorVolts < 0) {
             motorVolts = 0;
         }
         
@@ -78,7 +83,7 @@ public class PivotArm extends SubsystemBase {
     }
 
     public void move(double speed) {
-        setVoltage(speed * 12);
+        setVoltage(speed);
     }
 
     public void runPID() {
@@ -87,11 +92,13 @@ public class PivotArm extends SubsystemBase {
 
     public void setPID(double setpoint) {
         this.setpoint = setpoint;
+        Logger.recordOutput("PivotArm/Setpoint", setpoint);
     }
 
     public boolean atSetpoint() {
-        return Math.abs(io.getAngle() - setpoint) < PIVOT_ARM_PID_TOLERANCE;
+        return Math.abs(io.getAngle() - setpoint) < PivotArmConstants.PIVOT_ARM_PID_TOLERANCE;
     }
+
     public void setMechanism(MechanismLigament2d mechanism) {
         armMechanism = mechanism;
     }
@@ -117,12 +124,32 @@ public class PivotArm extends SubsystemBase {
         );
     }
 
+    public Command PIDCommand(DoubleSupplier setpointSupplier) {
+        return new FunctionalCommand(
+            () -> setPID(setpointSupplier.getAsDouble()), 
+            () -> {
+                setPID(setpointSupplier.getAsDouble());
+                runPID();
+            }, 
+            (stop) -> move(0), 
+            this::atSetpoint, 
+            this
+        );
+    }
+    // Allows manual control of the pivot arm for PID tuning
     public Command ManualCommand(DoubleSupplier speedSupplier) {
         return new FunctionalCommand(
             () -> move(speedSupplier.getAsDouble()), 
             () -> move(speedSupplier.getAsDouble()), 
             (stop) -> move(0), 
             () -> false, 
+            this
+        );
+    }
+
+    public Command stop() {
+        return new InstantCommand(
+            () -> move(0), 
             this
         );
     }

@@ -15,11 +15,7 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.useVision;
-import static frc.robot.Constants.DriveConstants.kMaxSpeedMetersPerSecond;
-import static frc.robot.Constants.DriveConstants.kPathConstraints;
-import static frc.robot.Constants.DriveConstants.kTrackWidthX;
-import static frc.robot.Constants.DriveConstants.kTrackWidthY;
-import static frc.robot.Constants.DriveConstants.periodicTime;
+import static frc.robot.subsystems.drive.DriveConstants.*;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -29,7 +25,6 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindHolonomic;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -40,7 +35,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -49,13 +43,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
-import frc.robot.util.LocalADStarAK;
+import frc.robot.util.autonomous.LocalADStarAK;
+import frc.robot.commands.DriveCommands;
 
 public class Drive extends SubsystemBase {
   // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
@@ -67,7 +61,7 @@ public class Drive extends SubsystemBase {
 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
-  private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+  private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   //private final SysIdRoutine sysId;
 
@@ -393,6 +387,10 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.followPath(path);
   }
 
+  public Command pathfindToTrajectory(PathPlannerPath path) {
+    return AutoBuilder.pathfindThenFollowPath(path, kPathConstraints);
+  }
+
   public Command goToThaPose(Pose2d endPose) {
     List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
       getPose(),
@@ -408,4 +406,21 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.followPath(path);
   }
 
+  public Command goToNote(){ //not supported for Sim yet
+    return DriveCommands.turnToNote(this).andThen(goToPose(visionIO.calculateNotePose(getPose(), visionIO.calculateNoteTranslation(visionInputs))));
+    //might have to negate direction or angle due to orientation of the robot's intake
+  }
+
+  public Translation2d calculateNoteTranslation() {
+    return visionIO.calculateNoteTranslation(visionInputs);
+  }
+
+  public Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation) {
+    return visionIO.calculateNotePose(robotPose, noteTranslation);
+  }
+
+  public Rotation2d getAngleToNote() {
+    return visionIO.getAngleToNote();
+  }
+  
 }

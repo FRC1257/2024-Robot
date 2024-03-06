@@ -8,11 +8,10 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.geometry.Twist3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.subsystems.drive.Drive;
 
-import static frc.robot.Constants.PivotArm.PivotArmSimConstants.kArmLength;
+import static frc.robot.subsystems.pivotArm.PivotArmConstants.PivotArmSimConstants.kArmLength;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -84,9 +83,13 @@ public class NoteShot {
         double dx = shotStraightSpeed * Math.cos(shotPosition.getRotation().getZ() + Math.PI) * Math.cos(shotPosition.getRotation().getY())
              + shotTangentSpeed * Math.cos(shotPosition.getRotation().getZ()) + chassisSpeeds.vxMetersPerSecond;
         double dy = -shotStraightSpeed * Math.sin(shotPosition.getRotation().getZ()) * Math.cos(shotPosition.getRotation().getY())
-            + shotTangentSpeed * Math.sin(shotPosition.getRotation().getZ() + Math.PI / 2) + chassisSpeeds.vyMetersPerSecond;
+            + shotTangentSpeed * Math.sin(shotPosition.getRotation().getZ() + Math.PI / 2)  + chassisSpeeds.vyMetersPerSecond;
         double dz = shotStraightSpeed * Math.sin(shotPosition.getRotation().getY());
+
+        //shoot doesn't work for some reason, fix at home
+        //try and figure out why a trajectory isn't being generated
         
+        //fixed velocity sim here, just had to add driver speed y to correct location
         return new PathPoint(
             shotPosition, 
             dx,

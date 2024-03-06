@@ -7,7 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import static frc.robot.Constants.BlinkinLEDControllerConstants.BLINKIN_LED_CONTROLLER_PORT;
+import static frc.robot.Constants.ElectricalLayout.BLINKIN_LED_CONTROLLER_PORT;
 
 /** Control REV Robotics Blinkin LED controller */
 public class BlinkinLEDController {

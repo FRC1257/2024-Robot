@@ -13,21 +13,22 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.Constants.ModuleConstants.kDrivingD;
-import static frc.robot.Constants.ModuleConstants.kDrivingFF;
-import static frc.robot.Constants.ModuleConstants.kDrivingI;
-import static frc.robot.Constants.ModuleConstants.kDrivingP;
-import static frc.robot.Constants.ModuleConstants.kTurningD;
-import static frc.robot.Constants.ModuleConstants.kTurningFF;
-import static frc.robot.Constants.ModuleConstants.kTurningI;
-import static frc.robot.Constants.ModuleConstants.kTurningP;
-import static frc.robot.Constants.ModuleConstants.kWheelDiameterMeters;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingD;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingFF;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingI;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingP;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningD;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningFF;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningI;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningP;
+import static frc.robot.subsystems.drive.ModuleConstants.kWheelDiameterMeters;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+
 import frc.robot.Constants;
 
 public class Module {
@@ -95,7 +96,7 @@ public class Module {
       if (speedSetpoint != null) {
         // Scale velocity based on turn error
         //
-        // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
+        // When the error is 90 degrees, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
         // double adjustSpeedSetpoint = speedSetpoint * Math.cos(io.getTurnPositionError(angleSetpoint.getRadians()));

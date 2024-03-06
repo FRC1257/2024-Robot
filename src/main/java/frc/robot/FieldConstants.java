@@ -2,10 +2,19 @@ package frc.robot;
 
 import static edu.wpi.first.apriltag.AprilTagFields.k2024Crescendo;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.*;
-import edu.wpi.first.math.util.Units;
 import java.io.IOException;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
+
+import frc.robot.util.drive.AllianceFlipUtil;
+
+
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
@@ -27,6 +36,7 @@ public class FieldConstants {
 
   public static Translation2d ampCenter =
       new Translation2d(Units.inchesToMeters(72.455), Units.inchesToMeters(322.996));
+
   public static Pose2d ampPose = new Pose2d(ampCenter, Rotation2d.fromDegrees(-90));
 
   public static Pose2d pickupPose = new Pose2d(15.331, 1, Rotation2d.fromDegrees(-60));
@@ -57,6 +67,8 @@ public class FieldConstants {
       for (int i = 0; i < spikeTranslations.length; i++) {
         spikeTranslations[i] = new Translation2d(spikeX, spikeFirstY + (i * spikeSeparationY));
       }
+      Logger.recordOutput("centerlineTranslations", centerlineTranslations);
+      Logger.recordOutput("spikeTranslations", spikeTranslations);
     }
   }
 
@@ -73,7 +85,7 @@ public class FieldConstants {
       new Translation3d(
           Units.inchesToMeters(18.055),
           Units.inchesToMeters(238.815),
-          Units.inchesToMeters(13.091));
+          Units.inchesToMeters(83.091));
 
   public static Translation3d topLeftSpeaker =
       new Translation3d(
@@ -85,7 +97,7 @@ public class FieldConstants {
       new Translation3d(0.0, Units.inchesToMeters(238.815), Units.inchesToMeters(78.324));
   public static Translation3d bottomLeftSpeaker =
       new Translation3d(0.0, Units.inchesToMeters(197.765), Units.inchesToMeters(78.324));
-
+  public static final Pose2d SpeakerPosition = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
   public static double aprilTagWidth = Units.inchesToMeters(6.50);
   public static AprilTagFieldLayout aprilTags;
 
@@ -95,5 +107,70 @@ public class FieldConstants {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private static Pose2d[] NOTE_POSITIONS = new Pose2d[] {
+    new Pose2d(2.90,6.68,Rotation2d.fromDegrees(0)),
+    new Pose2d(2.90,5.55,Rotation2d.fromDegrees(0)),
+    new Pose2d(2.90,4.09,Rotation2d.fromDegrees(0)),
+    new Pose2d(8.29,7.44,Rotation2d.fromDegrees(0)),
+    new Pose2d(8.29,5.78,Rotation2d.fromDegrees(0)),
+    new Pose2d(8.29,4.12,Rotation2d.fromDegrees(0)),
+    new Pose2d(8.29,2.45,Rotation2d.fromDegrees(0)),
+    new Pose2d(8.29,0.77,Rotation2d.fromDegrees(0)),
+  };
+
+  private static Pose2d[] START_POSITIONS = new Pose2d[] {
+    new Pose2d(0.73,6.74,Rotation2d.fromDegrees(0)),
+    new Pose2d(1.51,5.57,Rotation2d.fromDegrees(0)),
+    new Pose2d(0.73,4.43,Rotation2d.fromDegrees(0)),
+    new Pose2d(0.73,3.25,Rotation2d.fromDegrees(0)),
+    new Pose2d(0.73,2.27,Rotation2d.fromDegrees(0)),
+  };
+
+  private static Pose2d[] SCORE_POSITIONS = new Pose2d[] {
+    new Pose2d(0.73,6.74,Rotation2d.fromDegrees(45)),
+    new Pose2d(1.51,5.57,Rotation2d.fromDegrees(0)),
+    new Pose2d(0.73,4.43,Rotation2d.fromDegrees(-45)),
+    new Pose2d(4.02,5.82,Rotation2d.fromDegrees(0)),
+    new Pose2d(2.61,3.46,Rotation2d.fromDegrees(0)),
+    //some of these positions may need to change once we learn how far we can be and still shoot
+  };
+
+  // Flips a translation to the correct side of the field based on the current alliance color.
+  public static Pose2d flippedPose(Pose2d pose) {
+    return AllianceFlipUtil.apply(pose);
+  }
+
+  public static Translation2d flippedTranslation(Translation2d translation) {
+    return AllianceFlipUtil.apply(translation);
+  }
+
+  public static Pose2d ampPose() {
+    return flippedPose(ampPose);
+  }
+
+  public static Translation2d ampCenter() {
+    return flippedTranslation(ampCenter);
+  }
+  
+  public static Translation3d topRightSpeaker() {
+    return AllianceFlipUtil.apply(topRightSpeaker);
+  }
+
+  public static Pose2d[] NOTE_POSITIONS() {
+    return AllianceFlipUtil.apply(NOTE_POSITIONS);
+  }
+
+  public static Pose2d[] START_POSITIONS() {
+    return AllianceFlipUtil.apply(START_POSITIONS);
+  }
+
+  public static Pose2d[] SCORE_POSITIONS() {
+    return AllianceFlipUtil.apply(SCORE_POSITIONS);
+  }
+
+  public static Pose2d pickupPose() {
+    return flippedPose(pickupPose);
   }
 }

@@ -29,8 +29,6 @@ public interface GroundIntakeIO {
     /** sets brake mode */
     public default void setBrake(boolean brake) {}
 
-    public default boolean isIntaked() {return true;}
-
     public default void setSpeed(double speed) {}
 
     public default void setP(double p) {}
