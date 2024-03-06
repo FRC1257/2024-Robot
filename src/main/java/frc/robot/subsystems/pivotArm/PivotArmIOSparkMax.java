@@ -129,7 +129,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         pidController.setGoal(setpoint);
         // With the setpoint value we run PID control like normal
         double pidOutput = pidController.calculate(getAngle());
-        double feedforwardOutput = feedforward.calculate(pidController.getSetpoint().velocity);
+        double feedforwardOutput = 0;//feedforward.calculate(pidController.getSetpoint().velocity);
 
         setVoltage(pidOutput + feedforwardOutput);
     }
