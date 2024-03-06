@@ -68,7 +68,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
         //wasn't burning the flash to all the motors, this might be the issue
 
-        configurePID();
+        
 
         /* 
         absoluteEncoder = pivotMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
@@ -90,6 +90,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         motorEncoder = pivotMotor.getEncoder();
         motorEncoder.setPositionConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR);
         motorEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0);
+        configurePID();
     }
 
     private void configurePID() {
@@ -129,9 +130,9 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         pidController.setGoal(setpoint);
         // With the setpoint value we run PID control like normal
         double pidOutput = pidController.calculate(getAngle());
-        double feedforwardOutput = 0;//feedforward.calculate(pidController.getSetpoint().velocity);
+        double feedforwardOutput = feedforward.calculate(pidController.getSetpoint().velocity);
 
-        setVoltage(pidOutput + feedforwardOutput);
+        setVoltage(pidOutput);
     }
 
     @Override
