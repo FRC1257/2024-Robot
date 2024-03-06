@@ -120,7 +120,7 @@ public class DriveControls {
             case PROGRAMMERS:
             default:
                 // Operator controls
-                PIVOT_ROTATE = () -> 0;
+                PIVOT_ROTATE = () -> operator.getRightTriggerAxis() - operator.getLeftTriggerAxis();
                 PIVOT_AMP = operator.rightBumper();
                 PIVOT_ZERO = operator.leftBumper();
                 PIVOT_TO_SPEAKER = operator.a();

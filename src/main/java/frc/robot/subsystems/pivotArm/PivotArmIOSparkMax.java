@@ -91,6 +91,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         motorEncoder.setPositionConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR);
         motorEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0);
         configurePID();
+
     }
 
     private void configurePID() {
@@ -132,7 +133,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         double pidOutput = pidController.calculate(getAngle());
         double feedforwardOutput = feedforward.calculate(pidController.getSetpoint().velocity);
 
-        setVoltage(pidOutput);
+        setVoltage(pidOutput+feedforwardOutput);
     }
 
     @Override

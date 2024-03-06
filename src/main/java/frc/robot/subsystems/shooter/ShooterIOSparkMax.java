@@ -4,15 +4,13 @@ import static frc.robot.Constants.ElectricalLayout.SHOOTER_LEFT_ID;
 import static frc.robot.Constants.ElectricalLayout.SHOOTER_RIGHT_ID;
 import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.flywheelReduction;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import frc.robot.Constants;
 
 public class ShooterIOSparkMax implements ShooterIO {
   private CANSparkFlex leftMotor;
@@ -36,8 +34,13 @@ public class ShooterIOSparkMax implements ShooterIO {
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
 
-    leftMotor.setSmartCurrentLimit(60);
-    rightMotor.setSmartCurrentLimit(60);
+    setLeftBrakeMode(false);
+    setRightBrakeMode(false);
+
+    rightMotor.setInverted(true);
+
+    leftMotor.setSmartCurrentLimit(Constants.NEO_VORTEX_CURRENT_LIMIT);
+    rightMotor.setSmartCurrentLimit(Constants.NEO_VORTEX_CURRENT_LIMIT);
     //leftMotor.enableVoltageCompensation(12.0);
     //rightMotor.enableVoltageCompensation(12.0);
 

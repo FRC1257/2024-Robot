@@ -121,6 +121,7 @@ public final class Constants {
   public static double PI = 3.141592653589793238462643;
   public static double UPDATE_PERIOD = 0.010; // seconds
   public final static int NEO_550_CURRENT_LIMIT = 25; // amps
+  public final static int NEO_VORTEX_CURRENT_LIMIT = 60;
   public final static int QUADRATURE_COUNTS_PER_REV = 8192; // encoder resolution
   // https://www.revrobotics.com/rev-11-1271/
 

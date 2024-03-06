@@ -59,7 +59,7 @@ public class PivotArmIOSim implements PivotArmIO {
 
     @Override
     public void setVoltage(double motorVolts) {
-        sim.setInputVoltage(motorVolts * 5);
+        sim.setInputVoltage(motorVolts);
     }
 
     @Override

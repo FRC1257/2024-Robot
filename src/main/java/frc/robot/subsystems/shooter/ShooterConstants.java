@@ -28,7 +28,7 @@ public class ShooterConstants {
     }
 
     // encoder / flywheelReduction = flywheel
-    public static double flywheelReduction = (1.0 / 2.0);
+    public static double flywheelReduction = 1.0;
     public static double shooterToleranceRPM = 100.0;
 
     public static double wheelRadiusM = 0.05;
