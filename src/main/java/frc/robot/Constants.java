@@ -76,8 +76,6 @@ public final class Constants {
     return Mode.REAL;
   }
 
-  
-
   public static class BuildConstants {
     public static int DIRTY = 1;
     public static String MAVEN_NAME = "Snail";
@@ -128,8 +126,6 @@ public final class Constants {
 
   public final static int NEO_CURRENT_LIMIT = 80; // amps
 
-
-  
   public static final double[][] LookupTable = {
     {0,1000,10},
     {1,2000,30},

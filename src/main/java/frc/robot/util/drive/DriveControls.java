@@ -120,14 +120,14 @@ public class DriveControls {
             case PROGRAMMERS:
             default:
                 // Operator controls
-                PIVOT_ROTATE = operator::getRightY;
+                PIVOT_ROTATE = () -> 0;
                 PIVOT_AMP = operator.rightBumper();
                 PIVOT_ZERO = operator.leftBumper();
                 PIVOT_TO_SPEAKER = operator.a();
                 
                 INTAKE_IN = operator.rightTrigger();
                 INTAKE_OUT = EMPTY_TRIGGER;
-                INTAKE_ROTATE = operator::getLeftY;
+                INTAKE_ROTATE = operator::getRightY;
 
                 //GROUND_INTAKE_IN = operator.y();
                 GROUND_INTAKE_OUT = operator.b();

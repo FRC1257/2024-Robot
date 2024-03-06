@@ -19,23 +19,46 @@ public interface ShooterIO {
   /** Update inputs */
   default void updateInputs(ShooterIOInputs inputs) {}
 
-  default void setRPM(double rpm) {}
+  default void setLeftRPM(double rpm) {}
 
-  default void setVoltage(double voltage) {}
+  default void setRightRPM(double rpm) {}
+
+  default void setRightVoltage(double voltage) {}
+
+  default void setLeftVoltage (double voltage) {}
+
+  default void setRPM(double leftRpm, double rightRpm) {
+    setLeftRPM(leftRpm);
+    setRightRPM(rightRpm);
+  }
+
+  default void setVoltage(double leftVoltage, double rightVoltage){
+    setRightVoltage(rightVoltage);
+    setLeftVoltage(leftVoltage);
+  }
 
   //make a setRPM that doesn't rely on PID
 
-  default void setBrakeMode(boolean enabled) {}
+  default void setLeftBrakeMode(boolean enabled) {}
 
-  default void setCharacterizationVoltage(double volts) {}
+  default void setRightBrakeMode(boolean enabled) {}
 
-  default void setPID(double p, double i, double d) {}
+  default void setShooterBrakeMode(boolean enabled) {
+    setLeftBrakeMode(enabled);
+    setRightBrakeMode(enabled);
+  }
 
-  default void setFF(double s, double v, double a) {}
+  default void setLeftCharacterizationVoltage(double volts) {}
+
+  default void setRightCharacterizationVoltage(double volts) {}
+
+  default void setLeftPID(double p, double i, double d) {}
+
+  default void setLeftFF(double s, double v, double a) {}
+
+  default void setRightPID(double p, double i, double d) {}
+
+  default void setRightFF(double s, double v, double a) {}
 
   default void stop() {}
-
-  default void run(double speed) {
-    setVoltage(speed * 12);
-  }
 }

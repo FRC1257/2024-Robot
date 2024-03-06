@@ -35,7 +35,12 @@ public class ShooterConstants {
     public static double wheelMassKg = 0.2;
     public static double momentOfInertia = 0.5 * wheelMassKg * wheelRadiusM * wheelRadiusM;
 
-    public static FlywheelConstants shooter = switch (Constants.currentMode) {
+    public static FlywheelConstants leftShooter = switch (Constants.currentMode) {
+      case REAL -> new FlywheelConstants(false, 0.0008, 0.4, 0.00001, 0.33329, 0.00083, 0.0);
+      default -> new FlywheelConstants(false, 0.0008, 0.4, 0.00001, 0.33329, 0.00083, 0.0);
+    };
+
+    public static FlywheelConstants rightShooter = switch (Constants.currentMode) {
       case REAL -> new FlywheelConstants(false, 0.0008, 0.4, 0.00001, 0.33329, 0.00083, 0.0);
       default -> new FlywheelConstants(false, 0.0008, 0.4, 0.00001, 0.33329, 0.00083, 0.0);
     };
