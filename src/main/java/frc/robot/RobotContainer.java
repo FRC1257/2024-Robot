@@ -6,6 +6,8 @@ package frc.robot;
 
 import static frc.robot.Constants.PivotArm.PIVOT_ARM_MIN_ANGLE;
 
+import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -405,22 +407,36 @@ public class RobotContainer {
     return drive.pathfindToTrajectory(PathPlannerPath.fromPathFile("amp score"));
   }
   
-  public Command shootAnywhere() {
-    // implement this later using swerve to turn to desired target
-    // move pivot arm
-    // and calculate the speed required to shoot
-    /* if (DriveCommands.pointedAtSpeaker(drive)){
-       return rotateArm().andThen(shoot());
-    } else {
-    return DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot()); */
+  // public Command shootAnywhere() {
+  //   // implement this later using swerve to turn to desired target
+  //   // move pivot arm
+  //   // and calculate the speed required to shoot
+  //   /* if (DriveCommands.pointedAtSpeaker(drive)){
+  //      return rotateArm().andThen(shoot());
+  //   } else {
+  //   return DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot()); */
 
-    // return DriveCommands.turnSpeakerAngle(drive).onlyIf(() -> !DriveCommands.pointedAtSpeaker(drive)).alongWith(rotateArm()).andThen(shoot());
-    return (rotateArm().alongWith(shoot())).deadlineWith(DriveCommands.joystickSpeakerPoint(
-        drive,
-        DriveControls.DRIVE_FORWARD,
-        DriveControls.DRIVE_STRAFE
+  //   // return DriveCommands.turnSpeakerAngle(drive).onlyIf(() -> !DriveCommands.pointedAtSpeaker(drive)).alongWith(rotateArm()).andThen(shoot());
+  //   return (rotateArm().alongWith(shoot())).deadlineWith(DriveCommands.joystickSpeakerPoint(
+  //       drive,
+  //       DriveControls.DRIVE_FORWARD,
+  //       DriveControls.DRIVE_STRAFE
+  //     )
+  //   );
+  // }
+
+  public Command shootAnywhere() {
+    return (
+        DriveCommands.joystickSpeakerPoint(drive, DriveControls.DRIVE_STRAFE, DriveControls.DRIVE_FORWARD)
+        .alongWith(rotateArm())).until(() -> pivot.atSetpoint() && DriveCommands.pointedAtSpeaker(drive)
       )
-    );
+      .andThen(
+        (
+          DriveCommands.joystickSpeakerPoint(drive, DriveControls.DRIVE_STRAFE, DriveControls.DRIVE_FORWARD)
+          .alongWith(shooter.runSpeed(getRPM()))
+        )
+        .until(() -> !intake.isIntaked())
+      );
   }
 
   public Command rotateArm(){
