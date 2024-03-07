@@ -108,7 +108,7 @@ public final class Constants {
     public static final int RIGHT_SLAVE_FRONT_ID = 10;
     public static final int RIGHT_SLAVE_BACK_ID = 11;
     
-    public static final int ABSOLUTE_ENCODER_ID = 0;
+    public static final int ABSOLUTE_ENCODER_ID = 1;
 
     // LED
     public static final int BLINKIN_LED_CONTROLLER_PORT = 1;

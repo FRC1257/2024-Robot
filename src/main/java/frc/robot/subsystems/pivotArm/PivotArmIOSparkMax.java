@@ -78,9 +78,9 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         absoluteEncoder = new DutyCycleEncoder(ElectricalLayout.ABSOLUTE_ENCODER_ID);
         absoluteEncoder.setDistancePerRotation(2 * Constants.PI * PivotArmConstants.POSITION_CONVERSION_FACTOR);
         absoluteEncoder.setDutyCycleRange(1/1024.0, 1023.0/1024.0);
-        // absoluteEncoder.reset();
+        absoluteEncoder.reset();
 
-        pidController = new ProfiledPIDController(PivotArmConstants.PivotArmSimConstants.kPivotSimPID[0], PivotArmConstants.PivotArmSimConstants.kPivotSimPID[1], PivotArmConstants.PivotArmSimConstants.kPivotSimPID[2],
+        pidController = new ProfiledPIDController(PivotArmConstants.PIVOT_ARM_PID_REAL[0], PivotArmConstants.PIVOT_ARM_PID_REAL[1], PivotArmConstants.PIVOT_ARM_PID_REAL[2],
                 new TrapezoidProfile.Constraints(2.45, 2.45));
         
         pidController.setTolerance(PivotArmConstants.PIVOT_ARM_PID_TOLERANCE, PivotArmConstants.PIVOT_ARM_PID_VELOCITY_TOLERANCE);
@@ -105,6 +105,8 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     @Override
     public void updateInputs(PivotArmIOInputs inputs) {
         inputs.angleRads = getAngle();
+        Logger.recordOutput("PivotAbsolute", absoluteEncoder.getAbsolutePosition());
+        // Logger.recordOutput("")
         inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
         inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
         inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};

@@ -99,11 +99,8 @@ public class RobotContainer {
   // Field
   private final Field2d field;
 
-<<<<<<< Updated upstream
   private boolean brakeMode = true;
-=======
   
->>>>>>> Stashed changes
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -307,8 +304,8 @@ public class RobotContainer {
     // DriveControls.SHOOTER_SHOOT.onTrue(shootNote());
     // DriveControls.SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
-    new Trigger(() -> (Timer.getMatchTime() == 90.0)).onTrue(DriveControls.driver.BeginRumble().alongWith(DriveControls.operator.BeginRumble()));
-    new Trigger(() -> intake.isIntaked()).onTrue(DriveControls.driver.BeginRumble());
+    // new Trigger(() -> (Timer.getMatchTime() == 90.0)).onTrue(DriveControls.driver.BeginRumble().alongWith(DriveControls.operator.BeginRumble()));
+    // new Trigger(() -> intake.isIntaked()).onTrue(DriveControls.driver.BeginRumble());
     
     if (Constants.tuningMode) {
       SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));

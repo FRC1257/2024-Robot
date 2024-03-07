@@ -104,4 +104,20 @@ public class CommandSnailController extends CommandXboxController {
         if (Math.abs(value) < 0.08) return 0;
         else return value;
     }
+
+    public double getRightYD() {
+        return applyDeadband(getRightY());
+    }
+
+    public double getLeftYD() {
+        return applyDeadband(getLeftY());
+    }
+
+    public double getRightXD() {
+        return applyDeadband(getRightX());
+    }
+
+    public double getLeftXD() {
+        return applyDeadband(getLeftX());
+    }
 }

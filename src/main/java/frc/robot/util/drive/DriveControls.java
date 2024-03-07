@@ -80,11 +80,7 @@ public class DriveControls {
                 DRIVE_SOURCE = EMPTY_TRIGGER;
                 TURN_90 = EMPTY_TRIGGER;
                 TURN_180 = EMPTY_TRIGGER;
-<<<<<<< Updated upstream
                 LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
-=======
-
->>>>>>> Stashed changes
                 break;
             case PROGRAMMERS:
             default:
@@ -130,26 +126,29 @@ public class DriveControls {
             case PROGRAMMERS:
             default:
                 // Operator controls
-                PIVOT_ROTATE = () -> operator.getRightTriggerAxis() - operator.getLeftTriggerAxis();
-                PIVOT_AMP = operator.rightBumper();
-                PIVOT_ZERO = operator.leftBumper();
-                PIVOT_TO_SPEAKER = operator.a();
+                PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+                //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
+                PIVOT_AMP = EMPTY_TRIGGER;
+                PIVOT_ZERO = EMPTY_TRIGGER;
+                PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
                 
-                INTAKE_IN = operator.rightTrigger();
+                INTAKE_IN = EMPTY_TRIGGER;
                 INTAKE_OUT = EMPTY_TRIGGER;
-                INTAKE_ROTATE = operator::getRightY;
+                INTAKE_ROTATE = () -> -2*operator.getLeftYD();
 
                 //GROUND_INTAKE_IN = operator.y();
-                GROUND_INTAKE_OUT = operator.b();
-                GROUND_INTAKE_ROTATE = operator::getLeftX;
+                GROUND_INTAKE_OUT = EMPTY_TRIGGER;
+                GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
 
-                SHOOTER_SPEED = operator::getRightX;
-                //SHOOTER_SPEED = operator::getRightTriggerAxis;
-                SHOOTER_PREP = operator.rightBumper();
-                SHOOTER_FIRE_AMP = operator.leftBumper();
-                SHOOTER_FIRE_SPEAKER = operator.y();// commented out for testing
-                SHOOTER_SHOOT = operator.x();
+                SHOOTER_SPEED = operator::getRightXD;
+                //SHOOTER_SPEED = operator::getRightTriggerAxis;\
+                SHOOTER_PREP = EMPTY_TRIGGER;
+                SHOOTER_FIRE_AMP = EMPTY_TRIGGER;
+                SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;// commented out for testing
+                SHOOTER_SHOOT = EMPTY_TRIGGER;
                 break;
+
+                //bottom right Left joystick to intake 
         }
     }
 }

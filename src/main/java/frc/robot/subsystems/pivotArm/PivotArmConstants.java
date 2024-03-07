@@ -4,14 +4,14 @@ import edu.wpi.first.math.util.Units;
 
 public class PivotArmConstants {
 
-    public static final double POSITION_CONVERSION_FACTOR = 24.0/35.0;
+    public static final double POSITION_CONVERSION_FACTOR = 21.0/35.0;
     public static final double PIVOT_ARM_ROTATION_DIAM_M = 1;
 
-    public static final double[] PIVOT_ARM_PID_REAL = {0.25, 0, 0, 0};
+    public static final double[] PIVOT_ARM_PID_REAL = {0.01, 0, 0, 0};
     public static final double PIVOT_ARM_PID_TOLERANCE = Units.degreesToRadians(1);
     public static final double PIVOT_ARM_PID_VELOCITY_TOLERANCE = Units.degreesToRadians(5) / 60.0;
 
-    public static final double PIVOT_ARM_OFFSET = 1.12;
+    public static final double PIVOT_ARM_OFFSET = 0;
 
     public static final double PIVOT_ARM_MAX_ANGLE = Units.degreesToRadians(120.0);
     public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(0.0);
