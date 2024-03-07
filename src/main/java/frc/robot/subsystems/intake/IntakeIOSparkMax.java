@@ -37,7 +37,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
         encoder = motor.getEncoder();
 
-        //breakBeam = new DigitalInput(ElectricalLayout.INTAKE_BREAK_BEAM);
+        breakBeam = new DigitalInput(ElectricalLayout.INTAKE_BREAK_BEAM);
 
         velocityPID = motor.getPIDController();
     }

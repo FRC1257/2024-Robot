@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -137,13 +138,13 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     public void goToSetpoint(double setpoint) {
         pidController.setGoal(setpoint);
         // With the setpoint value we run PID control like normal
-        double pidOutput = pidController.calculate(getAngle());
+        double pidOutput = MathUtil.clamp(pidController.calculate(getAngle()), -3, 3);
         double feedforwardOutput = feedforward.calculate(getAngle(), pidController.getSetpoint().velocity);
 
         Logger.recordOutput("PivotArm/FeedforwardOutput", feedforwardOutput);
         Logger.recordOutput("PivotArm/PIDOutput", pidOutput);
 
-        setVoltage(pidOutput+feedforwardOutput);
+        setVoltage(MathUtil.clamp(pidOutput + feedforwardOutput, -4, 4));
     }
 
     @Override

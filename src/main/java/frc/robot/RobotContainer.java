@@ -291,8 +291,8 @@ public class RobotContainer {
     DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
     // Operator controls
-    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_AMP_ANGLE));
-    DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
+    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_AMP_ANGLE));
+    DriveControls.PIVOT_ZERO.onTrue(pivot.PIDCommandForever(0));
     DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
 
     DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
