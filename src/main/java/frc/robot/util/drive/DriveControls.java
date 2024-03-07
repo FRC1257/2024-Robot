@@ -2,7 +2,6 @@ package frc.robot.util.drive;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
@@ -13,6 +12,7 @@ public class DriveControls {
 
     // Useful for things that don't need to be triggered
     private static final Trigger EMPTY_TRIGGER = new Trigger(() -> false);
+    private static final DoubleSupplier EMPTY_DOUBLE_SUPPLIER = () -> 0.0;
 
     // Drive controls
     public static DoubleSupplier DRIVE_FORWARD;
@@ -44,8 +44,7 @@ public class DriveControls {
     // Intake Controls
     public static Trigger INTAKE_IN;
     public static Trigger INTAKE_OUT;
-    public static DoubleSupplier 
-    INTAKE_ROTATE;
+    public static DoubleSupplier INTAKE_ROTATE;
 
     // Ground Intake
     public static Trigger GROUND_INTAKE_IN;
@@ -132,12 +131,12 @@ public class DriveControls {
                 PIVOT_ZERO = EMPTY_TRIGGER;
                 PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
                 
-                INTAKE_IN = EMPTY_TRIGGER;
-                INTAKE_OUT = EMPTY_TRIGGER;
-                INTAKE_ROTATE = () -> -2*operator.getLeftYD();
+                INTAKE_IN = operator.rightBumper();
+                INTAKE_OUT = operator.leftBumper();
+                INTAKE_ROTATE = () -> operator.getLeftYD();
 
-                //GROUND_INTAKE_IN = operator.y();
-                GROUND_INTAKE_OUT = EMPTY_TRIGGER;
+                GROUND_INTAKE_IN = operator.rightBumper();
+                GROUND_INTAKE_OUT = operator.leftBumper();
                 GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
 
                 SHOOTER_SPEED = operator::getRightXD;

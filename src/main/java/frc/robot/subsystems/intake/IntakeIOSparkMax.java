@@ -31,6 +31,7 @@ public class IntakeIOSparkMax implements IntakeIO {
         motor = new CANSparkMax(ElectricalLayout.INTAKE_MOTOR, CANSparkMax.MotorType.kBrushless);
         motor.restoreFactoryDefaults();
         motor.setIdleMode(IdleMode.kCoast);
+        motor.setInverted(true);
         /** Current limit should be added to Constants.java when known */
         motor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
 

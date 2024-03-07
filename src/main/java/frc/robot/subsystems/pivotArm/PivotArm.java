@@ -24,6 +24,9 @@ public class PivotArm extends SubsystemBase {
     private LoggedDashboardNumber logD;
     private LoggedDashboardNumber logFF;
 
+    private LoggedDashboardNumber logkS;
+    private LoggedDashboardNumber logkV;
+
     private double setpoint = 0;
 
     private final PivotArmIO io;
@@ -40,6 +43,9 @@ public class PivotArm extends SubsystemBase {
         logI = new LoggedDashboardNumber("PivotArm/I", io.getI());
         logD = new LoggedDashboardNumber("PivotArm/D", io.getD());
         logFF = new LoggedDashboardNumber("PivotArm/FF", io.getFF());
+
+        logkS = new LoggedDashboardNumber("PivotArm/kS", io.getkS());
+        logkV = new LoggedDashboardNumber("PivotArm/kV", io.getkV());
         
     }
     
@@ -62,6 +68,12 @@ public class PivotArm extends SubsystemBase {
         
         if (logFF.get() != io.getFF())
             io.setFF(logFF.get());
+
+        if (logkS.get() != io.getkS())
+            io.setkS(logkS.get());
+
+        if (logkV.get() != io.getkV())
+            io.setkV(logkV.get());
         
         // Log Inputs
         Logger.processInputs("PivotArm", inputs);
@@ -114,6 +126,7 @@ public class PivotArm extends SubsystemBase {
     public MechanismLigament2d getArmMechanism() {
         return new MechanismLigament2d("Pivot Arm", 0.4, 0, 5, new Color8Bit(Color.kAqua));
     }
+
     public Command PIDCommand(double setpoint) {
         return new FunctionalCommand(
             () -> setPID(setpoint), 
@@ -136,6 +149,7 @@ public class PivotArm extends SubsystemBase {
             this
         );
     }
+
     // Allows manual control of the pivot arm for PID tuning
     public Command ManualCommand(DoubleSupplier speedSupplier) {
         return new FunctionalCommand(

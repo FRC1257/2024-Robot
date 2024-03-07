@@ -23,7 +23,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     // Motor and Encoders
     private CANSparkMax pivotMotor, leftSlave, rightSlaveFront, rightSlaveBack;
     private final ProfiledPIDController pidController;
-    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(PivotArmConstants.PivotArmSimConstants.kArmMass, PivotArmConstants.PivotArmSimConstants.kArmLength);
+    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0, 0);
     
     private DutyCycleEncoder absoluteEncoder;
     private RelativeEncoder motorEncoder;
@@ -68,16 +68,11 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
         //wasn't burning the flash to all the motors, this might be the issue
 
-        
-
-        /* 
-        absoluteEncoder = pivotMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
-        absoluteEncoder.setPositionConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR);
-        absoluteEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0); */
-
         absoluteEncoder = new DutyCycleEncoder(ElectricalLayout.ABSOLUTE_ENCODER_ID);
         absoluteEncoder.setDistancePerRotation(2 * Constants.PI * PivotArmConstants.POSITION_CONVERSION_FACTOR);
         absoluteEncoder.setDutyCycleRange(1/1024.0, 1023.0/1024.0);
+        System.out.println("Absolute Encoder Starting Position: " + absoluteEncoder.getDistance());
+        // make sure the pivot starts at the bottom position every time
         absoluteEncoder.reset();
 
         pidController = new ProfiledPIDController(PivotArmConstants.PIVOT_ARM_PID_REAL[0], PivotArmConstants.PIVOT_ARM_PID_REAL[1], PivotArmConstants.PIVOT_ARM_PID_REAL[2],
@@ -105,8 +100,8 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     @Override
     public void updateInputs(PivotArmIOInputs inputs) {
         inputs.angleRads = getAngle();
-        Logger.recordOutput("PivotAbsolute", absoluteEncoder.getAbsolutePosition());
-        // Logger.recordOutput("")
+        Logger.recordOutput("PivotArm/Absolute", absoluteEncoder.getAbsolutePosition());
+        Logger.recordOutput("PivotArm/MotorEncoder", motorEncoder.getPosition());
         inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
         inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
         inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
@@ -117,6 +112,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     /** Run open loop at the specified voltage. */
     @Override
     public void setVoltage(double motorVolts) {
+        Logger.recordOutput("PivotArm/AppliedVolts", motorVolts);
         pivotMotor.setVoltage(motorVolts);
     }
 
@@ -133,6 +129,9 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         // With the setpoint value we run PID control like normal
         double pidOutput = pidController.calculate(getAngle());
         double feedforwardOutput = feedforward.calculate(pidController.getSetpoint().velocity);
+
+        Logger.recordOutput("PivotArm/FeedforwardOutput", feedforwardOutput);
+        Logger.recordOutput("PivotArm/PIDOutput", pidOutput);
 
         setVoltage(pidOutput+feedforwardOutput);
     }

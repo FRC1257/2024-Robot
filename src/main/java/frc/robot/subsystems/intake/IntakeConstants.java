@@ -34,4 +34,6 @@ public final class IntakeConstants {
     public static final double kIntakeI = 0.0;
     public static final double kIntakeD = 0.0;
   }
+
+  public static final double INTAKE_IN_VOLTAGE = 8;
 }

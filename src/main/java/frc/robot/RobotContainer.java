@@ -22,9 +22,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -32,7 +30,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -45,10 +42,12 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.groundIntake.GroundIntake;
+import frc.robot.subsystems.groundIntake.GroundIntakeConstants;
 import frc.robot.subsystems.groundIntake.GroundIntakeIO;
 import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
 import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkMax;
@@ -290,7 +289,7 @@ public class RobotContainer {
     DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
     // Operator controls
-    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MAX_ANGLE));
+    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_AMP_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(zeroPosition());
     DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
 
@@ -298,6 +297,13 @@ public class RobotContainer {
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
+
+    DriveControls.INTAKE_IN.whileTrue(intake.IntakeManualCommand(() -> IntakeConstants.INTAKE_IN_VOLTAGE));
+    DriveControls.INTAKE_OUT.whileTrue(intake.IntakeManualCommand(() -> -IntakeConstants.INTAKE_IN_VOLTAGE));
+
+    DriveControls.GROUND_INTAKE_IN.whileTrue(groundIntake.GroundIntakeManualCommand(() -> GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
+    DriveControls.GROUND_INTAKE_OUT.whileTrue(groundIntake.GroundIntakeManualCommand(() -> -GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
+
     // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
     // pivot::getAngle);
     // DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());

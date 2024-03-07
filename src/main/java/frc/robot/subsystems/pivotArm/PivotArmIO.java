@@ -47,6 +47,10 @@ public interface PivotArmIO {
 
     public default void setFF(double ff) {}
 
+    public default void setkS(double kS) {}
+
+    public default void setkV(double kV) {}
+
     public default double getP() { return 0.0; }
 
     public default double getI() { return 0.0; }
@@ -54,5 +58,9 @@ public interface PivotArmIO {
     public default double getD() { return 0.0; }
 
     public default double getFF() { return 0.0; }
+
+    public default double getkS() { return 0.0; }
+
+    public default double getkV() { return 0.0; }
 
 }

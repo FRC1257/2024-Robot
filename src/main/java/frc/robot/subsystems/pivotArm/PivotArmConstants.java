@@ -16,6 +16,8 @@ public class PivotArmConstants {
     public static final double PIVOT_ARM_MAX_ANGLE = Units.degreesToRadians(120.0);
     public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(0.0);
 
+    public static final double PIVOT_AMP_ANGLE = Units.degreesToRadians(100.0);
+
     public static class PivotArmSimConstants {
       public static final double[] kPivotSimPID = {15, 0, 0, 0};
 
