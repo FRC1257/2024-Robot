@@ -2,8 +2,10 @@ package frc.robot.util.drive;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
 
 public class DriveControls {
     // Controllers
@@ -37,6 +39,7 @@ public class DriveControls {
 
     // Pivot Controls
     public static DoubleSupplier PIVOT_ROTATE;
+    public static DoubleSupplier PIVOT_PID_ROTATE;
     public static Trigger PIVOT_AMP;
     public static Trigger PIVOT_ZERO;
     public static Trigger PIVOT_TO_SPEAKER;
@@ -128,6 +131,7 @@ public class DriveControls {
             default:
                 // Operator controls
                 PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+                PIVOT_PID_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
                 //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
                 PIVOT_AMP = operator.getB();
                 PIVOT_ZERO = operator.getA();

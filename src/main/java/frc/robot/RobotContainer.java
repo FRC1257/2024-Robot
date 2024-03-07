@@ -260,8 +260,11 @@ public class RobotContainer {
         groundIntake.GroundIntakeManualCommand(
             () -> DriveControls.GROUND_INTAKE_ROTATE.getAsDouble() * 12));
 
+    // pivot.setDefaultCommand(
+    //     pivot.ManualCommand(() -> DriveControls.PIVOT_ROTATE.getAsDouble() * 2));
     pivot.setDefaultCommand(
-        pivot.ManualCommand(() -> DriveControls.PIVOT_ROTATE.getAsDouble() * 1.5));
+      pivot.PIDCommandForever(DriveControls.PIVOT_PID_ROTATE)
+    );
 
     shooter.setDefaultCommand(
         // shooter.runPIDSpeed(0)
@@ -291,8 +294,8 @@ public class RobotContainer {
     DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
     // Operator controls
-    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_AMP_ANGLE));
-    DriveControls.PIVOT_ZERO.onTrue(pivot.PIDCommandForever(0));
+    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_AMP_ANGLE));
+    DriveControls.PIVOT_ZERO.onTrue(pivot.PIDCommand(0));
     DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
 
     DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());

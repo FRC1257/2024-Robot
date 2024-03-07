@@ -3,6 +3,7 @@ package frc.robot.subsystems.pivotArm;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -118,6 +119,13 @@ public class PivotArm extends SubsystemBase {
         Logger.recordOutput("PivotArm/Setpoint", setpoint);
     }
 
+    public void addPID(double setpointAdd) {
+        this.setpoint += setpointAdd;
+        this.setpoint = MathUtil.clamp(this.setpoint, PivotArmConstants.PIVOT_ARM_MIN_ANGLE, PivotArmConstants.PIVOT_ARM_MAX_ANGLE);
+        
+        Logger.recordOutput("PivotArm/Setpoint", setpoint);
+    }
+
     public boolean atSetpoint() {
         return Math.abs(io.getAngle() - setpoint) < PivotArmConstants.PIVOT_ARM_PID_TOLERANCE;
     }
@@ -148,10 +156,17 @@ public class PivotArm extends SubsystemBase {
         );
     }
 
-    public Command PIDCommandForever(double setpoint) {
+    public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
         return new FunctionalCommand(
-            () -> setPID(setpoint), 
-            () -> runPID(), 
+            () -> {}, 
+            () -> {
+                if (!atSetpoint()) {
+                    runPID();
+                    return;
+                }
+                addPID(setpointSupplier.getAsDouble());
+                runPID();
+            }, 
             (stop) -> move(0), 
             () -> false, 
             this
