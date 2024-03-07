@@ -58,6 +58,7 @@ public class DriveControls {
     public static Trigger SHOOTER_FIRE_AMP;
     public static Trigger SHOOTER_FIRE_SPEAKER;
     public static Trigger SHOOTER_SHOOT;
+    public static Trigger SHOOTER_FULL_SEND;
 
     // Rumble Controls
     public static Trigger TIMED_RUMBLE;
@@ -121,14 +122,15 @@ public class DriveControls {
                 SHOOTER_FIRE_AMP = operator.leftBumper();
                 SHOOTER_FIRE_SPEAKER = operator.x();
                 TIMED_RUMBLE = EMPTY_TRIGGER;
+                SHOOTER_FULL_SEND = EMPTY_TRIGGER;
                 break;
             case PROGRAMMERS:
             default:
                 // Operator controls
                 PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
                 //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
-                PIVOT_AMP = EMPTY_TRIGGER;
-                PIVOT_ZERO = EMPTY_TRIGGER;
+                PIVOT_AMP = operator.getB();
+                PIVOT_ZERO = operator.getA();
                 PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
                 
                 INTAKE_IN = operator.rightBumper();
@@ -145,6 +147,7 @@ public class DriveControls {
                 SHOOTER_FIRE_AMP = EMPTY_TRIGGER;
                 SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;// commented out for testing
                 SHOOTER_SHOOT = EMPTY_TRIGGER;
+                SHOOTER_FULL_SEND = operator.getY();
                 break;
 
                 //bottom right Left joystick to intake 

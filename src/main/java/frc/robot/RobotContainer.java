@@ -306,6 +306,8 @@ public class RobotContainer {
     DriveControls.GROUND_INTAKE_IN.whileTrue(groundIntake.GroundIntakeManualCommand(() -> GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
     DriveControls.GROUND_INTAKE_OUT.whileTrue(groundIntake.GroundIntakeManualCommand(() -> -GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
 
+    DriveControls.SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(() -> 11));
+
     // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
     // pivot::getAngle);
     // DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
@@ -360,9 +362,11 @@ public class RobotContainer {
 
   public Command zeroPosition() {
     return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MIN_ANGLE)
-        .alongWith(intake.stop())
-        .alongWith(shooter.stop())
-        .alongWith(groundIntake.stop());
+        .deadlineWith(
+          intake.stop()
+          .alongWith(shooter.stop())
+          .alongWith(groundIntake.stop())
+        );
   }
 
   public Command zeroShooter() {
