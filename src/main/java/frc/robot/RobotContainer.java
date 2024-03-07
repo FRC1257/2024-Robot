@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -310,8 +312,8 @@ public class RobotContainer {
     // DriveControls.SHOOTER_SHOOT.onTrue(shootNote());
     // DriveControls.SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
-    // new Trigger(() -> (Timer.getMatchTime() == 90.0)).onTrue(DriveControls.driver.BeginRumble().alongWith(DriveControls.operator.BeginRumble()));
-    // new Trigger(() -> intake.isIntaked()).onTrue(DriveControls.driver.BeginRumble());
+    new Trigger(() -> Timer.getMatchTime() == 90.0).onTrue(DriveControls.driver.BeginRumble().alongWith(DriveControls.operator.BeginRumble()));
+    new Trigger(() -> intake.isIntaked()).onTrue(DriveControls.driver.BeginRumble());
     
     if (Constants.tuningMode) {
       SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
