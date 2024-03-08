@@ -502,36 +502,13 @@ public class RobotContainer {
   }
 
   public Command shootNote() {
-    return //new FunctionalCommand(
-        // () -> {
-        // },
-        // () -> {
+    return
 
-        //   shooter.setRPM(getRPM());
-        //   Logger.recordOutput("DistanceAway", getEstimatedDistance());
-        //   Logger.recordOutput("RPM setpoint", getRPM());
-          
-        //   //shooter.setRPM(getRPM());
-        //   //shooter.setVoltage(12);
-        //   // shooter.setRPM(1000, 1000);
-        // },
-        // (interrupted) -> {
-        //   if (!interrupted)
-        //     return;
-
-        //   shooter.stop();
-        // },
-        // () -> {
-        //   return shooter.atSetpoint();
-        // },
-        // shooter).andThen(
-
-        
           //figure out why the shooter is so weaksauce
           //it's only shooting it out fast when I mash the button
           //probably has to do with the getRPM method
-            intake.EjectLoopCommand(2)
-                .deadlineWith(shooter.runSpeed(() -> getRPM()));
+          shooter.runSpeed(() -> getRPM())
+            .andThen(intake.EjectLoopCommand(8));
                 //.alongWith(NoteVisualizer.shoot(drive)));//);
   }
 
