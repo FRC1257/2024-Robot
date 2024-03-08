@@ -173,8 +173,13 @@ public class Shooter extends SubsystemBase {
     shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
   }
 
+  public void setVoltage(double volts){
+    shooterIO.setVoltage(volts, volts);
+  }
+
+ 
   public void setRPM(double leftRPM, double rightRPM) {
-    leftSetpointRPM = leftRPM;
+    leftSetpointRPM = leftRPM; //RPM setpoint is being set here
     rightSetpointRPM = rightRPM;
     shooterIO.setRPM(leftRPM, rightRPM);
   }

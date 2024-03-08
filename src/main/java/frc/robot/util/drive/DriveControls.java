@@ -149,9 +149,9 @@ public class DriveControls {
                 //SHOOTER_SPEED = operator::getRightTriggerAxis;\
                 SHOOTER_PREP = EMPTY_TRIGGER;
                 SHOOTER_FIRE_AMP = EMPTY_TRIGGER;
-                SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;// commented out for testing
+                SHOOTER_FIRE_SPEAKER = operator.getY();// commented out for testing
                 SHOOTER_SHOOT = EMPTY_TRIGGER;
-                SHOOTER_FULL_SEND = operator.getY();
+                SHOOTER_FULL_SEND = EMPTY_TRIGGER;
                 break;
 
                 //bottom right Left joystick to intake 

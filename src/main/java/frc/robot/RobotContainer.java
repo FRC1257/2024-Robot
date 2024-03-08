@@ -296,9 +296,7 @@ public class RobotContainer {
     // Operator controls
     DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_AMP_ANGLE));
     DriveControls.PIVOT_ZERO.onTrue(pivot.PIDCommand(0));
-    DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
-
-    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
+    //DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
@@ -313,7 +311,7 @@ public class RobotContainer {
 
     // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
     // pivot::getAngle);
-    // DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
+    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
     // DriveControls.SHOOTER_SHOOT.onTrue(shootNote());
     // DriveControls.SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
@@ -439,6 +437,7 @@ public class RobotContainer {
     return new FunctionalCommand(
           () -> {},
           () -> {
+            Logger.recordOutput("PivotArmSpeakerAngle", getAngle());
             pivot.setPID(getAngle());
             pivot.runPID();
           },
@@ -448,8 +447,6 @@ public class RobotContainer {
         },
         () -> {
           return pivot.atSetpoint();
-          //shooter can never get to that setpoint with a comically high speed probably
-          //we pierce the heavens but bounce against the earth
         },
         pivot
     );
@@ -470,23 +467,28 @@ public class RobotContainer {
         () -> {
         },
         () -> {
+          Logger.recordOutput("PivotArmSpeakerAngle", getAngle());
           pivot.setPID(getAngle());
           pivot.runPID();
           //shooter.setRPM(getRPM());
         },
         (interrupted) -> {
-          if (!interrupted)
-            return;
-
-            //shooter.stop();
+          //shooter.stop();
           pivot.stop();
+          //this should be stopping but it isn't
+          //pivot.stop should be void, not return a command
         },
         () -> {
-          return pivot.atSetpoint();
+
+          if (pivot.atSetpoint()){
+            Logger.recordOutput("atSetpoint", pivot.atSetpoint());
+          }
+          return pivot.atSetpoint();// && shooter.atSetpoint();
           //shooter can never get to that setpoint with a comically high speed probably
           //we pierce the heavens but bounce against the earth
+          
         },
-        shooter, pivot);
+        pivot);
   }
 
   public Command shoot() {
@@ -500,28 +502,37 @@ public class RobotContainer {
   }
 
   public Command shootNote() {
-    return new FunctionalCommand(
-        () -> {
-        },
-        () -> {
+    return //new FunctionalCommand(
+        // () -> {
+        // },
+        // () -> {
 
-          shooter.setRPM(getRPM());
-          Logger.recordOutput("DistanceAway", getEstimatedDistance());
-          // shooter.setRPM(1000, 1000);
-        },
-        (interrupted) -> {
-          if (!interrupted)
-            return;
+        //   shooter.setRPM(getRPM());
+        //   Logger.recordOutput("DistanceAway", getEstimatedDistance());
+        //   Logger.recordOutput("RPM setpoint", getRPM());
+          
+        //   //shooter.setRPM(getRPM());
+        //   //shooter.setVoltage(12);
+        //   // shooter.setRPM(1000, 1000);
+        // },
+        // (interrupted) -> {
+        //   if (!interrupted)
+        //     return;
 
-          shooter.stop();
-        },
-        () -> {
-          return shooter.atSetpoint();
-        },
-        shooter).andThen(
+        //   shooter.stop();
+        // },
+        // () -> {
+        //   return shooter.atSetpoint();
+        // },
+        // shooter).andThen(
+
+        
+          //figure out why the shooter is so weaksauce
+          //it's only shooting it out fast when I mash the button
+          //probably has to do with the getRPM method
             intake.EjectLoopCommand(2)
-                .deadlineWith(shooter.runSpeed(() -> getRPM())
-                .alongWith(NoteVisualizer.shoot(drive))));
+                .deadlineWith(shooter.runSpeed(() -> getRPM()));
+                //.alongWith(NoteVisualizer.shoot(drive)));//);
   }
 
   // Returns the estimated transformation over the next tick (The change in

@@ -197,12 +197,14 @@ public class PivotArm extends SubsystemBase {
         );
     }
 
-    public Command stop() {
-        return new InstantCommand(
-            () -> move(0), 
-            this
-        );
-    }
+    public void stop() {
+        // return new InstantCommand(
+        //     () -> move(0), 
+        //     this
+        // );
+        move(0);
+    }//not calling move
+    //no commmand yalee
 
 }
 
