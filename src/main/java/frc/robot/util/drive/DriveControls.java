@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.util.drive.CommandSnailController.DPad;
 
 public class DriveControls {
     // Controllers
@@ -43,6 +44,7 @@ public class DriveControls {
     public static Trigger PIVOT_AMP;
     public static Trigger PIVOT_ZERO;
     public static Trigger PIVOT_TO_SPEAKER;
+    public static Trigger PIVOT_HOLD;
 
     // Intake Controls
     public static Trigger INTAKE_IN;
@@ -55,8 +57,7 @@ public class DriveControls {
     public static DoubleSupplier GROUND_INTAKE_ROTATE;
 
     // Shooter Controls
-    public static DoubleSupplier 
-    SHOOTER_SPEED;
+    public static DoubleSupplier SHOOTER_SPEED;
     public static Trigger SHOOTER_PREP;
     public static Trigger SHOOTER_FIRE_AMP;
     public static Trigger SHOOTER_FIRE_SPEAKER;
@@ -108,25 +109,32 @@ public class DriveControls {
         switch (Constants.operator) {
             case ERICK:
                 // Operator controls
-                PIVOT_ROTATE = operator::getRightY;
-                PIVOT_AMP = operator.rightBumper();
-                PIVOT_ZERO = operator.leftBumper();
-                PIVOT_TO_SPEAKER = operator.a();
+                PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+                PIVOT_PID_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+                //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
                 
-                INTAKE_IN = operator.rightTrigger();
-                INTAKE_OUT = EMPTY_TRIGGER;
-                INTAKE_ROTATE = operator::getLeftY;
+                // Pivot things
+                PIVOT_AMP = operator.getDPad(DPad.RIGHT);
+                PIVOT_ZERO = operator.getDPad(DPad.DOWN);
+                PIVOT_TO_SPEAKER = operator.getDPad(DPad.LEFT);
+                PIVOT_HOLD = operator.getDPad(DPad.UP);
+                
+                // intaking things
+                INTAKE_IN = operator.rightBumper();
+                INTAKE_OUT = operator.leftBumper();
+                INTAKE_ROTATE = () -> operator.getLeftYD();
 
-                GROUND_INTAKE_IN = operator.y();
-                GROUND_INTAKE_OUT = operator.b();
-                GROUND_INTAKE_ROTATE = operator::getRightY;
+                GROUND_INTAKE_IN = operator.rightBumper();
+                GROUND_INTAKE_OUT = operator.leftBumper();
+                GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
 
-                SHOOTER_SPEED = operator::getRightY;
-                SHOOTER_PREP = operator.rightBumper();
-                SHOOTER_FIRE_AMP = operator.leftBumper();
-                SHOOTER_FIRE_SPEAKER = operator.x();
-                TIMED_RUMBLE = EMPTY_TRIGGER;
-                SHOOTER_FULL_SEND = EMPTY_TRIGGER;
+                SHOOTER_SPEED = operator::getRightXD;
+                //SHOOTER_SPEED = operator::getRightTriggerAxis;\
+                SHOOTER_PREP = EMPTY_TRIGGER;
+                SHOOTER_FIRE_AMP = operator.getA();
+                SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;// commented out for testing
+                SHOOTER_SHOOT = EMPTY_TRIGGER;
+                SHOOTER_FULL_SEND = operator.getA();
                 break;
             case PROGRAMMERS:
             default:
