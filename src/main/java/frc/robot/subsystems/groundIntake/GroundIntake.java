@@ -76,6 +76,11 @@ public class GroundIntake extends SubsystemBase {
         );
     }
 
+        // Allows manual command of the flywheel for testing
+    public Command GroundIntakeManualCommand(double voltage) {
+        return GroundIntakeManualCommand(() -> voltage);
+    }
+
     public Command stop() {
         return new FunctionalCommand(
             () -> {},

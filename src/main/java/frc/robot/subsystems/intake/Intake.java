@@ -103,6 +103,16 @@ public class Intake extends SubsystemBase {
         );
     }
 
+    public Command IntakeManualCommand(double voltage) {
+        return new FunctionalCommand(
+            () -> {},
+            () -> io.setVoltage(voltage),
+            (stop) -> io.stop(),
+            () -> false,
+            this
+        );
+    }
+
     public Command stop() {
         return new FunctionalCommand(
             () -> {},

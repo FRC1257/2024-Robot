@@ -166,6 +166,10 @@ public class Shooter extends SubsystemBase {
     );
   }
 
+  public Command runVoltage(double volts) {
+    return runVoltage(() -> volts);
+  }
+
   public void setVoltage(DoubleSupplier leftVoltage, DoubleSupplier rightVoltage){
     leftMotorVoltage = leftVoltage.getAsDouble() * 10;
     rightMotorVoltage = rightVoltage.getAsDouble() * 10;

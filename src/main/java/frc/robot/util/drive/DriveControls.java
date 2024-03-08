@@ -66,6 +66,7 @@ public class DriveControls {
     public static Trigger SHOOTER_FIRE_SPEAKER;
     public static Trigger SHOOTER_SHOOT;
     public static Trigger SHOOTER_FULL_SEND;
+    public static Trigger SHOOTER_UNJAM;
 
     // Rumble Controls
     public static Trigger TIMED_RUMBLE;
@@ -80,9 +81,9 @@ public class DriveControls {
                 DRIVE_ROTATE = driver::getRightX;
                 DRIVE_SLOW = driver.start();
                 DRIVE_SPEAKER_AIM = driver.leftBumper();
-                DRIVE_STOP = driver.rightBumper();
-                DRIVE_TOGGLE_ROBOT_RELATIVE = EMPTY_TRIGGER;
-                LOCK_ON_SPEAKER_FULL = driver.x();
+                DRIVE_STOP = driver.x();
+                DRIVE_TOGGLE_ROBOT_RELATIVE = driver.rightBumper();
+                LOCK_ON_SPEAKER_FULL = driver.y();
 
                 DRIVE_AMP = EMPTY_TRIGGER;
                 DRIVE_SOURCE = EMPTY_TRIGGER;
@@ -131,13 +132,15 @@ public class DriveControls {
                 GROUND_INTAKE_OUT = operator.leftBumper();
                 GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
 
-                SHOOTER_SPEED = operator::getRightXD;
+                // SHOOTER DEFAULT SPEED
+                SHOOTER_SPEED = () -> operator.getRightXD() + 0.2;
                 //SHOOTER_SPEED = operator::getRightTriggerAxis;\
                 SHOOTER_PREP = EMPTY_TRIGGER;
-                SHOOTER_FIRE_AMP = operator.getA();
+                SHOOTER_FIRE_AMP = operator.getY();
                 SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;// commented out for testing
                 SHOOTER_SHOOT = EMPTY_TRIGGER;
                 SHOOTER_FULL_SEND = operator.getA();
+                SHOOTER_UNJAM = operator.getB();
                 break;
             case PROGRAMMERS:
             default:
@@ -164,6 +167,7 @@ public class DriveControls {
                 SHOOTER_FIRE_SPEAKER = operator.getY();// commented out for testing
                 SHOOTER_SHOOT = EMPTY_TRIGGER;
                 SHOOTER_FULL_SEND = EMPTY_TRIGGER;
+                SHOOTER_UNJAM = EMPTY_TRIGGER;
                 break;
 
                 //bottom right Left joystick to intake 

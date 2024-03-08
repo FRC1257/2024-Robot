@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -301,15 +302,25 @@ public class RobotContainer {
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
 
-    DriveControls.INTAKE_IN.whileTrue(intake.IntakeManualCommand(() -> IntakeConstants.INTAKE_IN_VOLTAGE));
-    DriveControls.INTAKE_OUT.whileTrue(intake.IntakeManualCommand(() -> -IntakeConstants.INTAKE_IN_VOLTAGE));
+    DriveControls.INTAKE_IN.whileTrue(intake.IntakeManualCommand(IntakeConstants.INTAKE_IN_VOLTAGE));
+    DriveControls.INTAKE_OUT.whileTrue(intake.IntakeManualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE));
 
-    DriveControls.GROUND_INTAKE_IN.whileTrue(groundIntake.GroundIntakeManualCommand(() -> GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
-    DriveControls.GROUND_INTAKE_OUT.whileTrue(groundIntake.GroundIntakeManualCommand(() -> -GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
+    DriveControls.GROUND_INTAKE_IN.whileTrue(groundIntake.GroundIntakeManualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
+    DriveControls.GROUND_INTAKE_OUT.whileTrue(groundIntake.GroundIntakeManualCommand(GroundIntakeConstants.GROUND_INTAKE_OUT_VOLTAGE));
 
     // TODO using voltage mode for now but later speed PID
-    DriveControls.SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(() -> 11));
-    DriveControls.SHOOTER_FIRE_AMP.whileTrue(shooter.runVoltage(() -> 5));
+    DriveControls.SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(11));
+    DriveControls.SHOOTER_FIRE_AMP.whileTrue(
+      shooter.runVoltage(5)
+        .alongWith(
+          new WaitCommand(1)
+            .andThen(intake.IntakeManualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+        )
+    ));
+    DriveControls.SHOOTER_UNJAM.onTrue(
+      intake.IntakeManualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+        .withTimeout(IntakeConstants.SHOOTER_UNJAM_TIME)
+    );
 
     // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
     // pivot::getAngle);

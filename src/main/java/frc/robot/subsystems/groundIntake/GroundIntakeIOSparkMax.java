@@ -31,6 +31,7 @@ public class GroundIntakeIOSparkMax implements GroundIntakeIO {
         motor.setIdleMode(IdleMode.kCoast);
         
         motor.setSmartCurrentLimit(NEO_CURRENT_LIMIT);
+        motor.setInverted(true);
 
         encoder = motor.getEncoder();
 

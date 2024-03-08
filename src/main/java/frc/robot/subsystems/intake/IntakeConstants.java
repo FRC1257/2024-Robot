@@ -36,4 +36,7 @@ public final class IntakeConstants {
   }
 
   public static final double INTAKE_IN_VOLTAGE = 8;
+  public static final double INTAKE_OUT_VOLTAGE = -8;
+
+  public static final double SHOOTER_UNJAM_TIME = 0.5;
 }
