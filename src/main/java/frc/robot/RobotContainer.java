@@ -508,7 +508,7 @@ public class RobotContainer {
           //it's only shooting it out fast when I mash the button
           //probably has to do with the getRPM method
           shooter.runSpeed(() -> getRPM())
-            .andThen(intake.EjectLoopCommand(8));
+            .andThen(() -> intake.setVoltage(8));
                 //.alongWith(NoteVisualizer.shoot(drive)));//);
   }
 
