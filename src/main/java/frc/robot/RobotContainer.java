@@ -193,7 +193,7 @@ public class RobotContainer {
     // Named Commands
     // command calling drivng subystem is probably here
     // NamedCommands.registerCommand("Shoot", shootAnywhere());
-    NamedCommands.registerCommand("Shoot", shootSpeaker());
+    NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
     NamedCommands.registerCommand("Intake",
         intake.IntakeLoopCommand(3).deadlineWith(groundIntake.GroundIntakeManualCommand(() -> 2)));
     NamedCommands.registerCommand("PrepShoot", prepShoot());
