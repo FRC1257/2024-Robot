@@ -29,6 +29,9 @@ public class VisionConstants {
             new Rotation3d(0, 0, Rotation2d.fromDegrees(155).getRadians()));
     // Change CameraNameToCam angle and stuff as needed, ask MAURICIO SANCHEZ
 
+    public static final int NOTE_PIPELINE = 0;
+    public static final int NOTE_TAG_PIPELINE = 1;
+
     public static final double NoteCameraHeight = 6.0;
 
     public static final double NoteHeight = 0.0;

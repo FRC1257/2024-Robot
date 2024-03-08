@@ -20,8 +20,8 @@ public class VisionIOPhoton implements VisionIO {
     private final PhotonCamera raspberryCamera;
     private final PhotonPoseEstimator raspberryEstimator;
 
-    private final PhotonCamera raspberryCamera2;
-    private final PhotonPoseEstimator raspberryEstimator2;
+    // private final PhotonCamera raspberryCamera2;
+    // private final PhotonPoseEstimator raspberryEstimator2;
 
     private final PhotonCamera orangeCamera;
     private final PhotonPoseEstimator orangeEstimator;
@@ -42,9 +42,9 @@ public class VisionIOPhoton implements VisionIO {
         raspberryEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         //Front Left
-        raspberryCamera2 = new PhotonCamera(kRaspberryCameraName2);
-        raspberryEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam2);
-        raspberryEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        // raspberryCamera2 = new PhotonCamera(kRaspberryCameraName2);
+        // raspberryEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam2);
+        // raspberryEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         //Back Left
         orangeCamera = new PhotonCamera(kOrangeCameraName);
@@ -103,31 +103,35 @@ public class VisionIOPhoton implements VisionIO {
         Logger.recordOutput("Vision/OrangeConnected", orangeCamera.isConnected());
         Logger.recordOutput("Vision/RaspberryConnected", raspberryCamera.isConnected());
         Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
-        Logger.recordOutput("Vision/Raspberry2Connected", raspberryCamera2.isConnected());
+        Logger.recordOutput("Vision/NoteCameraPipeline", noteCamera.getPipelineIndex());
+        // Logger.recordOutput("Vision/Raspberry2Connected", raspberryCamera2.isConnected());
     }
 
     private PhotonPipelineResult[] getAprilTagResults() {
         PhotonPipelineResult front_result = getLatestResult(raspberryCamera);
         PhotonPipelineResult back_result = getLatestResult(orangeCamera);
-        PhotonPipelineResult front_result2 = getLatestResult(raspberryCamera2);
+        // PhotonPipelineResult front_result2 = getLatestResult(raspberryCamera2);
 
         if (!noteCameraObjectMode) {
-            return new PhotonPipelineResult[] { front_result, back_result, front_result2 };
+            // return new PhotonPipelineResult[] { front_result, back_result, front_result2 };
+            return new PhotonPipelineResult[] { front_result, back_result };
         } else {
-            return new PhotonPipelineResult[] { front_result, back_result, front_result2, getLatestResult(noteCamera) };
+            // return new PhotonPipelineResult[] { front_result, back_result, front_result2, getLatestResult(noteCamera) };
+            return new PhotonPipelineResult[] { front_result, back_result, getLatestResult(noteCamera) };
         }
     }
 
     private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
         raspberryEstimator.setReferencePose(currentEstimate);
         orangeEstimator.setReferencePose(currentEstimate);
-        raspberryEstimator2.setReferencePose(currentEstimate);
+        // raspberryEstimator2.setReferencePose(currentEstimate);
 
         if (!noteCameraObjectMode) {
-            orangeEstimator2.setReferencePose(currentEstimate);
-            return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator, raspberryEstimator2 };
+            // return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator, raspberryEstimator2 };
+            return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator };
         } else {
-            return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator, raspberryEstimator2, orangeEstimator2 };
+            orangeEstimator2.setReferencePose(currentEstimate);
+            return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator, orangeEstimator2 };
         }
     }
 
@@ -174,5 +178,10 @@ public class VisionIOPhoton implements VisionIO {
     @Override
     public void setNoteCameraObjectMode(boolean mode) {
         noteCameraObjectMode = mode;
+        if (noteCameraObjectMode) {
+            noteCamera.setPipelineIndex(VisionConstants.NOTE_PIPELINE);
+        } else {
+            noteCamera.setPipelineIndex(VisionConstants.NOTE_TAG_PIPELINE);
+        }
     }
 }
