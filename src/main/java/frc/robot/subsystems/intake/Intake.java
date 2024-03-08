@@ -83,7 +83,7 @@ public class Intake extends SubsystemBase {
      * Uses input from controller to set speed of the flywheel
      * and is used as the default command for the ground intake
     */
-    public Command IntakeSpeedCommand(DoubleSupplier speed) {
+    public Command speedCommand(DoubleSupplier speed) {
         return new FunctionalCommand(
             () -> {},
             () -> io.setSpeed(speed.getAsDouble()),
@@ -93,7 +93,7 @@ public class Intake extends SubsystemBase {
         );
     }
     // Allows manual command of the flywheel for testing
-    public Command IntakeManualCommand(DoubleSupplier voltage) {
+    public Command manualCommand(DoubleSupplier voltage) {
         return new FunctionalCommand(
             () -> {},
             () -> io.setVoltage(voltage.getAsDouble()),
@@ -103,7 +103,7 @@ public class Intake extends SubsystemBase {
         );
     }
 
-    public Command IntakeManualCommand(double voltage) {
+    public Command manualCommand(double voltage) {
         return new FunctionalCommand(
             () -> {},
             () -> io.setVoltage(voltage),

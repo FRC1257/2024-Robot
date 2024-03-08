@@ -69,7 +69,7 @@ import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.autonomous.AutoChooser;
 import frc.robot.util.autonomous.MakeAutos;
-import frc.robot.util.drive.DriveControls;
+import static frc.robot.util.drive.DriveControls.*;
 import frc.robot.util.misc.Lookup;
 import frc.robot.util.misc.LookupTuner;
 import frc.robot.util.note.NoteVisualizer;
@@ -196,11 +196,11 @@ public class RobotContainer {
     // NamedCommands.registerCommand("Shoot", shootAnywhere());
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
     NamedCommands.registerCommand("Intake",
-        intake.IntakeLoopCommand(3).deadlineWith(groundIntake.GroundIntakeManualCommand(() -> 2)));
+        intake.IntakeLoopCommand(3).deadlineWith(groundIntake.manualCommand(() -> 2)));
     NamedCommands.registerCommand("PrepShoot", prepShoot());
     NamedCommands.registerCommand("Zero", zeroPosition());
     NamedCommands.registerCommand("AmpShooter", setAmpShooterSpeed());
-    DriveControls.configureControls();
+    configureControls();
 
     // Set up auto routines
     /*
@@ -246,90 +246,91 @@ public class RobotContainer {
     drive.setDefaultCommand( // change state here
         DriveCommands.joystickDrive(
             drive,
-            DriveControls.DRIVE_FORWARD,
-            DriveControls.DRIVE_STRAFE,
-            DriveControls.DRIVE_ROTATE));
+            DRIVE_FORWARD,
+            DRIVE_STRAFE,
+            DRIVE_ROTATE));
 
     intake.setDefaultCommand(
         // intake.IntakeSpeedCommand(
-        // DriveControls.INTAKE_ROTATE));
-        intake.IntakeManualCommand(
-            () -> DriveControls.INTAKE_ROTATE.getAsDouble() * 12));
+        // INTAKE_ROTATE));
+        intake.manualCommand(
+            () -> INTAKE_ROTATE.getAsDouble() * 12));
     // banished to no PID command
 
     groundIntake.setDefaultCommand(
-        groundIntake.GroundIntakeManualCommand(
-            () -> DriveControls.GROUND_INTAKE_ROTATE.getAsDouble() * 12));
+        groundIntake.manualCommand(
+            () -> GROUND_INTAKE_ROTATE.getAsDouble() * 12));
 
     // pivot.setDefaultCommand(
-    //     pivot.ManualCommand(() -> DriveControls.PIVOT_ROTATE.getAsDouble() * 2));
+    //     pivot.ManualCommand(() -> PIVOT_ROTATE.getAsDouble() * 2));
     pivot.setDefaultCommand(
-      pivot.PIDCommandForever(DriveControls.PIVOT_PID_ROTATE)
+      pivot.PIDCommandForever(PIVOT_PID_ROTATE)
     );
 
     shooter.setDefaultCommand(
         // shooter.runPIDSpeed(0)
-        shooter.runVoltage(DriveControls.SHOOTER_SPEED));
+        shooter.runVoltage(SHOOTER_SPEED));
 
-    DriveControls.DRIVE_TOGGLE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(
+    DRIVE_TOGGLE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(
         drive,
-        DriveControls.DRIVE_FORWARD,
-        DriveControls.DRIVE_STRAFE,
-        DriveControls.DRIVE_ROTATE));
+        DRIVE_FORWARD,
+        DRIVE_STRAFE,
+        DRIVE_ROTATE));
 
-    DriveControls.DRIVE_SPEAKER_AIM.whileTrue(
+    DRIVE_SPEAKER_AIM.whileTrue(
         DriveCommands.joystickSpeakerPoint(
             drive,
-            DriveControls.DRIVE_FORWARD,
-            DriveControls.DRIVE_STRAFE));
+            DRIVE_FORWARD,
+            DRIVE_STRAFE));
 
-    DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
+    DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
-    DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose()));
-    DriveControls.DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose()));
-    DriveControls.DRIVE_STOP.onTrue(new InstantCommand(drive::stopWithX, drive));
+    DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose()));
+    DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose()));
+    DRIVE_STOP.onTrue(new InstantCommand(drive::stopWithX, drive));
 
-    DriveControls.TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
-    DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
+    TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
+    TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
     // Operator controls
-    DriveControls.PIVOT_AMP.whileTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_AMP_ANGLE));
-    DriveControls.PIVOT_ZERO.whileTrue(pivot.PIDCommand(0));
-    DriveControls.PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
-    DriveControls.PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
-    DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
+    PIVOT_AMP.whileTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_AMP_ANGLE));
+    PIVOT_ZERO.whileTrue(pivot.PIDCommand(0));
+    PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
+    PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
+    LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
 
-    DriveControls.INTAKE_IN.whileTrue(intake.IntakeManualCommand(IntakeConstants.INTAKE_IN_VOLTAGE));
-    DriveControls.INTAKE_OUT.whileTrue(intake.IntakeManualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE));
+    INTAKE_IN.whileTrue(intake.manualCommand(IntakeConstants.INTAKE_IN_VOLTAGE));
+    INTAKE_OUT.whileTrue(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE));
 
-    DriveControls.GROUND_INTAKE_IN.whileTrue(groundIntake.GroundIntakeManualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
-    DriveControls.GROUND_INTAKE_OUT.whileTrue(groundIntake.GroundIntakeManualCommand(GroundIntakeConstants.GROUND_INTAKE_OUT_VOLTAGE));
+    GROUND_INTAKE_IN.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
+    GROUND_INTAKE_OUT.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_OUT_VOLTAGE));
 
     // TODO using voltage mode for now but later speed PID
-    DriveControls.SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(11));
-    DriveControls.SHOOTER_FIRE_AMP.whileTrue(
+    SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(11));
+    SHOOTER_FIRE_AMP.whileTrue(
       shooter.runVoltage(5)
         .alongWith(
           new WaitCommand(1)
-            .andThen(intake.IntakeManualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+            .andThen(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
         )
     ));
-    DriveControls.SHOOTER_UNJAM.onTrue(
-      intake.IntakeManualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+    SHOOTER_UNJAM.onTrue(
+      (intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+        .alongWith(shooter.runVoltage(-1)))
         .withTimeout(IntakeConstants.SHOOTER_UNJAM_TIME)
     );
 
     // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
     // pivot::getAngle);
-    DriveControls.SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
-    // DriveControls.SHOOTER_SHOOT.onTrue(shootNote());
-    // DriveControls.SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
+    SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
+    // SHOOTER_SHOOT.onTrue(shootNote());
+    // SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
-    new Trigger(() -> (int) Timer.getMatchTime() == 90.0).onTrue(DriveControls.getRumbleBoth());
-    new Trigger(() -> intake.isIntaked()).onTrue(DriveControls.getRumbleBoth());
+    new Trigger(() -> (int) Timer.getMatchTime() == 90.0).onTrue(getRumbleBoth());
+    new Trigger(() -> intake.isIntaked()).onTrue(getRumbleBoth());
     
     if (Constants.tuningMode) {
       SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
@@ -364,7 +365,7 @@ public class RobotContainer {
           drive,
           this::shootAnywhere,
           () -> {
-            return intake.IntakeManualCommand(() -> 2);
+            return intake.manualCommand(() -> 2);
           },
           () -> {
             // use a vision command later
@@ -419,8 +420,8 @@ public class RobotContainer {
     return (rotateArm().andThen(shootNote())) // problem is here, both of these commands can't be robotContainer
         .deadlineWith(DriveCommands.joystickSpeakerPoint(
             drive,
-            DriveControls.DRIVE_FORWARD,
-            DriveControls.DRIVE_STRAFE)) //.andThen(zeroShooter())
+            DRIVE_FORWARD,
+            DRIVE_STRAFE)) //.andThen(zeroShooter())
             ;
       //the rotate arm method just keeps going, I don't know what's wrong with it
       //Maybe it's the shooter setRPM?
@@ -449,8 +450,8 @@ public class RobotContainer {
     return (rotateArmtoSpeaker()) //problem is here, both of these commands can't be robotContainer
       .alongWith(DriveCommands.joystickSpeakerPoint(
         drive,
-        DriveControls.DRIVE_FORWARD,
-        DriveControls.DRIVE_STRAFE
+        DRIVE_FORWARD,
+        DRIVE_STRAFE
       )
     );   
   }
