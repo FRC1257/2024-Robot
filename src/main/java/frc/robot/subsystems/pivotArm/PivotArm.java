@@ -158,15 +158,31 @@ public class PivotArm extends SubsystemBase {
 
     public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
         return new FunctionalCommand(
-            () -> {}, 
+            () -> setPID(setpointSupplier.getAsDouble()), 
             () -> {
-                if (!atSetpoint()) {
-                    runPID();
-                    return;
-                }
-                addPID(setpointSupplier.getAsDouble());
+                setPID(setpointSupplier.getAsDouble());
                 runPID();
             }, 
+            (stop) -> move(0), 
+            () -> false, 
+            this
+        );
+    }
+
+    public Command PIDCommandForever(double setpoint) {
+        return new FunctionalCommand(
+            () -> setPID(setpoint), 
+            () -> runPID(), 
+            (stop) -> move(0), 
+            () -> false, 
+            this
+        );
+    }
+
+    public Command PIDHoldCommand() {
+        return new FunctionalCommand(
+            () -> setPID(getAngle().getRadians()), 
+            () -> runPID(), 
             (stop) -> move(0), 
             () -> false, 
             this

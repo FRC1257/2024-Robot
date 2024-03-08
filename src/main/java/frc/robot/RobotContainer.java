@@ -294,8 +294,10 @@ public class RobotContainer {
     DriveControls.TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
     // Operator controls
-    DriveControls.PIVOT_AMP.onTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_AMP_ANGLE));
-    DriveControls.PIVOT_ZERO.onTrue(pivot.PIDCommand(0));
+    DriveControls.PIVOT_AMP.whileTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_AMP_ANGLE));
+    DriveControls.PIVOT_ZERO.whileTrue(pivot.PIDCommand(0));
+    DriveControls.PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
+    DriveControls.PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
     //DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
