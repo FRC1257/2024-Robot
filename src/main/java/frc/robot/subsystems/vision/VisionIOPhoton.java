@@ -23,8 +23,8 @@ public class VisionIOPhoton implements VisionIO {
     // private final PhotonCamera raspberryCamera2;
     // private final PhotonPoseEstimator raspberryEstimator2;
 
-    private final PhotonCamera orangeCamera;
-    private final PhotonPoseEstimator orangeEstimator;
+    // private final PhotonCamera orangeCamera;
+    // private final PhotonPoseEstimator orangeEstimator;
 
     private final PhotonCamera noteCamera;
     private final PhotonPoseEstimator orangeEstimator2;
@@ -47,13 +47,13 @@ public class VisionIOPhoton implements VisionIO {
         // raspberryEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         //Back Left
-        orangeCamera = new PhotonCamera(kOrangeCameraName);
-        orangeEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, orangeCamera, kOrangeRobotToCam);
-        orangeEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        // orangeCamera = new PhotonCamera(kOrangeCameraName);
+        // orangeEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, orangeCamera, kOrangeRobotToCam);
+        // orangeEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         //Back Right
         noteCamera = new PhotonCamera(kNoteCameraName);
-        orangeEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, orangeCamera, kOrangeRobotToCam);
+        orangeEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, noteCamera, kOrangeRobotToCam);
         orangeEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         //used for estimating pose based off 
 
@@ -100,7 +100,7 @@ public class VisionIOPhoton implements VisionIO {
             inputs.noteArea[i] = note_result.getTargets().get(i).getArea();
         }
 
-        Logger.recordOutput("Vision/OrangeConnected", orangeCamera.isConnected());
+        // Logger.recordOutput("Vision/OrangeConnected", orangeCamera.isConnected());
         Logger.recordOutput("Vision/RaspberryConnected", raspberryCamera.isConnected());
         Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
         Logger.recordOutput("Vision/NoteCameraPipeline", noteCamera.getPipelineIndex());
@@ -109,29 +109,29 @@ public class VisionIOPhoton implements VisionIO {
 
     private PhotonPipelineResult[] getAprilTagResults() {
         PhotonPipelineResult front_result = getLatestResult(raspberryCamera);
-        PhotonPipelineResult back_result = getLatestResult(orangeCamera);
+        // PhotonPipelineResult back_result = getLatestResult(orangeCamera);
         // PhotonPipelineResult front_result2 = getLatestResult(raspberryCamera2);
 
         if (!noteCameraObjectMode) {
             // return new PhotonPipelineResult[] { front_result, back_result, front_result2 };
-            return new PhotonPipelineResult[] { front_result, back_result };
+            return new PhotonPipelineResult[] { front_result };
         } else {
             // return new PhotonPipelineResult[] { front_result, back_result, front_result2, getLatestResult(noteCamera) };
-            return new PhotonPipelineResult[] { front_result, back_result, getLatestResult(noteCamera) };
+            return new PhotonPipelineResult[] { front_result, getLatestResult(noteCamera) };
         }
     }
 
     private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
         raspberryEstimator.setReferencePose(currentEstimate);
-        orangeEstimator.setReferencePose(currentEstimate);
+        // orangeEstimator.setReferencePose(currentEstimate);
         // raspberryEstimator2.setReferencePose(currentEstimate);
 
         if (!noteCameraObjectMode) {
             // return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator, raspberryEstimator2 };
-            return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator };
+            return new PhotonPoseEstimator[] { raspberryEstimator };
         } else {
             orangeEstimator2.setReferencePose(currentEstimate);
-            return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator, orangeEstimator2 };
+            return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator2 };
         }
     }
 
