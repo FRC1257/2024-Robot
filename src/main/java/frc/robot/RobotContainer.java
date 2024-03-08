@@ -282,8 +282,6 @@ public class RobotContainer {
             DriveControls.DRIVE_FORWARD,
             DriveControls.DRIVE_STRAFE));
 
-    // DriveControls.DRIVE_NOTE_GOTO.whileTrue(drive.goToNote());
-
     DriveControls.DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
     DriveControls.DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose()));
@@ -298,7 +296,7 @@ public class RobotContainer {
     DriveControls.PIVOT_ZERO.whileTrue(pivot.PIDCommand(0));
     DriveControls.PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
     DriveControls.PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
-    //DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
+    DriveControls.LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
@@ -407,20 +405,6 @@ public class RobotContainer {
   }
 
   public Command shootAnywhere() {
-    // implement this later using swerve to turn to desired target
-    // move pivot arm
-    // and calculate the speed required to shoot
-    /*
-     * if (DriveCommands.pointedAtSpeaker(drive)){
-     * return rotateArm().andThen(shoot());
-     * } else {
-     * return
-     * DriveCommands.turnSpeakerAngle(drive).alongWith(rotateArm()).andThen(shoot())
-     * ;
-     */
-
-    // return DriveCommands.turnSpeakerAngle(drive).onlyIf(() ->
-    // !DriveCommands.pointedAtSpeaker(drive)).alongWith(rotateArm()).andThen(shoot());
     return (rotateArm().andThen(shootNote())) // problem is here, both of these commands can't be robotContainer
         .deadlineWith(DriveCommands.joystickSpeakerPoint(
             drive,
@@ -429,7 +413,6 @@ public class RobotContainer {
             ;
       //the rotate arm method just keeps going, I don't know what's wrong with it
       //Maybe it's the shooter setRPM?
-
   }
 
   public Command shootSpeaker() {
@@ -445,13 +428,8 @@ public class RobotContainer {
             pivot.setPID(getAngle());
             pivot.runPID();
           },
-        (interrupted) -> {
-          if (!interrupted) return;
-          pivot.stop();
-        },
-        () -> {
-          return pivot.atSetpoint();
-        },
+        (interrupted) -> { pivot.stop(); },
+        () -> false,
         pivot
     );
   }
@@ -487,7 +465,7 @@ public class RobotContainer {
           if (pivot.atSetpoint()){
             Logger.recordOutput("atSetpoint", pivot.atSetpoint());
           }
-          return pivot.atSetpoint();// && shooter.atSetpoint();
+          return pivot.atSetpoint();
           //shooter can never get to that setpoint with a comically high speed probably
           //we pierce the heavens but bounce against the earth
           
