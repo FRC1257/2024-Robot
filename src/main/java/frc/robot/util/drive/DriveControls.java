@@ -74,10 +74,11 @@ public class DriveControls {
                 DRIVE_FORWARD = driver::getLeftY;
                 DRIVE_STRAFE = driver::getLeftX;
                 DRIVE_ROTATE = driver::getRightX;
-                DRIVE_SLOW = driver.x();
+                DRIVE_SLOW = driver.start();
                 DRIVE_SPEAKER_AIM = driver.leftBumper();
                 DRIVE_STOP = driver.rightBumper();
                 DRIVE_TOGGLE_ROBOT_RELATIVE = EMPTY_TRIGGER;
+                LOCK_ON_SPEAKER_FULL = driver.x();
 
                 DRIVE_AMP = EMPTY_TRIGGER;
                 DRIVE_SOURCE = EMPTY_TRIGGER;
