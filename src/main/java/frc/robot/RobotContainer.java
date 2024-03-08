@@ -231,6 +231,7 @@ public class RobotContainer {
 
     LookupTuner.setupTuner();
     SmartDashboard.putBoolean("Brake Mode", true);
+    SmartDashboard.putBoolean("Set Start Position", false);
   }
 
   
@@ -351,6 +352,10 @@ public class RobotContainer {
         new Pose3d(
             new Translation3d(0, 0, 0.28),
             new Rotation3d(0, -pivot.getAngle().getRadians(), 0)));
+  }
+
+  public void setRobotPose(Pose2d pose) {
+    drive.setPose(pose);
   }
 
   /**
@@ -572,9 +577,12 @@ public class RobotContainer {
       brakeMode = !brakeMode;
       pivot.setBrake(brakeMode);
     }
+
+    if (SmartDashboard.getBoolean("Set Start Position", false)) {
+      setRobotPose(AutoChooser.getStartPose());
+      SmartDashboard.putBoolean("Set Start Position", false);
+    }
+    
     setPivotPose3d();
-  }
-  public boolean alwaysRun(){
-    return true;
   }
 }

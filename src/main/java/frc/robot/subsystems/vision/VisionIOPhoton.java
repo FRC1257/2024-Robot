@@ -28,6 +28,7 @@ public class VisionIOPhoton implements VisionIO {
 
     private final PhotonCamera noteCamera;
     private final PhotonPoseEstimator orangeEstimator2;
+    private boolean noteCameraObjectMode = false;
     //private final PhotonPoseEstimator noteEstimator;
 
     private Pose2d lastEstimate = new Pose2d();
@@ -56,24 +57,14 @@ public class VisionIOPhoton implements VisionIO {
         orangeEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         //used for estimating pose based off 
 
-
-       
     }
 
     @Override
     public void updateInputs(VisionIOInputs inputs, Pose2d currentEstimate) {
         lastEstimate = currentEstimate;
-        //whether a camera looks for apriltags or notes is set in the website interface
-        raspberryEstimator.setReferencePose(currentEstimate);
-        orangeEstimator.setReferencePose(currentEstimate);
-        raspberryEstimator2.setReferencePose(currentEstimate);
 
-        PhotonPipelineResult front_result = getLatestResult(raspberryCamera);
-        PhotonPipelineResult back_result = getLatestResult(orangeCamera);
-        PhotonPipelineResult front_result2 = getLatestResult(raspberryCamera2);
-
-        PhotonPipelineResult[] results = { front_result, back_result, front_result2 };
-        PhotonPoseEstimator[] photonEstimators = { raspberryEstimator, orangeEstimator, raspberryEstimator2 };
+        PhotonPipelineResult[] results = getAprilTagResults();
+        PhotonPoseEstimator[] photonEstimators = getAprilTagEstimators(currentEstimate);
         
         inputs.estimate = currentEstimate;
 
@@ -96,6 +87,7 @@ public class VisionIOPhoton implements VisionIO {
         //all note information is gotten here
         //just need to do something with this information
         var note_result = getLatestResult(noteCamera);
+        Logger.recordOutput("Vision/NoteCameraMode", noteCameraObjectMode);
         inputs.noteTimestamp = note_result.getTimestampSeconds();
         inputs.noteConfidence = new double[note_result.getTargets().size()];
         inputs.notePitch = new double[note_result.getTargets().size()];
@@ -112,6 +104,31 @@ public class VisionIOPhoton implements VisionIO {
         Logger.recordOutput("Vision/RaspberryConnected", raspberryCamera.isConnected());
         Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
         Logger.recordOutput("Vision/Raspberry2Connected", raspberryCamera2.isConnected());
+    }
+
+    private PhotonPipelineResult[] getAprilTagResults() {
+        PhotonPipelineResult front_result = getLatestResult(raspberryCamera);
+        PhotonPipelineResult back_result = getLatestResult(orangeCamera);
+        PhotonPipelineResult front_result2 = getLatestResult(raspberryCamera2);
+
+        if (!noteCameraObjectMode) {
+            return new PhotonPipelineResult[] { front_result, back_result, front_result2 };
+        } else {
+            return new PhotonPipelineResult[] { front_result, back_result, front_result2, getLatestResult(noteCamera) };
+        }
+    }
+
+    private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
+        raspberryEstimator.setReferencePose(currentEstimate);
+        orangeEstimator.setReferencePose(currentEstimate);
+        raspberryEstimator2.setReferencePose(currentEstimate);
+
+        if (!noteCameraObjectMode) {
+            orangeEstimator2.setReferencePose(currentEstimate);
+            return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator, raspberryEstimator2 };
+        } else {
+            return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator, raspberryEstimator2, orangeEstimator2 };
+        }
     }
 
     @Override
@@ -152,5 +169,10 @@ public class VisionIOPhoton implements VisionIO {
         return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD
                 && kTagLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d().getTranslation()
                         .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE;
+    }
+
+    @Override
+    public void setNoteCameraObjectMode(boolean mode) {
+        noteCameraObjectMode = mode;
     }
 }
