@@ -63,11 +63,7 @@ public class CommandSnailController extends CommandXboxController {
         LEFT
     }
 
-    public Command BeginRumble(){
-        return new InstantCommand(() -> doRumble(1)).andThen(new WaitCommand(1)).andThen(() -> doRumble(0));
-    }
-
-    public void doRumble(int value) {
+    public void rumble(int value) {
         System.out.println("RUMBLE");
         getHID().setRumble(RumbleType.kLeftRumble, value);
         getHID().setRumble(RumbleType.kRightRumble, value);

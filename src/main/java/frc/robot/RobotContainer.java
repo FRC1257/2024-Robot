@@ -309,7 +309,9 @@ public class RobotContainer {
     DriveControls.GROUND_INTAKE_IN.whileTrue(groundIntake.GroundIntakeManualCommand(() -> GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
     DriveControls.GROUND_INTAKE_OUT.whileTrue(groundIntake.GroundIntakeManualCommand(() -> -GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
 
+    // TODO using voltage mode for now but later speed PID
     DriveControls.SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(() -> 11));
+    DriveControls.SHOOTER_FIRE_AMP.whileTrue(shooter.runVoltage(() -> 5));
 
     // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
     // pivot::getAngle);
@@ -317,8 +319,8 @@ public class RobotContainer {
     // DriveControls.SHOOTER_SHOOT.onTrue(shootNote());
     // DriveControls.SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
-    new Trigger(() -> Timer.getMatchTime() == 90.0).onTrue(DriveControls.driver.BeginRumble().alongWith(DriveControls.operator.BeginRumble()));
-    new Trigger(() -> intake.isIntaked()).onTrue(DriveControls.driver.BeginRumble());
+    new Trigger(() -> (int) Timer.getMatchTime() == 90.0).onTrue(DriveControls.getRumbleBoth());
+    new Trigger(() -> intake.isIntaked()).onTrue(DriveControls.getRumbleBoth());
     
     if (Constants.tuningMode) {
       SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
