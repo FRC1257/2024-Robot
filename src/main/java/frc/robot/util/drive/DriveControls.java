@@ -26,7 +26,7 @@ public class DriveControls {
     public static DoubleSupplier DRIVE_ROTATE;
     public static Trigger DRIVE_SLOW;
     public static Trigger DRIVE_STOP;
-    public static Trigger DRIVE_TOGGLE_ROBOT_RELATIVE;
+    public static Trigger DRIVE_ROBOT_RELATIVE;
     public static Trigger LOCK_ON_SPEAKER_FULL;
 
 
@@ -76,13 +76,13 @@ public class DriveControls {
     public static void configureControls() {
         switch (Constants.driver) {
             case MAUI:
-                DRIVE_FORWARD = driver::getLeftY;
-                DRIVE_STRAFE = driver::getLeftX;
-                DRIVE_ROTATE = driver::getRightX;
+                DRIVE_FORWARD = () -> -(driver.getLeftY());
+                DRIVE_STRAFE = ()->-(driver.getLeftX());
+                DRIVE_ROTATE = () -> -(driver.getRightX());
                 DRIVE_SLOW = driver.start();
                 DRIVE_SPEAKER_AIM = driver.leftBumper();
                 DRIVE_STOP = driver.x();
-                DRIVE_TOGGLE_ROBOT_RELATIVE = driver.rightBumper();
+                DRIVE_ROBOT_RELATIVE = driver.rightBumper();
                 LOCK_ON_SPEAKER_FULL = driver.y();
 
                 DRIVE_AMP = EMPTY_TRIGGER;
@@ -100,7 +100,7 @@ public class DriveControls {
                 DRIVE_SPEAKER_AIM = driver.b();
                 DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
                 DRIVE_STOP = driver.rightBumper();
-                DRIVE_TOGGLE_ROBOT_RELATIVE = EMPTY_TRIGGER;
+                DRIVE_ROBOT_RELATIVE = EMPTY_TRIGGER;
                 LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
 
                 DRIVE_AMP = driver.leftBumper();

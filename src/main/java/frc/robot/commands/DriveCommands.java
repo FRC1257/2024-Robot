@@ -25,8 +25,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.subsystems.shooter.*;
 import java.util.function.DoubleSupplier;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
@@ -283,7 +289,15 @@ public class DriveCommands {
         }
       }
 
-    public static Command driveBackAuto(Drive drive){
-    return joystickDrive(drive, () -> 0, () -> kSlowModeConstant, ()-> 0).withTimeout(2);
-  }
+    public static Command driveBackAuto(Drive drive, Shooter shooter, PivotArm pivot, Intake intake){
+        return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE)
+            .alongWith(
+                shooter.runVoltage(11)
+                    .alongWith(
+                    new WaitCommand(1)
+                    .andThen(intake.manualCommand(-IntakeConstants.INTAKE_OUT_VOLTAGE)
+                    )
+                
+                )).andThen(joystickDrive(drive, () -> 0.5, () -> 0, ()-> 0).withTimeout(2));
+ }
 }

@@ -27,9 +27,9 @@ public class VisionIOPhoton implements VisionIO {
     // private final PhotonCamera orangeCamera;
     // private final PhotonPoseEstimator orangeEstimator;
 
-    private final PhotonCamera noteCamera;
-    private final PhotonPoseEstimator orangeEstimator2;
-    private boolean noteCameraObjectMode = false;
+    // private final PhotonCamera noteCamera;
+    // private final PhotonPoseEstimator orangeEstimator2;
+    // private boolean noteCameraObjectMode = false;
     //private final PhotonPoseEstimator noteEstimator;
 
     private Pose2d lastEstimate = new Pose2d();
@@ -54,9 +54,9 @@ public class VisionIOPhoton implements VisionIO {
         // orangeEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         //Back Right
-        noteCamera = new PhotonCamera(kNoteCameraName);
-        orangeEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, noteCamera, kOrangeRobotToCam);
-        orangeEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        // noteCamera = new PhotonCamera(kNoteCameraName);
+        // orangeEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, noteCamera, kOrangeRobotToCam);
+        // orangeEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         //used for estimating pose based off 
 
     }
@@ -88,7 +88,7 @@ public class VisionIOPhoton implements VisionIO {
         // get note data
         //all note information is gotten here
         //just need to do something with this information
-        var note_result = getLatestResult(noteCamera);
+        /* var note_result = getLatestResult(noteCamera);
         Logger.recordOutput("Vision/NoteCameraMode", noteCameraObjectMode);
         inputs.noteTimestamp = note_result.getTimestampSeconds();
         inputs.noteConfidence = new double[note_result.getTargets().size()];
@@ -100,59 +100,33 @@ public class VisionIOPhoton implements VisionIO {
             inputs.notePitch[i] = note_result.getTargets().get(i).getPitch();
             inputs.noteYaw[i] = note_result.getTargets().get(i).getYaw();
             inputs.noteArea[i] = note_result.getTargets().get(i).getArea();
-        }
+        } */
 
         // Logger.recordOutput("Vision/OrangeConnected", orangeCamera.isConnected());
         Logger.recordOutput("Vision/RaspberryConnected", raspberryCamera.isConnected());
-        Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
-        Logger.recordOutput("Vision/NoteCameraPipeline", noteCamera.getPipelineIndex());
+        // Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
+        // Logger.recordOutput("Vision/NoteCameraPipeline", noteCamera.getPipelineIndex());
         // Logger.recordOutput("Vision/Raspberry2Connected", raspberryCamera2.isConnected());
     }
 
     private PhotonPipelineResult[] getAprilTagResults() {
         PhotonPipelineResult front_result = getLatestResult(raspberryCamera);
-        // PhotonPipelineResult back_result = getLatestResult(orangeCamera);
-        // PhotonPipelineResult front_result2 = getLatestResult(raspberryCamera2);
-
-        if (!noteCameraObjectMode) {
-            // return new PhotonPipelineResult[] { front_result, back_result, front_result2 };
+            // PhotonPipelineResult back_result = getLatestResult(orangeCamera);
+            // PhotonPipelineResult front_result2 = getLatestResult(raspberryCamera2);
             return new PhotonPipelineResult[] { front_result };
-        } else {
-            // return new PhotonPipelineResult[] { front_result, back_result, front_result2, getLatestResult(noteCamera) };
-            return new PhotonPipelineResult[] { front_result, getLatestResult(noteCamera) };
-        }
     }
 
+    
     private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
         raspberryEstimator.setReferencePose(currentEstimate);
         // orangeEstimator.setReferencePose(currentEstimate);
         // raspberryEstimator2.setReferencePose(currentEstimate);
-
-        if (!noteCameraObjectMode) {
-            // return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator, raspberryEstimator2 };
-            return new PhotonPoseEstimator[] { raspberryEstimator };
-        } else {
-            orangeEstimator2.setReferencePose(currentEstimate);
-            return new PhotonPoseEstimator[] { raspberryEstimator, orangeEstimator2 };
-        }
+        return new PhotonPoseEstimator[] { raspberryEstimator };
     }
 
     @Override
     public Translation2d calculateNoteTranslation(VisionIOInputs inputs) {
-        PhotonPipelineResult note_result = getLatestResult(noteCamera);
-        //height of the note shouldn't matter, because ideally it's going to be on the ground
-          if (note_result.hasTargets()) {
-                double range =
-                        PhotonUtils.calculateDistanceToTargetMeters(
-                                NoteCameraHeight, //need to set
-                                NoteHeight, //should be 0 or the height of the note
-                                0, //CAMERA_PITCH_RADIANS
-                                Units.degreesToRadians(note_result.getBestTarget().getPitch()));            
-                return PhotonUtils.estimateCameraToTargetTranslation(
-                range, Rotation2d.fromDegrees(-note_result.getBestTarget().getYaw()));
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override
@@ -162,28 +136,18 @@ public class VisionIOPhoton implements VisionIO {
 
     @Override
     public Rotation2d getAngleToNote() {
-        PhotonPipelineResult note_result = getLatestResult(noteCamera);
-        if (note_result.hasTargets()) {
-            return Rotation2d.fromDegrees(-note_result.getBestTarget().getYaw());
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override
     public boolean goodResult(PhotonPipelineResult result) {
-        return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD
+        return result.hasTargets()/*  && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD *//* 
                 && kTagLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d().getTranslation()
-                        .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE;
+                        .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE */;
     }
 
     @Override
     public void setNoteCameraObjectMode(boolean mode) {
-        noteCameraObjectMode = mode;
-        if (noteCameraObjectMode) {
-            noteCamera.setPipelineIndex(VisionConstants.NOTE_PIPELINE);
-        } else {
-            noteCamera.setPipelineIndex(VisionConstants.NOTE_TAG_PIPELINE);
-        }
+        return;
     }
 }

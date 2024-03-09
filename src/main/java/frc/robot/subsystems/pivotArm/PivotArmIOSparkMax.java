@@ -148,6 +148,16 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     }
 
     @Override
+    public void holdSetpoint(double setpoint) {
+        pidController.setGoal(setpoint);
+        // With the setpoint value we run PID control like normal
+        double pidOutput = MathUtil.clamp(pidController.calculate(getAngle()), -3, 3);
+        Logger.recordOutput("PivotArm/PIDOutput", pidOutput);
+
+        setVoltage(MathUtil.clamp(pidOutput, -4, 4));
+    }
+
+    @Override
     public void setBrake(boolean brake) {
         pivotMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
         leftSlave.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);

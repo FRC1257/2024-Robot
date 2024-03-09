@@ -10,17 +10,25 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
-    public static final String kRaspberryCameraName = "Front_Camera";
+    public static final String kRaspberryCameraName = "April_Camera";
     public static final String kOrangeCameraName = "Orange_tag";
     public static final String kNoteCameraName = "Note_Camera";
     public static final String kRaspberryCameraName2 = "Camera";
     // Cam mounted facing forward, half a meter forward of center, half a meter up
     // from center.
     private static double cameraPitchAngle = Rotation2d.fromDegrees(61).getRadians();
-    public static final Transform3d kRaspberryRobotToCam = new Transform3d(new Translation3d(0.5, 0.45, 0.23),
-            new Rotation3d(0, 0, Rotation2d.fromDegrees(245).getRadians()));
+    public static final Transform3d kRaspberryRobotToCam = new Transform3d(
+        new Translation3d(
+                Units.inchesToMeters(10.75), 
+                Units.inchesToMeters(-11), 
+                Units.inchesToMeters(9)
+        ),
+            new Rotation3d(0, cameraPitchAngle, Rotation2d.fromDegrees(180).getRadians()));
+
+
     public static final Transform3d kOrangeRobotToCam = new Transform3d(new Translation3d(0.5, -0.45, 0.23),
             new Rotation3d(0, 0, 0));
     public static final Transform3d kRaspberryRobotToCam2 = new Transform3d(new Translation3d(-0.5, 0.45, 0.23),

@@ -32,6 +32,10 @@ public interface PivotArmIO {
     public default void goToSetpoint(double setpoint) {
     }
 
+    public default void holdSetpoint(double setpoint) {
+        
+    }
+
     public default void setBrake(boolean brake) {
     }
 

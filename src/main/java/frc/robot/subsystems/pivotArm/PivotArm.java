@@ -114,6 +114,10 @@ public class PivotArm extends SubsystemBase {
         io.goToSetpoint(setpoint);
     }
 
+    public void holdPID() {
+        io.holdSetpoint(setpoint);
+    }
+
     public void setPID(double setpoint) {
         this.setpoint = setpoint;
         Logger.recordOutput("PivotArm/Setpoint", setpoint);
@@ -182,7 +186,7 @@ public class PivotArm extends SubsystemBase {
     public Command PIDHoldCommand() {
         return new FunctionalCommand(
             () -> setPID(getAngle().getRadians()), 
-            () -> runPID(), 
+            () -> holdPID(), 
             (stop) -> move(0), 
             () -> false, 
             this

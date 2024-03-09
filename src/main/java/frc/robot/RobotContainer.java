@@ -4,6 +4,37 @@
 
 package frc.robot;
 
+import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
+import static frc.robot.util.drive.DriveControls.DRIVE_FORWARD;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROTATE;
+import static frc.robot.util.drive.DriveControls.DRIVE_SLOW;
+import static frc.robot.util.drive.DriveControls.DRIVE_SOURCE;
+import static frc.robot.util.drive.DriveControls.DRIVE_SPEAKER_AIM;
+import static frc.robot.util.drive.DriveControls.DRIVE_STOP;
+import static frc.robot.util.drive.DriveControls.DRIVE_STRAFE;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROBOT_RELATIVE;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_IN;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_OUT;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.INTAKE_IN;
+import static frc.robot.util.drive.DriveControls.INTAKE_OUT;
+import static frc.robot.util.drive.DriveControls.INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.LOCK_ON_SPEAKER_FULL;
+import static frc.robot.util.drive.DriveControls.PIVOT_AMP;
+import static frc.robot.util.drive.DriveControls.PIVOT_HOLD;
+import static frc.robot.util.drive.DriveControls.PIVOT_ROTATE;
+import static frc.robot.util.drive.DriveControls.PIVOT_TO_SPEAKER;
+import static frc.robot.util.drive.DriveControls.PIVOT_ZERO;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FIRE_SPEAKER;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND_INTAKE;
+import static frc.robot.util.drive.DriveControls.SHOOTER_SPEED;
+import static frc.robot.util.drive.DriveControls.SHOOTER_UNJAM;
+import static frc.robot.util.drive.DriveControls.TURN_180;
+import static frc.robot.util.drive.DriveControls.TURN_90;
+import static frc.robot.util.drive.DriveControls.configureControls;
+import static frc.robot.util.drive.DriveControls.getRumbleBoth;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -69,7 +100,6 @@ import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.autonomous.AutoChooser;
 import frc.robot.util.autonomous.MakeAutos;
-import static frc.robot.util.drive.DriveControls.*;
 import frc.robot.util.misc.Lookup;
 import frc.robot.util.misc.LookupTuner;
 import frc.robot.util.note.NoteVisualizer;
@@ -194,9 +224,12 @@ public class RobotContainer {
     // Named Commands
     // command calling drivng subystem is probably here
     // NamedCommands.registerCommand("Shoot", shootAnywhere());
+
+    // shootSpeaker aims pivot, shoots; zeroPosition then zeros; run after reaching position
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
     NamedCommands.registerCommand("Intake",
         intake.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5)));
+    // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("PrepShoot", prepShoot());
     NamedCommands.registerCommand("Zero", zeroPosition());
     NamedCommands.registerCommand("AmpShooter", setAmpShooterSpeed());
@@ -220,7 +253,7 @@ public class RobotContainer {
             drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
     autoChooser.addOption("Drive Trajectory",
         drive.getAuto("Forward And Spin"));
-    autoChooser.addOption("driveOut", DriveCommands.driveBackAuto(drive));
+    autoChooser.addOption("driveOut", DriveCommands.driveBackAuto(drive, shooter, pivot, intake));
 
     // this is defined later
     autoChooser.addOption("Custom", new InstantCommand());
@@ -270,7 +303,7 @@ public class RobotContainer {
         // shooter.runPIDSpeed(0)
         shooter.runVoltage(SHOOTER_SPEED));
 
-    DRIVE_TOGGLE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(
+    DRIVE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(
         drive,
         DRIVE_FORWARD,
         DRIVE_STRAFE,
@@ -292,9 +325,9 @@ public class RobotContainer {
     TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
     // Operator controls
-    PIVOT_AMP.whileTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_AMP_ANGLE));
-    PIVOT_ZERO.whileTrue(pivot.PIDCommand(0));
-    PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
+    PIVOT_AMP.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_AMP_ANGLE));
+    PIVOT_ZERO.whileTrue(pivot.PIDCommandForever(0));
+    PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
     PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
     LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
 
@@ -312,14 +345,14 @@ public class RobotContainer {
     SHOOTER_FULL_SEND_INTAKE.whileTrue(
       shooter.runVoltage(11)
         .alongWith(
-          new WaitCommand(1)
-            .andThen(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+          new WaitCommand(0.5)
+            .andThen(intake.manualCommand(-IntakeConstants.INTAKE_OUT_VOLTAGE)
         )
     ));
 
     SHOOTER_UNJAM.onTrue(
       (intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
-        .alongWith(shooter.runVoltage(-1)))
+        .alongWith(shooter.runVoltage(-0.5)))
         .withTimeout(IntakeConstants.SHOOTER_UNJAM_TIME)
     );
 
@@ -330,7 +363,7 @@ public class RobotContainer {
     // SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
     new Trigger(() -> (int) Timer.getMatchTime() == 90.0).onTrue(getRumbleBoth());
-    new Trigger(() -> intake.isIntaked()).onTrue(getRumbleBoth());
+    // new Trigger(() -> intake.isIntaked()).onTrue(getRumbleBoth());
     
     if (Constants.tuningMode) {
       SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
@@ -367,14 +400,15 @@ public class RobotContainer {
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
       return MakeAutos.makeAutoCommand(
           drive,
-          this::shootAnywhere,
+          this::shoot,
           () -> {
-            return intake.manualCommand(() -> 2);
+            return groundIntake.manualCommand(() -> 2).withTimeout(1);
           },
           () -> {
             // use a vision command later
-            return intake.IntakeLoopCommand(8).withTimeout(1);
-          });
+            return intake.manualCommand(8).withTimeout(1);
+          },
+          this::zeroPositionWhileMoving);
     }
     return autoChooser.get();
   }
@@ -385,6 +419,14 @@ public class RobotContainer {
           intake.stop()
           .alongWith(shooter.stop())
           .alongWith(groundIntake.stop())
+        );
+  }
+
+  public Command zeroPositionWhileMoving() {
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MIN_ANGLE)
+        .deadlineWith(
+          intake.stop()
+          .alongWith(shooter.stop())
         );
   }
 
@@ -492,7 +534,7 @@ public class RobotContainer {
   public Command shoot() {
     Logger.recordOutput("DistanceAway", getEstimatedDistance());
     if (pivot.atSetpoint() == true) {
-      return intake.EjectLoopCommand(2).deadlineWith(shooter.runSpeed(() -> getRPM())
+      return intake.EjectLoopCommand(2).deadlineWith(shooter.runVoltage(12)
           .alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)));
     } else {
       return null;
@@ -580,6 +622,7 @@ public class RobotContainer {
     }
 
     if (SmartDashboard.getBoolean("Set Start Position", false)) {
+      AutoChooser.setupChoosers();
       setRobotPose(AutoChooser.getStartPose());
       SmartDashboard.putBoolean("Set Start Position", false);
     }
