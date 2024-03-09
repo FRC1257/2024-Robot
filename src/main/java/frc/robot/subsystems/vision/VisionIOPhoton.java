@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.net.PortForwarder;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
@@ -34,6 +35,7 @@ public class VisionIOPhoton implements VisionIO {
     private Pose2d lastEstimate = new Pose2d();
     
     public VisionIOPhoton() {
+        PortForwarder.add(5800, "photonvision.local", 5800);
         //These directions are arbitrary for now
 
         //Front Right
