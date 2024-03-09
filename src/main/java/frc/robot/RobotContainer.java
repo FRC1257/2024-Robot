@@ -268,6 +268,10 @@ public class RobotContainer {
     SmartDashboard.putBoolean("Set Start Position", false);
   }
 
+  public void reset() {
+    drive.resetYaw();
+  }
+
   
 
   /**
@@ -279,7 +283,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // drive.setDefaultCommandRobotRelative
     drive.setDefaultCommand( // change state here
-        DriveCommands.joystickDrive(
+        DriveCommands.joystickDriveRobotRelative(
             drive,
             DRIVE_FORWARD,
             DRIVE_STRAFE,
@@ -303,7 +307,7 @@ public class RobotContainer {
         // shooter.runPIDSpeed(0)
         shooter.runVoltage(SHOOTER_SPEED));
 
-    DRIVE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(
+    DRIVE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDrive(
         drive,
         DRIVE_FORWARD,
         DRIVE_STRAFE,
@@ -319,7 +323,10 @@ public class RobotContainer {
 
     DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose()));
     DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose()));
-    DRIVE_STOP.onTrue(new InstantCommand(drive::stopWithX, drive));
+    DRIVE_STOP.onTrue(new InstantCommand(() -> {
+      drive.stopWithX();
+      drive.resetYaw();
+    }, drive));
 
     TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
     TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
@@ -350,10 +357,9 @@ public class RobotContainer {
         )
     ));
 
-    SHOOTER_UNJAM.onTrue(
-      (intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+    SHOOTER_UNJAM.whileTrue(
+      (intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE/2)
         .alongWith(shooter.runVoltage(-0.5)))
-        .withTimeout(IntakeConstants.SHOOTER_UNJAM_TIME)
     );
 
     // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
@@ -402,11 +408,11 @@ public class RobotContainer {
           drive,
           this::shoot,
           () -> {
-            return groundIntake.manualCommand(() -> 2).withTimeout(1);
+            return groundIntake.manualCommand(() -> 2).alongWith(intake.manualCommand(2));
           },
           () -> {
             // use a vision command later
-            return intake.manualCommand(8).withTimeout(1);
+            return new InstantCommand();
           },
           this::zeroPositionWhileMoving);
     }
@@ -533,12 +539,19 @@ public class RobotContainer {
 
   public Command shoot() {
     Logger.recordOutput("DistanceAway", getEstimatedDistance());
-    if (pivot.atSetpoint() == true) {
+    return (shooter.runVoltage(11).withTimeout(4)
+    .alongWith(
+    new WaitCommand(0.5)
+    .andThen(intake.manualCommand(-IntakeConstants.INTAKE_OUT_VOLTAGE).withTimeout(2)
+    )).deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE+0.005))
+
+);
+    /* if (pivot.atSetpoint() == true) {
       return intake.EjectLoopCommand(2).deadlineWith(shooter.runVoltage(12)
           .alongWith(pivot.PIDCommand(() -> getAngle())).alongWith(NoteVisualizer.shoot(drive)));
     } else {
       return null;
-    }
+    } */
   }
 
   public Command shootNote() {

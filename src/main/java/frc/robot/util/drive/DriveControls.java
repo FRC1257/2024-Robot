@@ -133,7 +133,7 @@ public class DriveControls {
                 GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
 
                 // SHOOTER DEFAULT SPEED
-                SHOOTER_SPEED = () -> operator.getRightXD() + 0.2;
+                SHOOTER_SPEED = () -> operator.getRightXD();
                 //SHOOTER_SPEED = operator::getRightTriggerAxis;\
                 SHOOTER_PREP = EMPTY_TRIGGER;
                 SHOOTER_FULL_SEND_INTAKE = operator.getX();

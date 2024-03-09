@@ -290,14 +290,17 @@ public class DriveCommands {
       }
 
     public static Command driveBackAuto(Drive drive, Shooter shooter, PivotArm pivot, Intake intake){
-        return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE)
-            .alongWith(
-                shooter.runVoltage(11)
-                    .alongWith(
-                    new WaitCommand(1)
-                    .andThen(intake.manualCommand(-IntakeConstants.INTAKE_OUT_VOLTAGE)
-                    )
+        return  //(pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE+0.005))
+            //  .andThen(
+            //      (shooter.runVoltage(11).withTimeout(4)
+            //          .alongWith(
+            //              new WaitCommand(0.5)
+            //              .andThen(intake.manualCommand(-IntakeConstants.INTAKE_OUT_VOLTAGE).withTimeout(2)
+            //          )
+            //          )).deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE+0.005)).withTimeout(5)
                 
-                )).andThen(joystickDrive(drive, () -> 0.5, () -> 0, ()-> 0).withTimeout(2));
+            //      ).andThen(
+                    //
+                 joystickDrive(drive, () -> 0.6, () -> 0, ()-> 0).withTimeout(1.5);//);
  }
 }
