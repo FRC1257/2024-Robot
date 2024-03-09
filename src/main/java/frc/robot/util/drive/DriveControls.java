@@ -62,7 +62,7 @@ public class DriveControls {
     // Shooter Controls
     public static DoubleSupplier SHOOTER_SPEED;
     public static Trigger SHOOTER_PREP;
-    public static Trigger SHOOTER_FIRE_AMP;
+    public static Trigger SHOOTER_FULL_SEND_INTAKE;
     public static Trigger SHOOTER_FIRE_SPEAKER;
     public static Trigger SHOOTER_SHOOT;
     public static Trigger SHOOTER_FULL_SEND;
@@ -114,7 +114,7 @@ public class DriveControls {
             case ERICK:
                 // Operator controls
                 PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
-                PIVOT_PID_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+                PIVOT_PID_ROTATE = EMPTY_DOUBLE_SUPPLIER; //() -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
                 //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
                 
                 // Pivot things
@@ -136,7 +136,7 @@ public class DriveControls {
                 SHOOTER_SPEED = () -> operator.getRightXD() + 0.2;
                 //SHOOTER_SPEED = operator::getRightTriggerAxis;\
                 SHOOTER_PREP = EMPTY_TRIGGER;
-                SHOOTER_FIRE_AMP = operator.getY();
+                SHOOTER_FULL_SEND_INTAKE = operator.getX();
                 SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;// commented out for testing
                 SHOOTER_SHOOT = EMPTY_TRIGGER;
                 SHOOTER_FULL_SEND = operator.getA();
@@ -163,7 +163,7 @@ public class DriveControls {
                 SHOOTER_SPEED = operator::getRightXD;
                 //SHOOTER_SPEED = operator::getRightTriggerAxis;\
                 SHOOTER_PREP = EMPTY_TRIGGER;
-                SHOOTER_FIRE_AMP = EMPTY_TRIGGER;
+                SHOOTER_FULL_SEND_INTAKE = EMPTY_TRIGGER;
                 SHOOTER_FIRE_SPEAKER = operator.getY();// commented out for testing
                 SHOOTER_SHOOT = EMPTY_TRIGGER;
                 SHOOTER_FULL_SEND = EMPTY_TRIGGER;

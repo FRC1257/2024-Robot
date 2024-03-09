@@ -15,7 +15,7 @@ public class PivotArmConstants {
     public static final double PIVOT_ARM_OFFSET = 1;
 
     public static final double PIVOT_ARM_MAX_ANGLE = Units.degreesToRadians(110.0);
-    public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(10.0);
+    public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(2.0);
 
     public static final double PIVOT_AMP_ANGLE = Units.degreesToRadians(105.0);
     public static final double PIVOT_SUBWOOFER_ANGLE = Units.degreesToRadians(30.0);

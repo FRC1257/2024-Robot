@@ -21,7 +21,7 @@ public class IntakeIOSparkMax implements IntakeIO {
     private RelativeEncoder encoder;
     private SparkPIDController velocityPID;
 
-    private DigitalInput breakBeam;
+    private DigitalInput photoElectricSensor;
 
     private double desiredSpeed;
 
@@ -37,7 +37,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
         encoder = motor.getEncoder();
 
-        breakBeam = new DigitalInput(ElectricalLayout.INTAKE_BREAK_BEAM);
+        photoElectricSensor = new DigitalInput(ElectricalLayout.INTAKE_PHOTO_ELECTRIC);
 
         velocityPID = motor.getPIDController();
     }
@@ -50,7 +50,7 @@ public class IntakeIOSparkMax implements IntakeIO {
         inputs.tempCelcius = new double[] { motor.getMotorTemperature() };
         inputs.velocityRadsPerSec = encoder.getVelocity();
         inputs.speedSetpoint = desiredSpeed;
-        //inputs.breakBeam = breakBeam.get();
+        inputs.breakBeam = photoElectricSensor.get();
     }
 
     /** sets voltage to run motor if necessary */
@@ -67,7 +67,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     @Override
     public boolean isIntaked() {
-        return breakBeam.get();
+        return photoElectricSensor.get();
     }
 
     @Override

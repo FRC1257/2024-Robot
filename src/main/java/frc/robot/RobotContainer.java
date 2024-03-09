@@ -196,7 +196,7 @@ public class RobotContainer {
     // NamedCommands.registerCommand("Shoot", shootAnywhere());
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
     NamedCommands.registerCommand("Intake",
-        intake.IntakeLoopCommand(3).deadlineWith(groundIntake.manualCommand(() -> 2)));
+        intake.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5)));
     NamedCommands.registerCommand("PrepShoot", prepShoot());
     NamedCommands.registerCommand("Zero", zeroPosition());
     NamedCommands.registerCommand("AmpShooter", setAmpShooterSpeed());
@@ -220,6 +220,7 @@ public class RobotContainer {
             drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
     autoChooser.addOption("Drive Trajectory",
         drive.getAuto("Forward And Spin"));
+    autoChooser.addOption("driveOut", DriveCommands.driveBackAuto(drive));
 
     // this is defined later
     autoChooser.addOption("Custom", new InstantCommand());
@@ -252,21 +253,18 @@ public class RobotContainer {
             DRIVE_ROTATE));
 
     intake.setDefaultCommand(
-        // intake.IntakeSpeedCommand(
-        // INTAKE_ROTATE));
         intake.manualCommand(
             () -> INTAKE_ROTATE.getAsDouble() * 12));
-    // banished to no PID command
 
     groundIntake.setDefaultCommand(
         groundIntake.manualCommand(
             () -> GROUND_INTAKE_ROTATE.getAsDouble() * 12));
 
-    // pivot.setDefaultCommand(
-    //     pivot.ManualCommand(() -> PIVOT_ROTATE.getAsDouble() * 2));
-    pivot.setDefaultCommand(
-      pivot.PIDCommandForever(PIVOT_PID_ROTATE)
-    );
+     pivot.setDefaultCommand(
+        pivot.ManualCommand(() -> PIVOT_ROTATE.getAsDouble() * 2));
+    //pivot.setDefaultCommand(
+      //pivot.PIDCommandForever(PIVOT_PID_ROTATE)
+    //);
 
     shooter.setDefaultCommand(
         // shooter.runPIDSpeed(0)
@@ -311,13 +309,14 @@ public class RobotContainer {
 
     // TODO using voltage mode for now but later speed PID
     SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(11));
-    SHOOTER_FIRE_AMP.whileTrue(
-      shooter.runVoltage(5)
+    SHOOTER_FULL_SEND_INTAKE.whileTrue(
+      shooter.runVoltage(11)
         .alongWith(
           new WaitCommand(1)
             .andThen(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
         )
     ));
+
     SHOOTER_UNJAM.onTrue(
       (intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
         .alongWith(shooter.runVoltage(-1)))
@@ -501,13 +500,15 @@ public class RobotContainer {
   }
 
   public Command shootNote() {
-    return
-
+    return  shooter.runVoltage(11)
+              .alongWith(
+                new WaitCommand(1)
+                  .andThen(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+              ));
           //figure out why the shooter is so weaksauce
           //it's only shooting it out fast when I mash the button
           //probably has to do with the getRPM method
-          shooter.runSpeed(() -> getRPM())
-            .andThen(() -> intake.setVoltage(IntakeConstants.INTAKE_IN_VOLTAGE));
+          
                 //.alongWith(NoteVisualizer.shoot(drive)));//);
   }
 
@@ -558,7 +559,7 @@ public class RobotContainer {
     // implement this later using swerve to turn to desired target
     // move pivot arm
     // and calculate the speed required to shoot
-    return new InstantCommand();
+    return rotateArm();
   }
 
   public void LEDPeriodic() {
@@ -584,5 +585,5 @@ public class RobotContainer {
     }
     
     setPivotPose3d();
-  }
+  }  
 }

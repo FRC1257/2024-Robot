@@ -30,6 +30,7 @@ import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -282,4 +283,7 @@ public class DriveCommands {
         }
       }
 
+    public static Command driveBackAuto(Drive drive){
+    return joystickDrive(drive, () -> 0, () -> kSlowModeConstant, ()-> 0).withTimeout(2);
+  }
 }
