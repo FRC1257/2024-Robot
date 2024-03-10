@@ -13,6 +13,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,23 +22,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.OIConstants;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
-import frc.robot.subsystems.pivotArm.PivotArm;
-import frc.robot.subsystems.pivotArm.PivotArmConstants;
-import frc.robot.subsystems.shooter.*;
-import java.util.function.DoubleSupplier;
-
-import static frc.robot.subsystems.drive.DriveConstants.*;
-import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -45,7 +39,7 @@ public class DriveCommands {
     1;
     // kSlowModeConstant;
 
-  private static PIDController angleController = new PIDController(kTurnSpeakerP, kTurnSpeakerI, kTurnSpeakerD);
+  private static PIDController angleController = new PIDController(DriveConstants.kTurnSpeakerP, DriveConstants.kTurnSpeakerI, DriveConstants.kTurnSpeakerD);
 
   private DriveCommands() {}
 
@@ -57,39 +51,12 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
-    return Commands.run(
-        () -> {
-          // Apply deadband
-          double linearMagnitude =
-              MathUtil.applyDeadband(
-                  Math.hypot(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode), DEADBAND);
-          Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode);
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble() * slowMode, DEADBAND);
-
-          // Square values
-          linearMagnitude = linearMagnitude * linearMagnitude;
-          omega = Math.copySign(omega * omega, omega);
-
-          // Calcaulate new linear velocity
-          Translation2d linearVelocity =
-              new Pose2d(new Translation2d(), linearDirection)
-                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-                  .getTranslation();
-
-          // Convert to field relative speeds & send command
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec(),
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
-        },
+    return new RunCommand(
+        () -> drive.drive(
+            -MathUtil.applyDeadband(xSupplier.getAsDouble(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(ySupplier.getAsDouble(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(omegaSupplier.getAsDouble(), OIConstants.kDriveDeadband),
+            true, false),
         drive);
   }
 
@@ -101,34 +68,12 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
-    return Commands.run(
-        () -> {
-          // Apply deadband
-          double linearMagnitude =
-              MathUtil.applyDeadband(
-                  Math.hypot(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode), DEADBAND);
-          Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode);
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
-
-          // Square values
-          linearMagnitude = linearMagnitude * linearMagnitude;
-          omega = Math.copySign(omega * omega, omega);
-
-          // Calcaulate new linear velocity
-          Translation2d linearVelocity =
-              new Pose2d(new Translation2d(), linearDirection)
-                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-                  .getTranslation();
-
-          // Convert to robot relative speeds & send command
-          drive.runVelocity(
-              ChassisSpeeds.fromRobotRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getRotation()));
-        },
+    return new RunCommand(
+        () -> drive.drive(
+            -MathUtil.applyDeadband(xSupplier.getAsDouble(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(ySupplier.getAsDouble(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(omegaSupplier.getAsDouble(), OIConstants.kDriveDeadband),
+            false, false),
         drive);
     }
 
@@ -166,18 +111,24 @@ public class DriveCommands {
                         .getTranslation();
 
                 // Convert to robot relative speeds & send command
-                drive.runVelocity(
+                /* drive.runVelocity(
                     ChassisSpeeds.fromFieldRelativeSpeeds(
                         linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                         linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                         omega * drive.getMaxAngularSpeedRadPerSec(),
-                        drive.getRotation()));
+                        drive.getRotation())); */
+                drive.drive(
+                    linearVelocity.getX() * DriveConstants.kMaxSpeedMetersPerSecond,
+                    linearVelocity.getY() * DriveConstants.kMaxSpeedMetersPerSecond,
+                    omega * DriveConstants.kMaxAngularSpeed,
+                    false, false);
+                
             },
         drive
         );
     }
     // turns robot to speaker from current location
-    public static Command turnSpeakerAngle(Drive drive) {
+    /* public static Command turnSpeakerAngle(Drive drive) {
         Pose2d speakerPose = FieldConstants.SpeakerPosition;
         angleController.setTolerance(0.08, 0.01);
             return new FunctionalCommand(
@@ -205,10 +156,10 @@ public class DriveCommands {
                 },
                 () -> angleController.atSetpoint(),
                 drive);
-        }
+        } */
        
 
-    public static Command turnToNote(Drive drive) {
+    /* public static Command turnToNote(Drive drive) {
         Pose2d notePose = drive.calculateNotePose(drive.getPose(), drive.calculateNoteTranslation());
            angleController.setTolerance(0.08, 0.01);
                return new FunctionalCommand(
@@ -263,14 +214,14 @@ public class DriveCommands {
             },
         drive
         );
-    }
+    } */
 
     /** 
          * Toggle Slow Mode
          */
     public static void toggleSlowMode() {
       if (slowMode == 1) {
-        slowMode = kSlowModeConstant;
+        slowMode = DriveConstants.kSlowModeConstant;
       } else {
         slowMode = 1;
       }
@@ -289,7 +240,7 @@ public class DriveCommands {
         }
       }
 
-    public static Command driveBackAuto(Drive drive, Shooter shooter, PivotArm pivot, Intake intake){
+    public static Command driveBackAuto(Drive drive) {
         return  //(pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE+0.005))
             //  .andThen(
             //      (shooter.runVoltage(11).withTimeout(4)

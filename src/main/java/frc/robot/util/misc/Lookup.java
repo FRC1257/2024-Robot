@@ -15,7 +15,6 @@ public class Lookup {
 
     //returns the remapped value based on the which column in the lookup table (e.g. func(distance, 1), would return remapped velocity)
     private static double getValueFromColumn(double distance, int column) {
-      LookupTuner.updateMatrix(); //update the lookup table
       int lowerIndex = 0; //the index of the value in the lookup table that is just greater than distance
       
       //if the distance is below the lowest table distance, return a mapped value based on the least two table distances

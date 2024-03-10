@@ -44,6 +44,8 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 4.8;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
+    public static final double kSlowModeConstant = 0.5;
+
     public static final double kDirectionSlewRate = 1.2; // radians per second
     public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
     public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
@@ -80,7 +82,11 @@ public final class Constants {
   public static final int kRearRightTurningCanId = 6;
 
 
-    public static final boolean kGyroReversed = false;
+    public static final boolean kGyroReversed = true;
+
+    public static final double kTurnSpeakerP = 0.9;
+    public static final double kTurnSpeakerI = 0;
+    public static final double kTurnSpeakerD = 0;
   }
 
   public static final class ModuleConstants {
@@ -193,6 +199,18 @@ public final class Constants {
   public final static int NEO_VORTEX_CURRENT_LIMIT = 60;
 
   public static double PI = 3.141592653589793238462643;
-
+  public static final double[][] LookupTable = {
+    {0,1000,10},
+    {1,2000,30},
+    {2,3000,50},
+    {3,4000,60},
+    {4,5500,70},
+    {5,6500,70},
+    {6,6500,75},
+    {7,6500,77},
+    {8,6700,79},
+    {9,6900,83},
+    {10,6500,85}
+  };
 
 }
