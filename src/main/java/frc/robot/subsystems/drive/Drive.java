@@ -26,6 +26,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.utils.SwerveUtils;
@@ -60,6 +61,7 @@ public class Drive extends SubsystemBase {
   // The gyro sensor
   private final AHRS m_gyro;
   private double resetYaw;
+  private double lastGyroValue;
 
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotation = 0.0;
@@ -116,6 +118,7 @@ public class Drive extends SubsystemBase {
     );
 
     Pathfinding.ensureInitialized();
+    lastGyroValue = getYawAngle();
   }
 
     /**
@@ -124,11 +127,16 @@ public class Drive extends SubsystemBase {
    * @return The angle in degrees limited to the range -180 to 180.
    */
   public double getYawAngle() {
+    if (!m_gyro.isConnected()) {
+      return lastGyroValue;
+    }
+    
     double angle = m_gyro.getAngle() - resetYaw;
     while(angle <= -180) angle += 360;
     while(angle > 180) angle -= 360;
 
     angle *=  DriveConstants.kGyroReversed ? -1.0 : 1.0;
+    lastGyroValue = angle;
 
     return angle;
   }
@@ -152,6 +160,9 @@ public class Drive extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+
+      SmartDashboard.putNumber("Drive/Angle", getYawAngle());
+      SmartDashboard.putNumber("Drive/Angle", Rotation2d.fromDegrees(getYawAngle()).getRadians());
   }
 
   /**
@@ -291,6 +302,7 @@ public class Drive extends SubsystemBase {
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    
     m_frontLeft.setDesiredState(desiredStates[0]);
     m_frontRight.setDesiredState(desiredStates[1]);
     m_rearLeft.setDesiredState(desiredStates[2]);
@@ -350,6 +362,8 @@ public class Drive extends SubsystemBase {
       m_rearRight.getState()
     };
 
+    // SmartDashboard.putData("Swerve", states);
+
     return states;
   }
 
@@ -372,5 +386,11 @@ public class Drive extends SubsystemBase {
       DriveConstants.kPathConstraints, 
       0
     );
+  }
+
+  public void resetYaw() {
+      m_gyro.zeroYaw();
+      //setPose(lastPose);
+    
   }
 }

@@ -19,7 +19,7 @@ import com.revrobotics.SparkPIDController;
 
 public class Intake extends SubsystemBase {
 
-        private CANSparkMax motor;
+    private CANSparkMax motor;
     private RelativeEncoder encoder;
     private SparkPIDController velocityPID;
 
@@ -44,7 +44,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void periodic() {
-        SmartDashboard.putNumber("Intake/liveVoltageCurrent", getBusVoltage());
+        //SmartDashboard.putNumber("Intake/liveVoltageCurrent", getVoltage());
     }
 
     /**

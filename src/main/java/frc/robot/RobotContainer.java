@@ -4,27 +4,19 @@
 
 package frc.robot;
 
-import static frc.robot.DriveControls.DRIVE_FORWARD;
-import static frc.robot.DriveControls.DRIVE_ROTATE;
-import static frc.robot.DriveControls.DRIVE_STRAFE;
-import static frc.robot.DriveControls.GROUND_INTAKE_IN;
-import static frc.robot.DriveControls.GROUND_INTAKE_OUT;
-import static frc.robot.DriveControls.INTAKE_IN;
-import static frc.robot.DriveControls.INTAKE_OUT;
-import static frc.robot.DriveControls.PIVOT_AMP;
-import static frc.robot.DriveControls.PIVOT_HOLD;
-import static frc.robot.DriveControls.PIVOT_TO_SPEAKER;
-import static frc.robot.DriveControls.PIVOT_ZERO;
-import static frc.robot.DriveControls.SHOOTER_FIRE_AMP;
-import static frc.robot.DriveControls.SHOOTER_FULL_SEND;
-import static frc.robot.DriveControls.SHOOTER_FULL_SEND_INTAKE;
-import static frc.robot.DriveControls.SHOOTER_SPEED;
-import static frc.robot.DriveControls.SHOOTER_UNJAM;
+import static frc.robot.DriveControls.*;
 import static frc.robot.DriveControls.getRumbleBoth;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -33,9 +25,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
@@ -47,6 +42,11 @@ import frc.robot.subsystems.pivotArm.Pivot;
 import frc.robot.subsystems.pivotArm.PivotArmConstants;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.util.autonomous.MakeAutos;
+
+import edu.wpi.first.math.geometry.Pose2d;
+
+
+import java.util.List;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -78,13 +78,19 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Custom", new InstantCommand().withName("Custom"));
+    autoChooser.addOption("Leave", driveOut());
+
+    autoChooser.addOption("ShootAndLeave", shoot().andThen(driveOut()));
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
-        DriveCommands.joystickDrive(m_robotDrive, DRIVE_STRAFE, DRIVE_ROTATE, DRIVE_FORWARD)
+        DriveCommands.joystickDrive(m_robotDrive, DRIVE_FORWARD,DRIVE_STRAFE, DRIVE_ROTATE)
+
     );
+
+    DriveControls.DRIVE_TOGGLE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveRobotRelative(m_robotDrive, DRIVE_FORWARD,DRIVE_STRAFE, DRIVE_ROTATE));
 
     intake.setDefaultCommand(
         intake.manualCommand(
@@ -99,6 +105,42 @@ public class RobotContainer {
 
     shooter.setDefaultCommand(
         shooter.runVoltage(SHOOTER_SPEED));
+
+    DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
+
+
+    DRIVE_STOP.onTrue(new InstantCommand(() -> {
+      //m_robotDrive.stopWithX();
+      m_robotDrive.resetYaw();
+    }, m_robotDrive));
+
+    // Operator controls
+    PIVOT_AMP.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_AMP_ANGLE));
+    PIVOT_ZERO.whileTrue(pivot.PIDCommandForever(0));
+    PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
+    PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
+
+
+    INTAKE_IN.whileTrue(intake.manualCommand(IntakeConstants.INTAKE_IN_VOLTAGE));
+    INTAKE_OUT.whileTrue(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE));
+
+    GROUND_INTAKE_IN.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
+    GROUND_INTAKE_OUT.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_OUT_VOLTAGE));
+
+    // TODO using voltage mode for now but later speed PID
+    SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(11));
+    SHOOTER_FULL_SEND_INTAKE.whileTrue(
+      shooter.runVoltage(11)
+        .alongWith(
+          new WaitCommand(0.5)
+            .andThen(intake.manualCommand(-IntakeConstants.INTAKE_OUT_VOLTAGE)
+        )
+    ));
+
+    SHOOTER_UNJAM.whileTrue(
+      (intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE/2)
+        .alongWith(shooter.runVoltage(-0.5)))
+    );
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -185,7 +227,7 @@ public class RobotContainer {
             .andThen(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE))
           ).withTimeout(2)
       ).deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE))
-    );
+    ).withTimeout(5);
   }
 
   public Command prepShoot() {
@@ -221,7 +263,11 @@ public class RobotContainer {
 
     return auto;
     // Create config for trajectory
-    /* TrajectoryConfig config = new TrajectoryConfig(
+
+  }
+
+  public Command driveOut() {
+    TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
         // Add kinematics to ensure max speed is actually obeyed
@@ -257,6 +303,6 @@ public class RobotContainer {
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false)); */
+    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
   }
 }

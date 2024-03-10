@@ -76,9 +76,9 @@ public class DriveControls {
     public static void configureControls() {
         switch (Constants.driver) {
             case MAUI:
-                DRIVE_FORWARD = () -> -(driver.getLeftY());
+                DRIVE_FORWARD = () -> (driver.getLeftY());
                 DRIVE_STRAFE = ()->-(driver.getLeftX());
-                DRIVE_ROTATE = () -> -(driver.getRightX());
+                DRIVE_ROTATE = () -> (driver.getRightX());
                 DRIVE_SLOW = driver.start();
                 DRIVE_SPEAKER_AIM = driver.leftBumper();
                 DRIVE_STOP = driver.x();

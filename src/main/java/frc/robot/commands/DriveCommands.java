@@ -60,6 +60,20 @@ public class DriveCommands {
         drive);
   }
 
+  public static Command joystickDriveRR(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier) {
+    return new RunCommand(
+        () -> drive.drive(
+            -MathUtil.applyDeadband(xSupplier.getAsDouble(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(ySupplier.getAsDouble(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(omegaSupplier.getAsDouble(), OIConstants.kDriveDeadband),
+            false, false),
+        drive);
+  }
+
   /**
    * Robot relative drive command using two joysticks (controlling linear and angular velocities).
    */
