@@ -363,22 +363,7 @@ public class Drive extends SubsystemBase {
   public Command goToPose(Pose2d target_pose, double end_velocity, double time_before_turn) {
     return AutoBuilder.pathfindToPose(target_pose, kPathConstraints, end_velocity, time_before_turn);
   }
-
-  public Command goToPose(Pose2d target_pose) {
-    return AutoBuilder.pathfindToPose(target_pose, kPathConstraints, 0.0, 1);
-  }
  
-  public ChassisSpeeds getFieldVelocity() {
-    // ChassisSpeeds has a method to convert from field-relative to robot-relative speeds,
-    // but not the reverse.  However, because this transform is a simple rotation, negating the
-    // angle
-    // given as the robot angle reverses the direction of rotation, and the conversion is reversed.
-    return ChassisSpeeds.fromFieldRelativeSpeeds(
-        kDriveKinematics.toChassisSpeeds(getModuleStates()), getRotation());
-  }
-
- 
-
   public Rotation2d getRotation() {
     return new Rotation2d(m_gyro.getYaw());
   }

@@ -23,6 +23,7 @@ import static frc.robot.DriveControls.SHOOTER_UNJAM;
 import static frc.robot.DriveControls.getRumbleBoth;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.Timer;
@@ -100,6 +101,14 @@ public class RobotContainer {
         shooter.runVoltage(SHOOTER_SPEED));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
+    NamedCommands.registerCommand("Intake",
+        intake.manualCommand(IntakeConstants.INTAKE_IN_VOLTAGE).deadlineWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE)));
+    // Preps pivot arm at correct angle; may want to run as parallel to movement
+    NamedCommands.registerCommand("PrepShoot", prepShoot());
+    NamedCommands.registerCommand("Zero", zeroPosition());
+    // NamedCommands.registerCommand("AmpShooter", setAmpShooterSpeed());
   }
 
   /**
@@ -161,6 +170,30 @@ public class RobotContainer {
 
   public Command intake() {
     return intake.manualCommand(IntakeConstants.INTAKE_IN_VOLTAGE);
+  }
+
+  public Command zeroPosition() {
+    return pivot.PIDCommand(0).alongWith(intake.manualCommand(0)).alongWith(groundIntake.manualCommand(0));
+  }
+
+  public Command shootSpeaker() {
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).andThen(
+      (
+        shooter.runVoltage(11)
+          .alongWith(
+            new WaitCommand(0.5)
+            .andThen(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE))
+          ).withTimeout(2)
+      ).deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE))
+    );
+  }
+
+  public Command prepShoot() {
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).andThen(
+      (
+        shooter.runVoltage(11).withTimeout(2)
+      ).deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE))
+    );
   }
 
   public Command intakeWhile() {
