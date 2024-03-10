@@ -118,9 +118,9 @@ public class DriveCommands {
                         omega * drive.getMaxAngularSpeedRadPerSec(),
                         drive.getRotation())); */
                 drive.drive(
-                    linearVelocity.getX() * DriveConstants.kMaxSpeedMetersPerSecond,
-                    linearVelocity.getY() * DriveConstants.kMaxSpeedMetersPerSecond,
-                    omega * DriveConstants.kMaxAngularSpeed,
+                    linearVelocity.getX(),
+                    linearVelocity.getY(),
+                    omega,
                     false, false);
                 
             },

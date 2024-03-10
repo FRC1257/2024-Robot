@@ -225,10 +225,23 @@ public class Drive extends SubsystemBase {
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
+  }
+
+  public void runVelocity(ChassisSpeeds speeds) {
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    
+    SwerveModuleState[] setpointStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(discreteSpeeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.kMaxSpeedMetersPerSecond);
+
+    m_frontLeft.setDesiredState(setpointStates[0]);
+    m_frontRight.setDesiredState(setpointStates[1]);
+    m_rearLeft.setDesiredState(setpointStates[2]);
+    m_rearRight.setDesiredState(setpointStates[3]);
   }
 
   /**
@@ -286,13 +299,22 @@ public class Drive extends SubsystemBase {
    */
  
 
-  /**
-   * Returns the turn rate of the robot.
-   *
-   * @return The turn rate of the robot, in degrees per second
-   */
-  public double getTurnRate() {
-    return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+
+  /** Returns the module states (turn angles and driveZ velocities) for all of the modules. */
+  @AutoLogOutput(key = "SwerveStates/Measured")
+  private SwerveModuleState[] getModuleStates() {
+    SwerveModuleState[] states = new SwerveModuleState[] {
+      m_frontLeft.getState(),
+      m_frontRight.getState(),
+      m_rearLeft.getState(),
+      m_rearRight.getState()
+    };
+
+    return states;
+  }
+
+  public Rotation2d getRotation() {
+    return new Rotation2d(m_gyro.getYaw());
   }
 
 
@@ -315,15 +337,7 @@ public class Drive extends SubsystemBase {
         kDriveKinematics.toChassisSpeeds(getModuleStates()), getRotation());
   }
 
-  /** Returns the module states (turn angles and driveZ velocities) for all of the modules. */
-  @AutoLogOutput(key = "SwerveStates/Measured")
-  private SwerveModuleState[] getModuleStates() {
-    SwerveModuleState[] states = new SwerveModuleState[4];
-    for (int i = 0; i < 4; i++) {
-      states[i] =  modules[i].getState();
-    }
-    return states;
-  }
+ 
 
   public Rotation2d getRotation() {
     return new Rotation2d(m_gyro.getYaw());
