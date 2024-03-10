@@ -6,13 +6,13 @@ package frc.robot;
 
 import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
 import static frc.robot.util.drive.DriveControls.DRIVE_FORWARD;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROBOT_RELATIVE;
 import static frc.robot.util.drive.DriveControls.DRIVE_ROTATE;
 import static frc.robot.util.drive.DriveControls.DRIVE_SLOW;
 import static frc.robot.util.drive.DriveControls.DRIVE_SOURCE;
 import static frc.robot.util.drive.DriveControls.DRIVE_SPEAKER_AIM;
 import static frc.robot.util.drive.DriveControls.DRIVE_STOP;
 import static frc.robot.util.drive.DriveControls.DRIVE_STRAFE;
-import static frc.robot.util.drive.DriveControls.DRIVE_ROBOT_RELATIVE;
 import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_IN;
 import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_OUT;
 import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_ROTATE;
@@ -30,8 +30,6 @@ import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND;
 import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND_INTAKE;
 import static frc.robot.util.drive.DriveControls.SHOOTER_SPEED;
 import static frc.robot.util.drive.DriveControls.SHOOTER_UNJAM;
-import static frc.robot.util.drive.DriveControls.TURN_180;
-import static frc.robot.util.drive.DriveControls.TURN_90;
 import static frc.robot.util.drive.DriveControls.configureControls;
 import static frc.robot.util.drive.DriveControls.getRumbleBoth;
 
@@ -64,9 +62,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -248,7 +244,9 @@ public class RobotContainer {
     // Set up feedforward characterization
     autoChooser.addOption("Drive Trajectory",
         drive.getAuto("Forward And Spin"));
-    autoChooser.addOption("driveOut", DriveCommands.driveBackAuto(drive));
+    autoChooser.addOption("driveOutShoot", DriveCommands.driveBackandShooter(drive, pivot, shooter, intake));
+    autoChooser.addOption("drive out", DriveCommands.driveBack(drive, pivot, shooter, intake));
+    autoChooser.addOption("shoot out", DriveCommands.justShooter(pivot, shooter, intake));
 
     // this is defined later
     autoChooser.addOption("Custom", new InstantCommand());
@@ -278,7 +276,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // drive.setDefaultCommandRobotRelative
     drive.setDefaultCommand( // change state here
-        DriveCommands.joystickDriveRobotRelative(
+        DriveCommands.joystickDriveFieldRelative(
             drive,
             DRIVE_FORWARD,
             DRIVE_STRAFE,
@@ -302,7 +300,7 @@ public class RobotContainer {
         // shooter.runPIDSpeed(0)
         shooter.runVoltage(SHOOTER_SPEED));
 
-    DRIVE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDrive(
+    DRIVE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDriveFieldRelative(
         drive,
         DRIVE_FORWARD,
         DRIVE_STRAFE,
