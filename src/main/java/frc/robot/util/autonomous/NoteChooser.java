@@ -1,21 +1,21 @@
 package frc.robot.util.autonomous;
 
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.FieldConstants;
 
 public class NoteChooser {
 
-    private LoggedDashboardChooser<Pose2d> position;
+    private SendableChooser<Pose2d> position;
 
     public NoteChooser(String name){
-        position = new LoggedDashboardChooser<Pose2d>(name);
+        position = new SendableChooser<Pose2d>();
     }
 
     public void setNotePosition(){
         Pose2d[] NOTE_POSITIONS = FieldConstants.NOTE_POSITIONS();
-        position.addDefaultOption("Note 1", NOTE_POSITIONS[0]);
+        position.setDefaultOption("Note 1", NOTE_POSITIONS[0]);
         for (int i = 1; i < NOTE_POSITIONS.length; i++){
             position.addOption("Note " + (i + 1), NOTE_POSITIONS[i]);
         }
@@ -23,7 +23,7 @@ public class NoteChooser {
 
     public void setStartPosition(){
         Pose2d[] START_POSITIONS = FieldConstants.START_POSITIONS();
-        position.addDefaultOption("Top", START_POSITIONS[0]);
+        position.setDefaultOption("Top", START_POSITIONS[0]);
         position.addOption("Center", START_POSITIONS[1]);
         position.addOption("Bottom", START_POSITIONS[2]);
         position.addOption("Really Bottom", START_POSITIONS[3]);
@@ -32,7 +32,7 @@ public class NoteChooser {
 
     public void setScorePosition(){
         Pose2d[] SCORE_POSITIONS = FieldConstants.SCORE_POSITIONS();
-        position.addDefaultOption("Top", SCORE_POSITIONS[0]);
+        position.setDefaultOption("Top", SCORE_POSITIONS[0]);
         position.addOption("Center", SCORE_POSITIONS[1]);
         position.addOption("Bottom", SCORE_POSITIONS[2]);
         position.addOption("Really Bottom", SCORE_POSITIONS[3]);
@@ -40,7 +40,7 @@ public class NoteChooser {
     }
 
     public Pose2d getSelected(){
-        Pose2d thing = position.get();
+        Pose2d thing = position.getSelected();
 
         if (thing == null){
             System.out.println("Null value for some reason");

@@ -7,8 +7,6 @@ package frc.robot.subsystems.drive;
 import static frc.robot.subsystems.drive.DriveConstants.kDriveKinematics;
 import static frc.robot.subsystems.drive.DriveConstants.kPathConstraints;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import com.kauailabs.navx.frc.AHRS;

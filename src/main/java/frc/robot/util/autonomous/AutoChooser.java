@@ -1,13 +1,10 @@
 package frc.robot.util.autonomous;
 
-import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
-
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class AutoChooser {
-    public static LoggedDashboardBoolean shootOnStart = new LoggedDashboardBoolean("ShootOnStart", true);
-
     // Get the start position
     public static NoteChooser startChooser = new NoteChooser("Start");
 
@@ -24,6 +21,7 @@ public class AutoChooser {
     
     // Get the start position
     public static void setupChoosers() {
+        SmartDashboard.putBoolean("Auto/ShootOnStart", true);
         startChooser.setStartPosition();
 
         NoteOneChooser.setNotePosition();

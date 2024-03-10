@@ -14,8 +14,6 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.util.drive.AllianceFlipUtil;
 
 
-import org.littletonrobotics.junction.Logger;
-
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
  * of corners start in the lower left moving clockwise. <b>All units in Meters</b> <br>
@@ -67,8 +65,6 @@ public class FieldConstants {
       for (int i = 0; i < spikeTranslations.length; i++) {
         spikeTranslations[i] = new Translation2d(spikeX, spikeFirstY + (i * spikeSeparationY));
       }
-      Logger.recordOutput("centerlineTranslations", centerlineTranslations);
-      Logger.recordOutput("spikeTranslations", spikeTranslations);
     }
   }
 
