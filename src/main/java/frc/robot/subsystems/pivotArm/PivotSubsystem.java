@@ -27,7 +27,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import static frc.robot.Constants.ElectricalLayout.*;
 
-public class Pivot extends SubsystemBase {
+public class PivotSubsystem extends SubsystemBase {
     private double setpoint = 0;
 
     private CANSparkMax pivotMotor, leftSlave, rightSlaveFront, rightSlaveBack;
@@ -40,7 +40,7 @@ public class Pivot extends SubsystemBase {
     // Create a Mechanism2d visualization of the arm
     private MechanismLigament2d armMechanism = getArmMechanism();
 
-    public Pivot() {
+    public PivotSubsystem() {
         pivotMotor = new CANSparkMax(PIVOT_ARM_ID, MotorType.kBrushless);
         leftSlave = new CANSparkMax(LEFT_SLAVE_ID, MotorType.kBrushless);
         rightSlaveFront = new CANSparkMax(RIGHT_SLAVE_FRONT_ID, MotorType.kBrushless);

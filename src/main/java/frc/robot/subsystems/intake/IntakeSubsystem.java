@@ -17,7 +17,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-public class Intake extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase {
 
         private CANSparkMax motor;
     private RelativeEncoder encoder;
@@ -26,7 +26,7 @@ public class Intake extends SubsystemBase {
     private double desiredSpeed;
 
 
-    public Intake () {
+    public IntakeSubsystem () {
         SmartDashboard.putData(getName(), this);
                 /** ID needs to be assigned from constants */
         //setPIDConstants(kIntakeP, kIntakeI, kIntakeD);
