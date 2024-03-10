@@ -313,9 +313,7 @@ public class Drive extends SubsystemBase {
     return states;
   }
 
-  public Rotation2d getRotation() {
-    return new Rotation2d(m_gyro.getYaw());
-  }
+ 
 
 
   //TODO CODE ADDED FROM OUR ORIGINAL CODE, MAY OR MAY NOT WORK
