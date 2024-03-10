@@ -265,7 +265,7 @@ public class Drive extends SubsystemBase {
     return getPose().getRotation();
   } */
   public Rotation2d getRotation() {
-    return new Rotation2d(gyroIO.getYawAngle());
+    return getPose().getRotation();
   }
 
   /** Resets the current odometry pose. */
