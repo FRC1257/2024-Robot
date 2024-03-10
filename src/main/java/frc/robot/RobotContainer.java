@@ -19,14 +19,13 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.groundIntake.GroundIntake;
 import frc.robot.subsystems.groundIntake.GroundIntakeConstants;
 import frc.robot.subsystems.intake.IntakeConstants;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.pivotArm.PivotArmConstants;
-import frc.robot.subsystems.pivotArm.Pivot;
+import frc.robot.subsystems.pivotArm.PivotSubsystem;
 import frc.robot.subsystems.shooter.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -46,11 +45,11 @@ import java.util.List;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final Drive m_robotDrive = new Drive();
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final GroundIntake groundIntake = new GroundIntake();
-  private final Intake intake = new Intake();
+  private final IntakeSubsystem intake = new IntakeSubsystem();
   private final Shooter shooter = new Shooter();
-  private final Pivot pivot = new Pivot();
+  private final PivotSubsystem pivot = new PivotSubsystem();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -67,8 +66,13 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
-        DriveCommands.joystickDrive(m_robotDrive, DRIVE_STRAFE, DRIVE_ROTATE, DRIVE_FORWARD)
-    );
+        new RunCommand(
+            () -> m_robotDrive.drive(
+                -MathUtil.applyDeadband(DriveControls.DRIVE_FORWARD.getAsDouble(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(DriveControls.DRIVE_STRAFE.getAsDouble(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(DriveControls.DRIVE_ROTATE.getAsDouble(), OIConstants.kDriveDeadband),
+                true, false),
+            m_robotDrive));
 
     intake.setDefaultCommand(
         intake.manualCommand(
