@@ -4,6 +4,13 @@
 
 package frc.robot.subsystems.drive;
 
+import static frc.robot.subsystems.drive.DriveConstants.kDriveKinematics;
+import static frc.robot.subsystems.drive.DriveConstants.kPathConstraints;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -23,10 +30,13 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class Drive extends SubsystemBase {
+
+  private final MAXSwerveModule[] modules = new MAXSwerveModule[4];
+
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
@@ -48,6 +58,7 @@ public class Drive extends SubsystemBase {
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
 
+  
   // The gyro sensor
   private final AHRS m_gyro;
   private double resetYaw;
@@ -64,7 +75,7 @@ public class Drive extends SubsystemBase {
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry;
 
-  /** Creates a new DriveSubsystem. */
+  /** Creates a new Drive. */
   public Drive() {
     m_gyro = new AHRS();
     m_gyro.reset();
@@ -310,9 +321,7 @@ public class Drive extends SubsystemBase {
     return getYawAngle();
   }
 
-  public Rotation2d getRotation() {
-    return Rotation2d.fromDegrees(getHeading());
-  }
+
 
     /**
    * Gets the current field-relative velocity (x, y and omega) of the robot
@@ -346,13 +355,32 @@ public class Drive extends SubsystemBase {
     return states;
   }
 
-  /**
-   * Returns the turn rate of the robot.
-   *
-   * @return The turn rate of the robot, in degrees per second
-   */
-  public double getTurnRate() {
-    return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+ 
+
+
+  //TODO CODE ADDED FROM OUR ORIGINAL CODE, MAY OR MAY NOT WORK
+
+  public Command goToPose(Pose2d target_pose, double end_velocity, double time_before_turn) {
+    return AutoBuilder.pathfindToPose(target_pose, kPathConstraints, end_velocity, time_before_turn);
+  }
+
+  public Command goToPose(Pose2d target_pose) {
+    return AutoBuilder.pathfindToPose(target_pose, kPathConstraints, 0.0, 1);
+  }
+ 
+  public ChassisSpeeds getFieldVelocity() {
+    // ChassisSpeeds has a method to convert from field-relative to robot-relative speeds,
+    // but not the reverse.  However, because this transform is a simple rotation, negating the
+    // angle
+    // given as the robot angle reverses the direction of rotation, and the conversion is reversed.
+    return ChassisSpeeds.fromFieldRelativeSpeeds(
+        kDriveKinematics.toChassisSpeeds(getModuleStates()), getRotation());
+  }
+
+ 
+
+  public Rotation2d getRotation() {
+    return new Rotation2d(m_gyro.getYaw());
   }
 
   public Command goToPose(Pose2d pose) {
