@@ -108,7 +108,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake 5",
+      "name": "Intake ",
       "waypointRelativePos": 0.85,
       "command": {
         "type": "sequential",

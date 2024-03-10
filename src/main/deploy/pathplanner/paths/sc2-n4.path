@@ -32,24 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot 2",
-      "waypointRelativePos": 0.15,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Shoot"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Intake 4",
+      "name": "Intake",
       "waypointRelativePos": 0.85,
       "command": {
         "type": "sequential",

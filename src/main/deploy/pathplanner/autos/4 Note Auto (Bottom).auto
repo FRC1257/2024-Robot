@@ -16,6 +16,12 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "n3-sc1-n8"
@@ -25,6 +31,12 @@
                 "type": "path",
                 "data": {
                   "pathName": "n8-sc2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
                 }
               },
               {
@@ -40,6 +52,12 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "sc3-n6"
@@ -49,6 +67,12 @@
                 "type": "path",
                 "data": {
                   "pathName": "n6-sc4 (4)"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
                 }
               }
             ]
