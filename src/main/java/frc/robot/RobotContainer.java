@@ -67,7 +67,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
-import frc.robot.commands.TurnAngleCommand;
 import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -247,13 +246,9 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up feedforward characterization
-    autoChooser.addOption(
-        "Drive FF Characterization",
-        new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
     autoChooser.addOption("Drive Trajectory",
         drive.getAuto("Forward And Spin"));
-    autoChooser.addOption("driveOut", DriveCommands.driveBackAuto(drive, shooter, pivot, intake));
+    autoChooser.addOption("driveOut", DriveCommands.driveBackAuto(drive));
 
     // this is defined later
     autoChooser.addOption("Custom", new InstantCommand());
@@ -328,8 +323,8 @@ public class RobotContainer {
       drive.resetYaw();
     }, drive));
 
-    TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
-    TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
+    /* TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
+    TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180))); */
 
     // Operator controls
     PIVOT_AMP.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_AMP_ANGLE));
@@ -372,7 +367,7 @@ public class RobotContainer {
     // new Trigger(() -> intake.isIntaked()).onTrue(getRumbleBoth());
     
     if (Constants.tuningMode) {
-      SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      /* SmartDashboard.putData("Sysid Dynamic Drive Forward", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
       SmartDashboard.putData("Sysid Dynamic Drive Backward", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
       SmartDashboard.putData("Sysid Dynamic Turn Forward", drive.turnDynamic(SysIdRoutine.Direction.kForward));
       SmartDashboard.putData("Sysid Dynamic Turn Backward", drive.turnDynamic(SysIdRoutine.Direction.kReverse));
@@ -380,7 +375,7 @@ public class RobotContainer {
       SmartDashboard.putData("Sysid Quasi Drive Forward", drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
       SmartDashboard.putData("Sysid Quasi Drive Backward", drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
       SmartDashboard.putData("Sysid Quasi Turn Forward", drive.turnQuasistatic(SysIdRoutine.Direction.kForward));
-      SmartDashboard.putData("Sysid Quasi Turn Backward", drive.turnQuasistatic(SysIdRoutine.Direction.kReverse));
+      SmartDashboard.putData("Sysid Quasi Turn Backward", drive.turnQuasistatic(SysIdRoutine.Direction.kReverse)); */
     }
 
   }
@@ -514,7 +509,7 @@ public class RobotContainer {
         },
         () -> {
           Logger.recordOutput("PivotArmSpeakerAngle", getAngle());
-          pivot.setPID(getAngle());
+          pivot.setPID(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
           pivot.runPID();
           //shooter.setRPM(getRPM());
         },
