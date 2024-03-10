@@ -4,39 +4,48 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import static frc.robot.DriveControls.DRIVE_FORWARD;
+import static frc.robot.DriveControls.DRIVE_ROTATE;
+import static frc.robot.DriveControls.DRIVE_STRAFE;
+import static frc.robot.DriveControls.GROUND_INTAKE_IN;
+import static frc.robot.DriveControls.GROUND_INTAKE_OUT;
+import static frc.robot.DriveControls.INTAKE_IN;
+import static frc.robot.DriveControls.INTAKE_OUT;
+import static frc.robot.DriveControls.PIVOT_AMP;
+import static frc.robot.DriveControls.PIVOT_HOLD;
+import static frc.robot.DriveControls.PIVOT_TO_SPEAKER;
+import static frc.robot.DriveControls.PIVOT_ZERO;
+import static frc.robot.DriveControls.SHOOTER_FIRE_AMP;
+import static frc.robot.DriveControls.SHOOTER_FULL_SEND;
+import static frc.robot.DriveControls.SHOOTER_FULL_SEND_INTAKE;
+import static frc.robot.DriveControls.SHOOTER_SPEED;
+import static frc.robot.DriveControls.SHOOTER_UNJAM;
+import static frc.robot.DriveControls.getRumbleBoth;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.groundIntake.GroundIntake;
 import frc.robot.subsystems.groundIntake.GroundIntakeConstants;
-import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.pivotArm.Pivot;
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
 import frc.robot.subsystems.shooter.Shooter;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import static frc.robot.DriveControls.*;
-
-import java.util.List;
+import frc.robot.util.autonomous.MakeAutos;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -52,6 +61,9 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Pivot pivot = new Pivot();
 
+    private final SendableChooser<Command> autoChooser;
+
+
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
@@ -62,6 +74,9 @@ public class RobotContainer {
     DriveControls.configureControls();
     // Configure the button bindings
     configureButtonBindings();
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser.addOption("Custom", new InstantCommand().withName("Custom"));
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
@@ -83,6 +98,8 @@ public class RobotContainer {
 
     shooter.setDefaultCommand(
         shooter.runVoltage(SHOOTER_SPEED));
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
@@ -116,11 +133,7 @@ public class RobotContainer {
     // TODO using voltage mode for now but later speed PID
     SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(11));
     SHOOTER_FULL_SEND_INTAKE.whileTrue(
-        shooter.runVoltage(11)
-        .alongWith(
-            new WaitCommand(0.5)
-            .andThen(intake.manualCommand(-IntakeConstants.INTAKE_OUT_VOLTAGE))
-        )
+        shoot()
     );
     SHOOTER_FIRE_AMP.whileTrue(
       shooter.runVoltage(5)
@@ -138,14 +151,44 @@ public class RobotContainer {
     new Trigger(() -> (int) Timer.getMatchTime() == 90.0).onTrue(getRumbleBoth());
   }
 
+  public Command shoot() {
+    return shooter.runVoltage(11)
+        .alongWith(
+            new WaitCommand(0.5)
+            .andThen(intake.manualCommand(-IntakeConstants.INTAKE_OUT_VOLTAGE))
+        );
+  }
+
+  public Command intake() {
+    return intake.manualCommand(IntakeConstants.INTAKE_IN_VOLTAGE);
+  }
+
+  public Command intakeWhile() {
+    // meant to intake with vision
+    return new InstantCommand();
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    Command auto = autoChooser.getSelected();
+
+    if (auto.getName().equals("Custom")) {
+        return MakeAutos.makeAutoCommand(
+            m_robotDrive, 
+            this::shoot, 
+            this::intake, 
+            this::intakeWhile, 
+            () -> pivot.PIDCommand(0)
+        );
+    }
+
+    return auto;
     // Create config for trajectory
-    TrajectoryConfig config = new TrajectoryConfig(
+    /* TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
         // Add kinematics to ensure max speed is actually obeyed
@@ -156,7 +199,7 @@ public class RobotContainer {
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        List.of(new Translation2d(1, 0), new Translation2d(2, 0)),
         // End 3 meters straight ahead of where we started, facing forward
         new Pose2d(3, 0, new Rotation2d(0)),
         config);
@@ -181,6 +224,6 @@ public class RobotContainer {
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false)); */
   }
 }

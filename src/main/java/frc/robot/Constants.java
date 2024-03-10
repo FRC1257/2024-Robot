@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.path.PathConstraints;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -87,6 +88,14 @@ public final class Constants {
     public static final double kTurnSpeakerP = 0.9;
     public static final double kTurnSpeakerI = 0;
     public static final double kTurnSpeakerD = 0;
+
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+
+    public static final PathConstraints kPathConstraints = new PathConstraints(
+      kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared,
+      kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
   public static final class ModuleConstants {

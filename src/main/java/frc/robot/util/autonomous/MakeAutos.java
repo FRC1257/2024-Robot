@@ -32,7 +32,7 @@ public class MakeAutos {
     public static Command makeAutoCommand(Drive drive, Supplier<Command> shoot, Supplier<Command> intakeCommand, Supplier<Command> intakeWhile, Supplier<Command> zeroPivot) {
         return new SequentialCommandGroup(
             shoot.get(),
-            zeroPivot.get(),
+            zeroPivot.get(), // bring the pivot to the zero position
             drive.goToPose(AutoChooser.NoteOneChooser.getSelected()).deadlineWith(intakeCommand.get()),
             intakeWhile.get(),
             drive.goToPose(AutoChooser.NoteOneShotChooser.getSelected()),
