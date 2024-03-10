@@ -114,7 +114,9 @@ public class Pivot extends SubsystemBase {
     }
     
     public void periodic() {
-        
+        SmartDashboard.putNumber("Pivot/Angle", getAngle());
+        SmartDashboard.putNumber("Pivot/Voltage", pivotMotor.getBusVoltage());
+        SmartDashboard.putNumber("Pivot/current", pivotMotor.getOutputCurrent());
     }
 
     public void setBrake(boolean brake) {

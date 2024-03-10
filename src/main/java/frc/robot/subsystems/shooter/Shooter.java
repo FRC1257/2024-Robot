@@ -9,6 +9,7 @@ import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -63,7 +64,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void periodic() {
-    
+    SmartDashboard.putNumber("Shooter/Voltage", getBusVoltage());
   }
 
   public Command runVoltage(DoubleSupplier volts) {
