@@ -45,6 +45,7 @@ public class Intake extends SubsystemBase {
 
     public void periodic() {
         //SmartDashboard.putNumber("Intake/liveVoltageCurrent", getVoltage());
+        // SmartDashboard.putNumber("Intake/liveVoltageCurrent", getBusVoltage());
     }
 
     /**

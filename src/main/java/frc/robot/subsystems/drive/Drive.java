@@ -4,10 +4,7 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.kDriveKinematics;
 import static frc.robot.subsystems.drive.DriveConstants.kPathConstraints;
-
-import com.pathplanner.lib.auto.AutoBuilder;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -16,6 +13,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,12 +28,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.utils.SwerveUtils;
-import edu.wpi.first.wpilibj2.command.Command;
 
 public class Drive extends SubsystemBase {
-
-  private final MAXSwerveModule[] modules = new MAXSwerveModule[4];
-
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
@@ -74,6 +68,7 @@ public class Drive extends SubsystemBase {
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry;
+  private SwerveDrivePoseEstimator poseEstimator;
 
   /** Creates a new Drive. */
   public Drive() {
@@ -89,6 +84,18 @@ public class Drive extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
       });
+
+    poseEstimator = new SwerveDrivePoseEstimator(
+      DriveConstants.kDriveKinematics,
+      Rotation2d.fromDegrees(m_gyro.getAngle()),
+      new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()
+      },
+      new Pose2d()
+    );
 
     // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
@@ -160,6 +167,15 @@ public class Drive extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+    poseEstimator.update(
+      getRotation(), 
+      new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        }
+    );
 
       SmartDashboard.putNumber("Drive/Angle", getYawAngle());
       SmartDashboard.putNumber("Drive/Angle", Rotation2d.fromDegrees(getYawAngle()).getRadians());
@@ -171,7 +187,7 @@ public class Drive extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return poseEstimator.getEstimatedPosition();
   }
 
   /**
@@ -189,6 +205,16 @@ public class Drive extends SubsystemBase {
             m_rearRight.getPosition()
         },
         pose);
+    poseEstimator.resetPosition(
+        Rotation2d.fromDegrees(getYawAngle()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        },
+        pose
+    );
   }
 
   /**

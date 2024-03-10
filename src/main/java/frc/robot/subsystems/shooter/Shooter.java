@@ -65,6 +65,7 @@ public class Shooter extends SubsystemBase {
 
   public void periodic() {
     //SmartDashboard.putNumber("Shooter/Voltage", getBusVoltage());
+    // SmartDashboard.putNumber("Shooter/Voltage", getBusVoltage());
   }
 
   public Command runVoltage(DoubleSupplier volts) {
