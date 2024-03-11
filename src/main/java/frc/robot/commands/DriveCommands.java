@@ -260,7 +260,7 @@ public class DriveCommands {
     }
 
     public static Command driveBackandShooter(Drive drive, PivotArm pivot, Shooter shooter, Intake intake) {
-        return (pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE-1)
+        return (pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE)
                 .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
                 .andThen(
                         (shooter.runVoltage(11).withTimeout(3)
@@ -282,7 +282,7 @@ public class DriveCommands {
     }
 
     public static Command justShooter(PivotArm pivot, Shooter shooter, Intake intake) {
-        return (pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE-1)
+        return (pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE)
                 .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
                 .andThen(
                         (shooter.runVoltage(11).withTimeout(3)
