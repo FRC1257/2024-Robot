@@ -472,6 +472,38 @@ public class RobotContainer {
       //Maybe it's the shooter setRPM?
   }
 
+  public Command altShootAnywhere() {
+    return new FunctionalCommand(
+      () -> {
+        DriveCommands.joystickSpeakerPoint(
+            drive,
+            DRIVE_FORWARD,
+            DRIVE_STRAFE);
+      },
+      () -> {
+        Logger.recordOutput("PivotArmSpeakerAngle", getAngle());
+        pivot.setPID(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
+        pivot.runPID();
+        if(pivot.atSetpoint()) {
+          shooter.runVoltage(11)
+              .alongWith(
+                new WaitCommand(1)
+                  .andThen(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+              ));
+        DriveCommands.joystickSpeakerPoint(
+            drive,
+            DRIVE_FORWARD,
+            DRIVE_STRAFE);
+        }
+      },
+      (interrupted) -> { 
+        pivot.stop();
+        shooter.stop(); },
+      () -> false, //replace with photoelectric = clear or smth
+      pivot
+    );
+  }
+
   public Command shootSpeaker() {
     return (rotateArm().andThen(shootNote()));
   }
