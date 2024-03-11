@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.indexer;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import org.littletonrobotics.junction.Logger;
@@ -9,19 +9,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.subsystems.indexer.IndexerIOInputsAutoLogged;
 
 import java.util.function.DoubleSupplier;
 
-public class Intake extends SubsystemBase {
-    private final IntakeIO io;
-    IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+public class Indexer extends SubsystemBase {
+    private final IndexerIO io;
+    IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
     
     private LoggedDashboardNumber logP;
     private LoggedDashboardNumber logI;
     private LoggedDashboardNumber logD;
     
-    public Intake (IntakeIO io) {
+    public Indexer (IndexerIO io) {
         this.io = io;
         SmartDashboard.putData(getName(), this);
 
