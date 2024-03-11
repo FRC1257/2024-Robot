@@ -488,7 +488,7 @@ public class RobotContainer {
           shooter.runVoltage(11)
               .alongWith(
                 new WaitCommand(1)
-                  .andThen(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+                  .andThen(intake.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)
               ));
         DriveCommands.joystickSpeakerPoint(
             drive,
