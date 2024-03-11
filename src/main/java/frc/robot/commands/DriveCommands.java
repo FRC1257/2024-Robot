@@ -266,7 +266,7 @@ public class DriveCommands {
                         (shooter.runVoltage(11).withTimeout(3)
                                 .alongWith(
                                         new WaitCommand(0.5)
-                                                .andThen(intake.manualCommand(-IndexerConstants.INTAKE_OUT_VOLTAGE)
+                                                .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
                                                         .withTimeout(1))))
                                 .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
                                 .withTimeout(3)
@@ -288,7 +288,7 @@ public class DriveCommands {
                         (shooter.runVoltage(11).withTimeout(3)
                                 .alongWith(
                                         new WaitCommand(0.5)
-                                                .andThen(intake.manualCommand(-IndexerConstants.INTAKE_OUT_VOLTAGE)
+                                                .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
                                                         .withTimeout(1))))
                                 .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
                                 .withTimeout(3)
