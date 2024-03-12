@@ -114,6 +114,7 @@ public final class Constants {
     // Shooter
     public static final int SHOOTER_LEFT_ID = 14; // master
     public static final int SHOOTER_RIGHT_ID = 13;
+    public static final int PHOTOELECTRIC_SENSOR_CHANNEL = 17; // NEEDS TO BE CHANGED 
   };
 
   public static double PI = 3.141592653589793238462643;

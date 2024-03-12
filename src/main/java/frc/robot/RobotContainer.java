@@ -662,6 +662,16 @@ public class RobotContainer {
     return angle;
   }
 
+  private double getGeneralAngle(Pose3d target) {
+    double armLength = PivotArmConstants.PivotArmSimConstants.kArmLength;
+    double height = Units.inchesToMeters(target.getZ());
+    Transform2d targetTransform = drive.getPose().minus(target.toPose2d());
+    double targetDistance = targetTransform.getTranslation().getNorm();
+    double angle = Math.PI - (Math.acos(armLength/Math.sqrt(Math.pow(targetDistance, 2) + Math.pow(height, 2))) + Math.atan(height/targetDistance));
+    Logger.recordOutput("Calculated General Angle", angle);
+    return angle;
+  }
+
   public Command prepShoot() {
     // implement this later using swerve to turn to desired target
     // move pivot arm

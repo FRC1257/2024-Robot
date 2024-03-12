@@ -72,6 +72,9 @@ public class DriveControls {
     public static Trigger TIMED_RUMBLE;
     public static Trigger INTAKE_RUMBLE;
 
+    // Potential Hail Marry Program [Suggested by Owen]
+    public static Trigger SHOOT_FROM_SOURCE; 
+
     // Setup the controls
     public static void configureControls() {
         switch (Constants.driver) {
@@ -140,6 +143,7 @@ public class DriveControls {
                 SHOOTER_SHOOT = EMPTY_TRIGGER;
                 SHOOTER_FULL_SEND = operator.getA();
                 SHOOTER_UNJAM = operator.getB();
+                SHOOT_FROM_SOURCE = EMPTY_TRIGGER;
                 break;
             case PROGRAMMERS:
             default:
