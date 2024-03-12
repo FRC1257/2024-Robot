@@ -530,8 +530,8 @@ public class RobotContainer {
     return new FunctionalCommand(
       () -> {},
       () -> {
-        Logger.recordOutput("PivotArmTrapAngle", getAngle());
-        pivot.setPID(getAngle());
+        Logger.recordOutput("PivotArmTrapAngle", getTrapAngle());
+        pivot.setPID(getTrapAngle());
         pivot.runPID();
        }, 
       (interrupted) -> {pivot.stop(); },
@@ -650,6 +650,16 @@ public class RobotContainer {
     return (angle);
     //comically high radian
     //return Lookup.getAngle(getEstimatedDistance());
+  }
+
+  private double getTrapAngle() {
+    double armLength = PivotArmConstants.PivotArmSimConstants.kArmLength;
+    double TrapHeight = Units.inchesToMeters(56.2);
+    Transform2d targetTransform = drive.getPose().minus(FieldConstants.TrapPose);
+    double targetDistance = targetTransform.getTranslation().getNorm();
+    double angle = Math.PI - (Math.acos(armLength/Math.sqrt(Math.pow(targetDistance, 2) + Math.pow(TrapHeight, 2))) + Math.atan(TrapHeight/targetDistance));
+    Logger.recordOutput("Calculated Trap Angle", angle);
+    return angle;
   }
 
   public Command prepShoot() {
