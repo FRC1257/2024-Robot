@@ -508,7 +508,6 @@ public class RobotContainer {
     return (rotateArm().andThen(shootNote()));
   }
 
- 
   public Command rotateArmtoSpeaker() {
     return new FunctionalCommand(
           () -> {},
@@ -520,6 +519,24 @@ public class RobotContainer {
         (interrupted) -> { pivot.stop(); },
         () -> false,
         pivot
+    );
+  }
+
+   public Command shootTrap(){
+    return (drive.goToPose(FieldConstants.TrapPose).andThen(rotateArmtoTrap()).andThen(shootNote()));
+  }
+
+  public Command rotateArmtoTrap() {
+    return new FunctionalCommand(
+      () -> {},
+      () -> {
+        Logger.recordOutput("PivotArmTrapAngle", getAngle());
+        pivot.setPID(getAngle());
+        pivot.runPID();
+       }, 
+      (interrupted) -> {pivot.stop(); },
+        () -> false,
+      pivot
     );
   }
 
