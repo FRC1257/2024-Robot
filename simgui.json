@@ -18,6 +18,7 @@
       "/SmartDashboard/Elevator": "Subsystem",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/GroundIntake": "Subsystem",
+      "/SmartDashboard/Indexer": "Subsystem",
       "/SmartDashboard/Intake": "Subsystem",
       "/SmartDashboard/NoteFour": "String Chooser",
       "/SmartDashboard/NoteFourShot": "String Chooser",

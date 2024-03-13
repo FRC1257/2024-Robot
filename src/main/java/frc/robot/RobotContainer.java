@@ -77,11 +77,11 @@ import frc.robot.subsystems.groundIntake.GroundIntakeConstants;
 import frc.robot.subsystems.groundIntake.GroundIntakeIO;
 import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
 import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
-import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerConstants;
+import frc.robot.subsystems.indexer.IndexerIO;
+import frc.robot.subsystems.indexer.IndexerIOSim;
+import frc.robot.subsystems.indexer.IndexerIOSparkMax;
 import frc.robot.subsystems.pivotArm.PivotArm;
 import frc.robot.subsystems.pivotArm.PivotArmConstants;
 import frc.robot.subsystems.pivotArm.PivotArmIO;
@@ -113,7 +113,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Shooter shooter;
   private final PivotArm pivot;
-  private final Intake intake;
+  private final Indexer intake;
   private final GroundIntake groundIntake;
 
   // LEDs
@@ -148,7 +148,7 @@ public class RobotContainer {
             new ModuleIOSparkMax(2), // Back left
             new ModuleIOSparkMax(3), // Back right
             new VisionIOPhoton());
-        intake = new Intake(new IntakeIOSparkMax());
+        intake = new Indexer(new IndexerIOSparkMax());
         groundIntake = new GroundIntake(new GroundIntakeIOSparkMax());
         break;
 
@@ -164,7 +164,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new VisionIOSim());
-        intake = new Intake(new IntakeIOSim());
+        intake = new Indexer(new IndexerIOSim());
         groundIntake = new GroundIntake(new GroundIntakeIOSim());
         break;
 
@@ -180,7 +180,7 @@ public class RobotContainer {
           new ModuleIO() {},
           new VisionIO() {}
         );
-        intake = new Intake(new IntakeIO() {});
+        intake = new Indexer(new IndexerIO() {});
         groundIntake = new GroundIntake(new GroundIntakeIO() {});
         break;
     }
@@ -340,8 +340,8 @@ public class RobotContainer {
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
 
-    INTAKE_IN.whileTrue(intake.manualCommand(IntakeConstants.INTAKE_IN_VOLTAGE));
-    INTAKE_OUT.whileTrue(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE));
+    INTAKE_IN.whileTrue(intake.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE));
+    INTAKE_OUT.whileTrue(intake.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE));
 
     GROUND_INTAKE_IN.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
     GROUND_INTAKE_OUT.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_OUT_VOLTAGE));
@@ -352,12 +352,12 @@ public class RobotContainer {
       shooter.runVoltage(11)
         .alongWith(
           new WaitCommand(0.5)
-            .andThen(intake.manualCommand(-IntakeConstants.INTAKE_OUT_VOLTAGE)
+            .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
         )
     ));
 
     SHOOTER_UNJAM.whileTrue(
-      (intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE/2)
+      (intake.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE/2)
         .alongWith(shooter.runVoltage(-0.5)))
     );
 
@@ -472,17 +472,47 @@ public class RobotContainer {
         .deadlineWith(DriveCommands.joystickSpeakerPoint(
             drive,
             DRIVE_FORWARD,
-            DRIVE_STRAFE)) //.andThen(zeroShooter())
-            ;
+            DRIVE_STRAFE)); //.andThen(zeroShooter())
       //the rotate arm method just keeps going, I don't know what's wrong with it
       //Maybe it's the shooter setRPM?
+  }
+
+  public Command altShootAnywhere() {
+    return new FunctionalCommand(
+      () -> {
+        DriveCommands.joystickSpeakerPoint(
+            drive,
+            DRIVE_FORWARD,
+            DRIVE_STRAFE);
+      },
+      () -> {
+        Logger.recordOutput("PivotArmSpeakerAngle", getAngle());
+        pivot.setPID(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
+        pivot.runPID();
+        if(pivot.atSetpoint()) {
+          shooter.runVoltage(11)
+              .alongWith(
+                new WaitCommand(1) //spinup time
+                  .andThen(intake.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)
+              ));
+        DriveCommands.joystickSpeakerPoint(
+            drive,
+            DRIVE_FORWARD,
+            DRIVE_STRAFE);
+        }
+      },
+      (interrupted) -> { 
+        pivot.stop();
+        shooter.stop(); },
+      () -> false, //replace with photoelectric = clear or smth
+      pivot
+    );
   }
 
   public Command shootSpeaker() {
     return (rotateArm().andThen(shootNote()));
   }
 
- 
   public Command rotateArmtoSpeaker() {
     return new FunctionalCommand(
           () -> {},
@@ -494,6 +524,24 @@ public class RobotContainer {
         (interrupted) -> { pivot.stop(); },
         () -> false,
         pivot
+    );
+  }
+
+   public Command shootTrap(){
+    return (drive.goToPose(FieldConstants.TrapPose).andThen(rotateArmtoTrap()).andThen(shootNote()));
+  }
+
+  public Command rotateArmtoTrap() {
+    return new FunctionalCommand(
+      () -> {},
+      () -> {
+        Logger.recordOutput("PivotArmTrapAngle", getTrapAngle());
+        pivot.setPID(getTrapAngle());
+        pivot.runPID();
+       }, 
+      (interrupted) -> {pivot.stop(); },
+        () -> false,
+      pivot
     );
   }
 
@@ -541,7 +589,7 @@ public class RobotContainer {
     return (shooter.runVoltage(11).withTimeout(4)
     .alongWith(
     new WaitCommand(0.5)
-    .andThen(intake.manualCommand(-IntakeConstants.INTAKE_OUT_VOLTAGE).withTimeout(2)
+    .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(2)
     )).deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE+0.005))
 
 );
@@ -557,7 +605,7 @@ public class RobotContainer {
     return  shooter.runVoltage(11)
               .alongWith(
                 new WaitCommand(1)
-                  .andThen(intake.manualCommand(IntakeConstants.INTAKE_OUT_VOLTAGE)
+                  .andThen(intake.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)
               ));
           //figure out why the shooter is so weaksauce
           //it's only shooting it out fast when I mash the button
@@ -607,6 +655,26 @@ public class RobotContainer {
     return (angle);
     //comically high radian
     //return Lookup.getAngle(getEstimatedDistance());
+  }
+
+  private double getTrapAngle() {
+    double armLength = PivotArmConstants.PivotArmSimConstants.kArmLength;
+    double TrapHeight = Units.inchesToMeters(56.2);
+    Transform2d targetTransform = drive.getPose().minus(FieldConstants.TrapPose);
+    double targetDistance = targetTransform.getTranslation().getNorm();
+    double angle = Math.PI - (Math.acos(armLength/Math.sqrt(Math.pow(targetDistance, 2) + Math.pow(TrapHeight, 2))) + Math.atan(TrapHeight/targetDistance));
+    Logger.recordOutput("Calculated Trap Angle", angle);
+    return angle;
+  }
+
+  private double getGeneralAngle(Pose3d target) {
+    double armLength = PivotArmConstants.PivotArmSimConstants.kArmLength;
+    double height = Units.inchesToMeters(target.getZ());
+    Transform2d targetTransform = drive.getPose().minus(target.toPose2d());
+    double targetDistance = targetTransform.getTranslation().getNorm();
+    double angle = Math.PI - (Math.acos(armLength/Math.sqrt(Math.pow(targetDistance, 2) + Math.pow(height, 2))) + Math.atan(height/targetDistance));
+    Logger.recordOutput("Calculated General Angle", angle);
+    return angle;
   }
 
   public Command prepShoot() {

@@ -22,6 +22,12 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "sc2-n4"
@@ -34,6 +40,12 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "sc2-n5"
@@ -42,13 +54,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "sc2-n5 (2)"
+                  "pathName": "n5-sc3"
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "sc2-n5 (2)"
+                  "name": "Shoot"
                 }
               }
             ]
