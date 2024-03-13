@@ -466,8 +466,7 @@ public class RobotContainer {
         .deadlineWith(DriveCommands.joystickSpeakerPoint(
             drive,
             DRIVE_FORWARD,
-            DRIVE_STRAFE)) //.andThen(zeroShooter())
-            ;
+            DRIVE_STRAFE)); //.andThen(zeroShooter())
       //the rotate arm method just keeps going, I don't know what's wrong with it
       //Maybe it's the shooter setRPM?
   }
@@ -487,7 +486,7 @@ public class RobotContainer {
         if(pivot.atSetpoint()) {
           shooter.runVoltage(11)
               .alongWith(
-                new WaitCommand(1)
+                new WaitCommand(1) //spinup time
                   .andThen(intake.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)
               ));
         DriveCommands.joystickSpeakerPoint(
