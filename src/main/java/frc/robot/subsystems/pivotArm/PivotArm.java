@@ -3,6 +3,7 @@ package frc.robot.subsystems.pivotArm;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -24,6 +25,12 @@ public class PivotArm extends SubsystemBase {
     private LoggedDashboardNumber logD;
     private LoggedDashboardNumber logFF;
 
+    private LoggedDashboardNumber logkS;
+    private LoggedDashboardNumber logkG;
+    private LoggedDashboardNumber logkV;
+    private LoggedDashboardNumber logkA;
+
+
     private double setpoint = 0;
 
     private final PivotArmIO io;
@@ -40,6 +47,11 @@ public class PivotArm extends SubsystemBase {
         logI = new LoggedDashboardNumber("PivotArm/I", io.getI());
         logD = new LoggedDashboardNumber("PivotArm/D", io.getD());
         logFF = new LoggedDashboardNumber("PivotArm/FF", io.getFF());
+
+        logkS = new LoggedDashboardNumber("PivotArm/kS", io.getkS());
+        logkG = new LoggedDashboardNumber("PivotArm/kG", io.getkG());
+        logkV = new LoggedDashboardNumber("PivotArm/kV", io.getkV());
+        logkA = new LoggedDashboardNumber("PivotArm/kG", io.getkA());
         
     }
     
@@ -61,7 +73,19 @@ public class PivotArm extends SubsystemBase {
             io.setD(logD.get());
         
         if (logFF.get() != io.getFF())
-            io.setFF(logFF.get());
+            io.setFF(logFF.get()); 
+
+        if (logkS.get() != io.getkS())
+            io.setkS(logkS.get());
+
+        if (logkG.get() != io.getkG())
+            io.setkG(logkG.get());   
+
+        if (logkV.get() != io.getkV())
+            io.setkV(logkV.get());
+
+        if (logkA.get() != io.getkA())
+            io.setkG(logkA.get());   
         
         // Log Inputs
         Logger.processInputs("PivotArm", inputs);
@@ -90,8 +114,19 @@ public class PivotArm extends SubsystemBase {
         io.goToSetpoint(setpoint);
     }
 
+    public void holdPID() {
+        io.holdSetpoint(setpoint);
+    }
+
     public void setPID(double setpoint) {
         this.setpoint = setpoint;
+        Logger.recordOutput("PivotArm/Setpoint", setpoint);
+    }
+
+    public void addPID(double setpointAdd) {
+        this.setpoint += setpointAdd;
+        this.setpoint = MathUtil.clamp(this.setpoint, PivotArmConstants.PIVOT_ARM_MIN_ANGLE, PivotArmConstants.PIVOT_ARM_MAX_ANGLE);
+        
         Logger.recordOutput("PivotArm/Setpoint", setpoint);
     }
 
@@ -114,12 +149,46 @@ public class PivotArm extends SubsystemBase {
     public MechanismLigament2d getArmMechanism() {
         return new MechanismLigament2d("Pivot Arm", 0.4, 0, 5, new Color8Bit(Color.kAqua));
     }
+
     public Command PIDCommand(double setpoint) {
         return new FunctionalCommand(
             () -> setPID(setpoint), 
             () -> runPID(), 
             (stop) -> move(0), 
             this::atSetpoint, 
+            this
+        );
+    }
+
+    public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
+        return new FunctionalCommand(
+            () -> setPID(setpointSupplier.getAsDouble()), 
+            () -> {
+                setPID(setpointSupplier.getAsDouble());
+                runPID();
+            }, 
+            (stop) -> move(0), 
+            () -> false, 
+            this
+        );
+    }
+
+    public Command PIDCommandForever(double setpoint) {
+        return new FunctionalCommand(
+            () -> setPID(setpoint), 
+            () -> runPID(), 
+            (stop) -> move(0), 
+            () -> false, 
+            this
+        );
+    }
+
+    public Command PIDHoldCommand() {
+        return new FunctionalCommand(
+            () -> setPID(getAngle().getRadians()), 
+            () -> holdPID(), 
+            (stop) -> move(0), 
+            () -> false, 
             this
         );
     }
@@ -136,6 +205,7 @@ public class PivotArm extends SubsystemBase {
             this
         );
     }
+
     // Allows manual control of the pivot arm for PID tuning
     public Command ManualCommand(DoubleSupplier speedSupplier) {
         return new FunctionalCommand(
@@ -147,12 +217,14 @@ public class PivotArm extends SubsystemBase {
         );
     }
 
-    public Command stop() {
-        return new InstantCommand(
-            () -> move(0), 
-            this
-        );
-    }
+    public void stop() {
+        // return new InstantCommand(
+        //     () -> move(0), 
+        //     this
+        // );
+        move(0);
+    }//not calling move
+    //no commmand yalee
 
 }
 

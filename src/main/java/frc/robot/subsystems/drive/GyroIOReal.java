@@ -2,6 +2,8 @@ package frc.robot.subsystems.drive;
 
 import java.util.Queue;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,8 +27,6 @@ public class GyroIOReal implements GyroIO {
     private double resetPitch;
     private double resetYaw;
 
-    private final Queue<Double> yawPositionQueue;
-    private final Queue<Double> yawTimestampQueue;
     private final ADXRS450_Gyro gyro;
 
     public GyroIOReal() {
@@ -37,30 +37,16 @@ public class GyroIOReal implements GyroIO {
 
         gyro = new ADXRS450_Gyro();
         gyro.calibrate();
-        yawPositionQueue =
-          SparkMaxOdometryThread.getInstance()
-              .registerSignal(() -> getYawAngle());
-        yawTimestampQueue =
-            SparkMaxOdometryThread.getInstance()
-                .makeTimestampQueue();
     }
 
     @Override
     public void updateInputs(GyroIOInputs inputs) {
         inputs.connected = navx.isConnected();
+        Logger.recordOutput("OtherGyro", gyro.getAngle());
         inputs.yawPosition = Rotation2d.fromDegrees(getYawAngle());
         inputs.rollPosition = Rotation2d.fromDegrees(getRollAngle());
         inputs.pitchPosition = Rotation2d.fromDegrees(getPitchAngle());
         inputs.yawVelocityRadPerSec = Units.degreesToRadians(getYawAngleVelocity());
-
-        inputs.odometryYawTimestamps =
-            yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-        inputs.odometryYawPositions =
-            yawPositionQueue.stream()
-                .map((Double value) -> Rotation2d.fromDegrees(value))
-                .toArray(Rotation2d[]::new);
-        yawTimestampQueue.clear();
-        yawPositionQueue.clear();
     }
 
     /**
@@ -68,6 +54,7 @@ public class GyroIOReal implements GyroIO {
      * 
      * @return The angle in degrees limited to the range -180 to 180.
      */
+    @Override
     public double getYawAngle() {
         double angle = navx.getAngle() - resetYaw;
         while(angle <= -180) angle += 360;
@@ -191,6 +178,7 @@ public class GyroIOReal implements GyroIO {
         gyro.reset();
     }
 
+    @Override
     public void zeroAll() {
         zeroYawAngle();
         zeroPitchAngle();

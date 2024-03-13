@@ -176,4 +176,6 @@ public interface VisionIO {
   public default Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation) {return null;}
 
   public default Rotation2d getAngleToNote() {return null;}
+
+  public default void setNoteCameraObjectMode(boolean mode) {}
 }

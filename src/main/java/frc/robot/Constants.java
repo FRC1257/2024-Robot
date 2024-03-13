@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
 
   public static final Mode mode = Mode.REAL;
-  public static final Drivers driver = Drivers.PROGRAMMERS;
-  public static final Operators operator = Operators.PROGRAMMERS;
+  public static final Drivers driver = Drivers.MAUI;
+  public static final Operators operator = Operators.ERICK;
 
   public static final Mode currentMode = getRobotMode();
 
@@ -99,15 +99,13 @@ public final class Constants {
     public final static int GROUND_INTAKE_MOTOR = 9;
 
     // Intake Sensors
-    public final static int INTAKE_PHOTO_ELECTRIC = 0;
-    public final static int GROUND_INTAKE_BREAK_BEAM = 1;
+    public final static int INTAKE_PHOTO_ELECTRIC = 6;
     
-    // CHANGE CONSTANTS, THESE ARE TEMPORARY
     public static final int PIVOT_ARM_ID = 16;
     public static final int LEFT_SLAVE_ID = 12;
     public static final int RIGHT_SLAVE_FRONT_ID = 10;
     public static final int RIGHT_SLAVE_BACK_ID = 11;
-    
+
     public static final int ABSOLUTE_ENCODER_ID = 0;
 
     // LED
@@ -116,6 +114,7 @@ public final class Constants {
     // Shooter
     public static final int SHOOTER_LEFT_ID = 14; // master
     public static final int SHOOTER_RIGHT_ID = 13;
+    public static final int PHOTOELECTRIC_SENSOR_CHANNEL = 17; // NEEDS TO BE CHANGED 
   };
 
   public static double PI = 3.141592653589793238462643;

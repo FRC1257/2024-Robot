@@ -2,6 +2,8 @@ package frc.robot.subsystems.shooter;
 
 import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.*;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -43,14 +45,18 @@ public class ShooterIOSim implements ShooterIO {
       leftAppliedVolts =
           leftController.calculate(leftSim.getAngularVelocityRPM(), leftSetpointRPM)
               + leftFF.calculate(leftSetpointRPM);
-      leftSim.setInputVoltage(MathUtil.clamp(leftAppliedVolts, -12.0, 12.0));
+      leftSim.setInputVoltage(MathUtil.clamp(leftAppliedVolts, -12.0, 12.0)); //we are limiting the voltage
+      Logger.recordOutput("Shooter Voltage Left", MathUtil.clamp(leftAppliedVolts, -12.0, 12.0));
+      //leftSim.setInputVoltage(leftAppliedVolts);
     }
     if (rightSetpointRPM != null) {
       rightAppliedVolts =
           rightController.calculate(rightSim.getAngularVelocityRPM(), rightSetpointRPM)
               + rightFF.calculate(rightSetpointRPM);
       rightSim.setInputVoltage(MathUtil.clamp(rightAppliedVolts, -12.0, 12.0));
-    }
+      Logger.recordOutput("Shooter Voltage Right", MathUtil.clamp(rightAppliedVolts, -12.0, 12.0));
+      //rightSim.setInputVoltage(rightAppliedVolts);
+    } //still not setting input voltage high enough
 
     inputs.leftShooterPositionRotations +=
         Units.radiansToRotations(leftSim.getAngularVelocityRadPerSec() * 0.02);
