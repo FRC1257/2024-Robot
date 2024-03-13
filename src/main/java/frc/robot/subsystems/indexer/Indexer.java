@@ -3,7 +3,7 @@ package frc.robot.subsystems.indexer;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -16,7 +16,6 @@ import java.util.function.DoubleSupplier;
 public class Indexer extends SubsystemBase {
     private final IndexerIO io;
     IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
-    private DigitalInput photoelectricSensor = new DigitalInput(1);
     
     private LoggedDashboardNumber logP;
     private LoggedDashboardNumber logI;
@@ -43,13 +42,7 @@ public class Indexer extends SubsystemBase {
         if(logD.get() != io.getD()) {
             io.setD(logD.get());
         }
-        
         Logger.processInputs("Intake", inputs);
-        Logger.recordOutput("PhotoelectricBoolean", photoelectricSensor.get());
-
-        if(photoelectricSensor.get()) {
-            io.setVoltage(0.0);
-        }
     }
 
     public void setVoltage(double voltage) {
