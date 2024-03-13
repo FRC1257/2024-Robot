@@ -303,15 +303,15 @@ public class DriveCommands {
         return (pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE)
                 .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
                 .andThen(
-                        (shooter.runVoltage(11).withTimeout(3)
+                        (shooter.runVoltage(11).withTimeout(2)
                                 .alongWith(
                                         new WaitCommand(0.5)
                                                 .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
-                                                        .withTimeout(1))))
+                                                        .withTimeout(0.5))))
                                 .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
-                                .withTimeout(3)
+                                .withTimeout(2)
 
-                ).andThen(new WaitCommand(10))
+                ).andThen(new WaitCommand(9))
                 .andThen(
 
                         joystickDrive(drive, () -> -0.6, () -> 0, () -> 0).withTimeout(1.5));// );
