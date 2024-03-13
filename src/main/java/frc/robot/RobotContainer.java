@@ -113,7 +113,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Shooter shooter;
   private final PivotArm pivot;
-  private final Indexer intake;
+  private final Indexer indexer;
   private final GroundIntake groundIntake;
 
   // LEDs
@@ -130,7 +130,6 @@ public class RobotContainer {
 
   private boolean brakeMode = true;
   
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -148,7 +147,7 @@ public class RobotContainer {
             new ModuleIOSparkMax(2), // Back left
             new ModuleIOSparkMax(3), // Back right
             new VisionIOPhoton());
-        intake = new Indexer(new IndexerIOSparkMax());
+        indexer = new Indexer(new IndexerIOSparkMax());
         groundIntake = new GroundIntake(new GroundIntakeIOSparkMax());
         break;
 
@@ -164,7 +163,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new VisionIOSim());
-        intake = new Indexer(new IndexerIOSim());
+        indexer = new Indexer(new IndexerIOSim());
         groundIntake = new GroundIntake(new GroundIntakeIOSim());
         break;
 
@@ -180,7 +179,7 @@ public class RobotContainer {
           new ModuleIO() {},
           new VisionIO() {}
         );
-        intake = new Indexer(new IndexerIO() {});
+        indexer = new Indexer(new IndexerIO() {});
         groundIntake = new GroundIntake(new GroundIntakeIO() {});
         break;
     }
@@ -225,7 +224,7 @@ public class RobotContainer {
     // shootSpeaker aims pivot, shoots; zeroPosition then zeros; run after reaching position
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
     NamedCommands.registerCommand("Intake",
-        intake.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5)));
+        indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5)));
     // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("PrepShoot", prepShoot());
     NamedCommands.registerCommand("Zero", zeroPosition());
@@ -250,9 +249,9 @@ public class RobotContainer {
             drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
     autoChooser.addOption("Drive Trajectory",
         drive.getAuto("Forward And Spin"));
-    autoChooser.addOption("driveOutShoot", DriveCommands.driveBackandShooter(drive, pivot, shooter, intake));
+    autoChooser.addOption("driveOutShoot", DriveCommands.driveBackandShooter(drive, pivot, shooter, indexer));
     autoChooser.addOption("drive out", DriveCommands.driveBackAuto(drive));
-    autoChooser.addOption("shoot out", DriveCommands.justShooter(pivot, shooter, intake));
+    autoChooser.addOption("shoot out", DriveCommands.justShooter(pivot, shooter, indexer));
 
     // this is defined later
     autoChooser.addOption("Custom", new InstantCommand());
@@ -288,8 +287,8 @@ public class RobotContainer {
             DRIVE_STRAFE,
             DRIVE_ROTATE));
 
-    intake.setDefaultCommand(
-        intake.manualCommand(
+    indexer.setDefaultCommand(
+        indexer.manualCommand(
             () -> INTAKE_ROTATE.getAsDouble() * 12));
 
     groundIntake.setDefaultCommand(
@@ -340,8 +339,8 @@ public class RobotContainer {
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
 
-    INTAKE_IN.whileTrue(intake.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE));
-    INTAKE_OUT.whileTrue(intake.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE));
+    INTAKE_IN.whileTrue(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE));
+    INTAKE_OUT.whileTrue(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE));
 
     GROUND_INTAKE_IN.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
     GROUND_INTAKE_OUT.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_OUT_VOLTAGE));
@@ -352,12 +351,12 @@ public class RobotContainer {
       shooter.runVoltage(11)
         .alongWith(
           new WaitCommand(0.5)
-            .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
+            .andThen(indexer.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
         )
     ));
 
     SHOOTER_UNJAM.whileTrue(
-      (intake.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE/2)
+      (indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE/2)
         .alongWith(shooter.runVoltage(-0.5)))
     );
 
@@ -407,7 +406,7 @@ public class RobotContainer {
           drive,
           this::shoot,
           () -> {
-            return groundIntake.manualCommand(() -> 2).alongWith(intake.manualCommand(2));
+            return groundIntake.manualCommand(() -> 2).alongWith(indexer.manualCommand(2));
           },
           () -> {
             // use a vision command later
@@ -421,7 +420,7 @@ public class RobotContainer {
   public Command zeroPosition() {
     return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MIN_ANGLE)
         .deadlineWith(
-          intake.stop()
+          indexer.stop()
           .alongWith(shooter.stop())
           .alongWith(groundIntake.stop())
         );
@@ -430,13 +429,13 @@ public class RobotContainer {
   public Command zeroPositionWhileMoving() {
     return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MIN_ANGLE)
         .deadlineWith(
-          intake.stop()
+          indexer.stop()
           .alongWith(shooter.stop())
         );
   }
 
   public Command zeroShooter() {
-    return (intake.stop())
+    return (indexer.stop())
         .alongWith(shooter.stop())
         .alongWith(groundIntake.stop());
   }
@@ -493,7 +492,7 @@ public class RobotContainer {
           shooter.runVoltage(11)
               .alongWith(
                 new WaitCommand(1) //spinup time
-                  .andThen(intake.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)
+                  .andThen(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)
               ));
         DriveCommands.joystickSpeakerPoint(
             drive,
@@ -589,7 +588,7 @@ public class RobotContainer {
     return (shooter.runVoltage(11).withTimeout(4)
     .alongWith(
     new WaitCommand(0.5)
-    .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(2)
+    .andThen(indexer.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(2)
     )).deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE+0.005))
 
 );
@@ -605,7 +604,7 @@ public class RobotContainer {
     return  shooter.runVoltage(11)
               .alongWith(
                 new WaitCommand(1)
-                  .andThen(intake.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)
+                  .andThen(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)
               ));
           //figure out why the shooter is so weaksauce
           //it's only shooting it out fast when I mash the button
