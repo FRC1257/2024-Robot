@@ -114,7 +114,8 @@ public class DriveControls {
             case ERICK:
                 // Operator controls
                 PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
-                PIVOT_PID_ROTATE = EMPTY_DOUBLE_SUPPLIER; 
+                PIVOT_PID_ROTATE = EMPTY_DOUBLE_SUPPLIER; //() -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+                //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
                 
                 // Pivot things
                 PIVOT_AMP = operator.getDPad(DPad.RIGHT);
@@ -129,7 +130,7 @@ public class DriveControls {
 
                 GROUND_INTAKE_IN = operator.rightBumper();
                 GROUND_INTAKE_OUT = operator.leftBumper();
-                GROUND_INTAKE_ROTATE = () -> -2 * operator.getLeftXD();
+                GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
 
                 // SHOOTER DEFAULT SPEED
                 SHOOTER_SPEED = () -> operator.getRightXD();
