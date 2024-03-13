@@ -40,16 +40,6 @@
           "commands": []
         }
       }
-    },
-    {
-      "name": "Zero",
-      "waypointRelativePos": 0.45,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
-        }
-      }
     }
   ],
   "globalConstraints": {
