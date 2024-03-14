@@ -21,7 +21,7 @@ public class IndexerIOSparkMax implements IndexerIO {
     private RelativeEncoder encoder;
     private SparkPIDController velocityPID;
 
-    private DigitalInput photoElectricSensor;
+    private DigitalInput photoelectricSensor;
 
     private double desiredSpeed;
 
@@ -37,7 +37,7 @@ public class IndexerIOSparkMax implements IndexerIO {
 
         encoder = motor.getEncoder();
 
-        photoElectricSensor = new DigitalInput(ElectricalLayout.INTAKE_PHOTO_ELECTRIC);
+        photoelectricSensor = new DigitalInput(ElectricalLayout.INTAKE_PHOTO_ELECTRIC);
 
         velocityPID = motor.getPIDController();
     }
@@ -50,7 +50,7 @@ public class IndexerIOSparkMax implements IndexerIO {
         inputs.tempCelcius = new double[] { motor.getMotorTemperature() };
         inputs.velocityRadsPerSec = encoder.getVelocity();
         inputs.speedSetpoint = desiredSpeed;
-        inputs.breakBeam = photoElectricSensor.get();
+        inputs.breakBeam = photoelectricSensor.get();
     }
 
     /** sets voltage to run motor if necessary */
@@ -67,7 +67,7 @@ public class IndexerIOSparkMax implements IndexerIO {
 
     @Override
     public boolean isIntaked() {
-        return photoElectricSensor.get();
+        return photoelectricSensor.get();
     }
 
     @Override

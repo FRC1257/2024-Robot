@@ -1,5 +1,7 @@
 package frc.robot.subsystems.indexer;
 
+import frc.robot.Constants;
+
 public final class IndexerConstants {
   public static class IndexerSimConstants {
     public static final int kMotorPort = 0;
@@ -39,4 +41,14 @@ public final class IndexerConstants {
   public static final double INDEXER_OUT_VOLTAGE = -2;
 
   public static final double SHOOTER_UNJAM_TIME = 0.2;
+
+  public static double getIntakeLoopMaxTime() {
+    switch (Constants.getRobotMode()) {
+      case REAL:
+        return 5.0;
+      case SIM:
+      default:
+        return 1.0;
+    }
+  }
 }

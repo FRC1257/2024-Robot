@@ -66,7 +66,7 @@ public class Indexer extends SubsystemBase {
             (stop) -> setVoltage(0.0),
             this::isIntaked,
             this
-        ).withTimeout(5);
+        ).withTimeout(IndexerConstants.getIntakeLoopMaxTime());
     }
 
     // The above command in reverse
@@ -77,7 +77,7 @@ public class Indexer extends SubsystemBase {
             (stop) -> setVoltage(0.0),
             this::isIntaked,
             this
-        ).withTimeout(2);
+        ).withTimeout(IndexerConstants.getIntakeLoopMaxTime());
     }
     /**
      * Uses input from controller to set speed of the flywheel

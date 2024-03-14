@@ -176,6 +176,20 @@ public class FieldConstants {
     return AllianceFlipUtil.apply(SCORE_POSITIONS);
   }
 
+  public static Pose3d speakerPosition3D() {
+    Pose2d flippedPose = flippedPose(SpeakerPosition);
+    return new Pose3d(
+      flippedPose.getTranslation().getX(),
+      flippedPose.getTranslation().getY(),
+      SpeakerPosition3D.getTranslation().getZ(),
+      new Rotation3d(
+        0,
+        0,
+        flippedPose.getRotation().getRadians()
+      )
+    );
+  }
+
   public static Pose2d pickupPose() {
     return flippedPose(pickupPose);
   }

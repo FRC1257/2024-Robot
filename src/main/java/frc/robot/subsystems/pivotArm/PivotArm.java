@@ -197,6 +197,7 @@ public class PivotArm extends SubsystemBase {
         return new FunctionalCommand(
             () -> setPID(setpointSupplier.getAsDouble()), 
             () -> {
+                Logger.recordOutput("PivotArmSpeakerAngle", setpointSupplier.getAsDouble());
                 setPID(setpointSupplier.getAsDouble());
                 runPID();
             }, 

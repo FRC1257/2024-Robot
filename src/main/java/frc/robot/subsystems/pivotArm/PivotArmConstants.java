@@ -1,5 +1,7 @@
 package frc.robot.subsystems.pivotArm;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.util.Units;
 
 public class PivotArmConstants {
@@ -19,6 +21,7 @@ public class PivotArmConstants {
 
     public static final double PIVOT_AMP_ANGLE = Units.degreesToRadians(105.0);
     public static final double PIVOT_SUBWOOFER_ANGLE = Units.degreesToRadians(39.0);
+    public static final double PIVOT_TRAP_ANGLE = Units.degreesToRadians(30.0);
 
     public static class PivotArmSimConstants {
       public static final double[] kPivotSimPID = {15, 0, 0, 0};
