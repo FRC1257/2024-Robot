@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.drive.Drive;
 
@@ -29,9 +30,10 @@ public class MakeAutos {
                     .andThen(intakeWhile.get());
     } */
 
-    public static Command makeAutoCommand(Drive drive, Supplier<Command> shoot, Supplier<Command> intakeCommand, Supplier<Command> intakeWhile, Supplier<Command> zeroPivot) {
+    public static Command makeAutoCommand(Drive drive, Supplier<Command> shoot, Supplier<Command> intakeCommand, Supplier<Command> intakeWhile, Supplier<Command> zeroPivot, Command shooterPrep) {
         return new SequentialCommandGroup(
-            shoot.get(),
+            //shoot.get(),
+            new WaitCommand(0.2).andThen(shoot.get()).deadlineWith(shooterPrep),
             zeroPivot.get(),
             drive.goToPose(AutoChooser.NoteOneChooser.getSelected()).deadlineWith(intakeCommand.get()),
             intakeWhile.get(),

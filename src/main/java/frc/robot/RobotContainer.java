@@ -415,7 +415,8 @@ public class RobotContainer {
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
       return MakeAutos.makeAutoCommand(
           drive,
-          this::shootAnywhere,
+          //this::shootAnywhere,
+          this::shootNote,
           () -> {
             return groundIntake.manualCommand(() -> 2).alongWith(indexer.manualCommand(2));
           },
@@ -423,7 +424,9 @@ public class RobotContainer {
             // use a vision command later
             return new InstantCommand();
           },
-          this::zeroPositionWhileMoving);
+          this::zeroPositionWhileMoving,
+          lockOnSpeakerFull()
+          );
     }
     return autoChooser.get();
   }
@@ -460,9 +463,7 @@ public class RobotContainer {
         .deadlineWith(DriveCommands.joystickSpeakerPoint(
             drive,
             DRIVE_FORWARD,
-            DRIVE_STRAFE)); // .andThen(zeroShooter())
-    // the rotate arm method just keeps going, I don't know what's wrong with it
-    // Maybe it's the shooter setRPM?
+            DRIVE_STRAFE)); 
   }
 
   public boolean isPointedAtSpeaker() {
