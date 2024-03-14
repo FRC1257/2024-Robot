@@ -77,6 +77,11 @@ public class IndexerIOSparkMax implements IndexerIO {
     }
 
     @Override
+    public double getSpeed() {
+        return encoder.getVelocity();
+    }
+
+    @Override
     public void setP(double p) {
         velocityPID.setP(p);
     }

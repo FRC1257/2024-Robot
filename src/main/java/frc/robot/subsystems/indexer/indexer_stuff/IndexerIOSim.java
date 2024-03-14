@@ -49,6 +49,11 @@ public class IndexerIOSim implements IndexerIO {
     }
 
     @Override
+    public double getSpeed() {
+        return sim.getAngularVelocityRadPerSec();
+    }
+
+    @Override
     public void setP(double p) {
         controller.setP(p);
     }

@@ -96,6 +96,9 @@ public interface IndexerIO {
      */
     public default void setSpeed(double speed) {}
 
+    // Returns the current speed of the intake motor
+    public default double getSpeed() { return 0; }
+
     /**
      * Sets the proportional constant for velocity control.
      * 

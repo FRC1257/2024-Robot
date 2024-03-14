@@ -20,11 +20,23 @@ public class Indexer extends SubsystemBase {
     private LoggedDashboardNumber logP;
     private LoggedDashboardNumber logI;
     private LoggedDashboardNumber logD;
+
+    // State of the note in the intake
+    enum NoteState {
+        NOT_ENOUGH, // Not far enough in the intake or not in there at all
+        GOLDILOCKS, // just the right position in intake
+        MIDDLE, // 
+        OVERSHOOT
+    }
+
+    private NoteState noteState = NoteState.GOLDILOCKS;
+    private double currentVoltage = 0;
+    private double timeInIntake = 0;
+    private final double desiredTimeInIntake = 0.5;
     
     public Indexer (IndexerIO io) {
         this.io = io;
         SmartDashboard.putData(getName(), this);
-
         logP = new LoggedDashboardNumber("Intake/P", io.getP());
         logI = new LoggedDashboardNumber("Intake/I", io.getI());
         logD = new LoggedDashboardNumber("Intake/D", io.getD());
@@ -43,6 +55,41 @@ public class Indexer extends SubsystemBase {
             io.setD(logD.get());
         }
         Logger.processInputs("Intake", inputs);
+
+        // Updates state of where the note is in the intake
+        if(noteState == NoteState.NOT_ENOUGH && isIntaked()) { // Note just entered the right spot
+            noteState = NoteState.GOLDILOCKS;
+        }
+        else if(noteState == NoteState.GOLDILOCKS && !isIntaked()) { // Note just left the right spot
+            if(io.getSpeed() > 0) {
+                noteState = NoteState.MIDDLE;
+            } else {
+                noteState = NoteState.NOT_ENOUGH;
+            }
+            currentVoltage = Math.max(currentVoltage - 2, 0); // Intake gets progressively slower every time you overshoot
+        }
+        else if(noteState == NoteState.MIDDLE && isIntaked()) { // Note either overshot or got to the right spot from middle
+            if(io.getSpeed() > 0) {
+                noteState = NoteState.OVERSHOOT;
+            } else {
+                noteState = NoteState.GOLDILOCKS;
+            }
+        }
+        else if(noteState == NoteState.OVERSHOOT && !isIntaked()) { // Note is either shot out or goes to the middle
+            if(io.getSpeed() > 0) {
+                noteState = NoteState.NOT_ENOUGH;
+            } else {
+                noteState = NoteState.MIDDLE;
+            }
+        }
+
+        // Updates the amount of time that the note has been in the intake for
+        if(noteState == NoteState.GOLDILOCKS) {
+            timeInIntake += 0.02;
+        }
+        else {
+            timeInIntake = 0;
+        }
     }
 
     public void setVoltage(double voltage) {
@@ -57,14 +104,34 @@ public class Indexer extends SubsystemBase {
         return io.isIntaked();
     }
 
+    // Sets motor speed based on where the note is in the intake
+    public void runIntakeLoop() {
+        switch(noteState) {
+            case NOT_ENOUGH:
+                setVoltage(currentVoltage);
+                break;
+            case GOLDILOCKS:
+                setVoltage(0);
+                break;
+            case MIDDLE: case OVERSHOOT:
+                setVoltage(-currentVoltage);
+                break;
+        }
+    }
+
+    // Checks if note has been in the intake for 0.5 seconds
+    public boolean isIntakedForEnoughTime() {
+        return timeInIntake >= desiredTimeInIntake;
+    }
+
     //replace with whatever you want
     // Dependence on pivot angle and shooter break beam
     public Command IntakeLoopCommand(double voltage) {
         return new FunctionalCommand(
-            () -> {},
-            () -> setVoltage(voltage),
+            () -> { currentVoltage = voltage; },
+            this::runIntakeLoop,
             (stop) -> setVoltage(0.0),
-            this::isIntaked,
+            this::isIntakedForEnoughTime,
             this
         ).withTimeout(IndexerConstants.getIntakeLoopMaxTime());
     }
@@ -75,7 +142,7 @@ public class Indexer extends SubsystemBase {
             () -> {},
             () -> setVoltage(-voltage), // Spins the other way
             (stop) -> setVoltage(0.0),
-            this::isIntaked,
+            () -> noteState == NoteState.NOT_ENOUGH,
             this
         ).withTimeout(IndexerConstants.getIntakeLoopMaxTime());
     }
