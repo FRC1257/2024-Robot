@@ -14,9 +14,9 @@ import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
     public static final String kRaspberryCameraName = "April_Camera";
-    public static final String kOrangeCameraName = "Orange_tag";
+    public static final String kOrangeCameraName = "";
     public static final String kNoteCameraName = "Note_Camera";
-    public static final String kRaspberryCameraName2 = "Camera";
+    public static final String kRaspberryCameraName2 = "April_Camera2";
     // Cam mounted facing forward, half a meter forward of center, half a meter up
     // from center.
     private static double cameraPitchAngle = Rotation2d.fromDegrees(61).getRadians();

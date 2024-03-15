@@ -420,7 +420,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     AutoChooser.setupChoosers();
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
-      return MakeAutos.makeAutoCommand(
+      return MakeAutos.makeAutoTrajectoryCommand(
           drive,
           //this::shootAnywhere,
           this::shootSpeaker,

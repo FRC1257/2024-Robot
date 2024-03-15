@@ -21,8 +21,8 @@ public class VisionIOPhoton implements VisionIO {
     private final PhotonCamera raspberryCamera;
     private final PhotonPoseEstimator raspberryEstimator;
 
-    // private final PhotonCamera raspberryCamera2;
-    // private final PhotonPoseEstimator raspberryEstimator2;
+    private final PhotonCamera raspberryCamera2;
+    private final PhotonPoseEstimator raspberryEstimator2;
 
     // private final PhotonCamera orangeCamera;
     // private final PhotonPoseEstimator orangeEstimator;
@@ -38,22 +38,24 @@ public class VisionIOPhoton implements VisionIO {
         PortForwarder.add(5800, "photonvision.local", 5800);
         //These directions are arbitrary for now
 
-        //Front Right
+        
+        //Back Right
         raspberryCamera = new PhotonCamera(kRaspberryCameraName);
         raspberryEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam);
         raspberryEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
-        //Front Left
-        // raspberryCamera2 = new PhotonCamera(kRaspberryCameraName2);
-        // raspberryEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam2);
-        // raspberryEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
+        
         //Back Left
+        raspberryCamera2 = new PhotonCamera(kRaspberryCameraName2);
+        raspberryEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam2);
+        raspberryEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+        //Front Left
         // orangeCamera = new PhotonCamera(kOrangeCameraName);
         // orangeEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, orangeCamera, kOrangeRobotToCam);
         // orangeEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
-        //Back Right
+        //Front Right
         // noteCamera = new PhotonCamera(kNoteCameraName);
         // orangeEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, noteCamera, kOrangeRobotToCam);
         // orangeEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
@@ -106,22 +108,22 @@ public class VisionIOPhoton implements VisionIO {
         Logger.recordOutput("Vision/RaspberryConnected", raspberryCamera.isConnected());
         // Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
         // Logger.recordOutput("Vision/NoteCameraPipeline", noteCamera.getPipelineIndex());
-        // Logger.recordOutput("Vision/Raspberry2Connected", raspberryCamera2.isConnected());
+        Logger.recordOutput("Vision/Raspberry2Connected", raspberryCamera2.isConnected());
     }
 
     private PhotonPipelineResult[] getAprilTagResults() {
         PhotonPipelineResult front_result = getLatestResult(raspberryCamera);
             // PhotonPipelineResult back_result = getLatestResult(orangeCamera);
-            // PhotonPipelineResult front_result2 = getLatestResult(raspberryCamera2);
-            return new PhotonPipelineResult[] { front_result };
+        PhotonPipelineResult front_result2 = getLatestResult(raspberryCamera2);
+            return new PhotonPipelineResult[] { front_result, front_result2 };
     }
 
     
     private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
         raspberryEstimator.setReferencePose(currentEstimate);
         // orangeEstimator.setReferencePose(currentEstimate);
-        // raspberryEstimator2.setReferencePose(currentEstimate);
-        return new PhotonPoseEstimator[] { raspberryEstimator };
+        raspberryEstimator2.setReferencePose(currentEstimate);
+        return new PhotonPoseEstimator[] { raspberryEstimator, raspberryEstimator2};
     }
 
     @Override
@@ -141,7 +143,7 @@ public class VisionIOPhoton implements VisionIO {
 
     @Override
     public boolean goodResult(PhotonPipelineResult result) {
-        return result.hasTargets()/*  && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD *//* 
+        return result.hasTargets()/*   && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD *//* 
                 && kTagLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d().getTranslation()
                         .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE */;
     }
