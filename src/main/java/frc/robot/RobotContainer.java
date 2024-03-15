@@ -19,6 +19,7 @@ import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_ROTATE;
 import static frc.robot.util.drive.DriveControls.INTAKE_IN;
 import static frc.robot.util.drive.DriveControls.INTAKE_OUT;
 import static frc.robot.util.drive.DriveControls.INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.INTAKE_UNTIL_INTAKED;
 import static frc.robot.util.drive.DriveControls.LOCK_ON_SPEAKER_FULL;
 import static frc.robot.util.drive.DriveControls.PIVOT_AMP;
 import static frc.robot.util.drive.DriveControls.PIVOT_HOLD;
@@ -32,6 +33,9 @@ import static frc.robot.util.drive.DriveControls.SHOOTER_SPEED;
 import static frc.robot.util.drive.DriveControls.SHOOTER_UNJAM;
 import static frc.robot.util.drive.DriveControls.configureControls;
 import static frc.robot.util.drive.DriveControls.getRumbleBoth;
+import static frc.robot.util.drive.DriveControls.getRumbleOperator;
+
+import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -58,6 +62,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -351,6 +356,8 @@ public class RobotContainer {
     GROUND_INTAKE_IN.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
     GROUND_INTAKE_OUT.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_OUT_VOLTAGE));
 
+    INTAKE_UNTIL_INTAKED.onTrue(intakeUntilIntaked(groundIntake, indexer));
+
     // TODO using voltage mode for now but later speed PID
     SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(11));
     SHOOTER_FULL_SEND_INTAKE.whileTrue(
@@ -370,7 +377,7 @@ public class RobotContainer {
     // SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
     new Trigger(() -> (int) Timer.getMatchTime() == 90.0).onTrue(getRumbleBoth());
-    // new Trigger(() -> intake.isIntaked()).onTrue(getRumbleBoth());
+    new Trigger(indexer::isIntaked).onTrue(getRumbleOperator());
 
     // if (Constants.tuningMode) {
     // SmartDashboard.putData("Sysid Dynamic Drive Forward",
@@ -416,9 +423,9 @@ public class RobotContainer {
       return MakeAutos.makeAutoCommand(
           drive,
           //this::shootAnywhere,
-          this::shootNote,
+          this::shootSpeaker,
           () -> {
-            return groundIntake.manualCommand(() -> 2).alongWith(indexer.manualCommand(2));
+            return groundIntake.manualCommand(() -> GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE).alongWith(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE));
           },
           () -> {
             // use a vision command later
@@ -443,7 +450,7 @@ public class RobotContainer {
     return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MIN_ANGLE)
         .deadlineWith(
             indexer.stop()
-                .alongWith(shooter.stop()));
+                .alongWith(shooter.stop())).withTimeout(1);
   }
 
   public Command shootAmpTrajectory() {
@@ -476,11 +483,14 @@ public class RobotContainer {
   }
 
   public Command shootSpeaker() {
-    return (rotateArm().andThen(shootNote()));
+    return (
+      rotateArm()
+        .andThen(shootNote().deadlineWith(rotateArmtoSpeakerForever())));
   }
 
   public Command rotateArmtoSpeakerForever() {
-    return pivot.PIDCommandForever(this::getAngle);
+    // return pivot.PIDCommandForever(this::getAngle);
+        return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
   }
 
   public Command rotateArmtoTrap() {
@@ -488,7 +498,8 @@ public class RobotContainer {
   }
 
   public Command rotateArm() {
-    return pivot.PIDCommand(this::getAngle);
+    // return pivot.PIDCommand(this::getAngle);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
   }
 
   public Command rotateArmAmp() {
@@ -522,7 +533,7 @@ public class RobotContainer {
     return shooter.runVoltage(11)
         .alongWith(
             new WaitCommand(1)
-                .andThen(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)))
+                .andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)))
         .withTimeout(2);
     // figure out why the shooter is so weaksauce
     // it's only shooting it out fast when I mash the button
@@ -602,4 +613,11 @@ public class RobotContainer {
 
     setPivotPose3d();
   }
+
+  public Command intakeUntilIntaked(GroundIntake groundIntake, Indexer indexer){
+    return indexer.IntakeLoopCommand(6).deadlineWith(groundIntake.manualCommand(6));
+  }
+  
+    
+  
 }

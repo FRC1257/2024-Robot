@@ -30,6 +30,8 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -206,7 +208,7 @@ public class Drive extends SubsystemBase {
       // Use the real gyro angle
       rawGyroRotation = gyroInputs.yawPosition;
     } else {
-      rawGyroRotation = simRotation;
+      // rawGyroRotation = simRotation;
     }
     
     poseEstimator.update(rawGyroRotation, modulePositions);
@@ -324,8 +326,9 @@ public class Drive extends SubsystemBase {
     return getPose().getRotation();
   } */
   public Rotation2d getRotation() {
-    return new Rotation2d(gyroIO.getYawAngle());
-    //return getPose().getRotation();
+    // return new Rotation2d(gyroIO.getYawAngle());
+    return getPose().getRotation();
+    // return new Rotation2d(); // use if nothing works
   }
 
   /** Resets the current odometry pose. */
@@ -419,7 +422,18 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.followPath(path);
   }
 
-  public Command goToNote(){ //not supported for Sim yet
+  public Command driveFromPoseToPose(Pose2d start, Pose2d end) {
+    return AutoBuilder.followPath(
+      PathPlannerPath.fromPathPoints(
+        List.of(
+          new PathPoint(start.getTranslation(), new RotationTarget(0, start.getRotation(), true)),
+          new PathPoint(end.getTranslation(), new RotationTarget(0, end.getRotation(), true))
+        ), 
+        kPathConstraints, 
+        new GoalEndState(0, end.getRotation())));
+  }
+
+  public Command goToNote() { //not supported for Sim yet
     return DriveCommands.turnToNote(this).andThen(goToPose(visionIO.calculateNotePose(getPose(), visionIO.calculateNoteTranslation(visionInputs))));
     //might have to negate direction or angle due to orientation of the robot's intake
   }

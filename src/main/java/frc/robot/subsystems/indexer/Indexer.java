@@ -100,7 +100,7 @@ public class Indexer extends SubsystemBase {
         io.setBrake(brake);
     }
 
-    public boolean isIntaked(){
+    public boolean isIntaked() {
         return io.isIntaked();
     }
 
@@ -124,6 +124,8 @@ public class Indexer extends SubsystemBase {
         return timeInIntake >= desiredTimeInIntake;
     }
 
+    
+
     //replace with whatever you want
     // Dependence on pivot angle and shooter break beam
     public Command IntakeLoopCommand(double voltage) {
@@ -131,7 +133,8 @@ public class Indexer extends SubsystemBase {
             () -> { currentVoltage = voltage; },
             this::runIntakeLoop,
             (stop) -> setVoltage(0.0),
-            this::isIntakedForEnoughTime,
+            //this::isIntakedForEnoughTime,
+            this::isIntaked,
             this
         ).withTimeout(IndexerConstants.getIntakeLoopMaxTime());
     }

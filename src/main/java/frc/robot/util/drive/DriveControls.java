@@ -48,6 +48,7 @@ public class DriveControls {
     public static Trigger PIVOT_ZERO;
     public static Trigger PIVOT_TO_SPEAKER;
     public static Trigger PIVOT_HOLD;
+    public static Trigger INTAKE_UNTIL_INTAKED;
 
     // Intake Controls
     public static Trigger INTAKE_IN;
@@ -79,9 +80,9 @@ public class DriveControls {
     public static void configureControls() {
         switch (Constants.driver) {
             case MAUI:
-                DRIVE_FORWARD = () -> -(driver.getLeftY());
-                DRIVE_STRAFE = ()->-(driver.getLeftX());
-                DRIVE_ROTATE = () -> -(driver.getRightX());
+                DRIVE_FORWARD = () -> (-driver.getLeftY());
+                DRIVE_STRAFE = ()->(-driver.getLeftX());
+                DRIVE_ROTATE = () -> (driver.getRightX());
                 DRIVE_SLOW = driver.start();
                 DRIVE_SPEAKER_AIM = driver.leftBumper();
                 DRIVE_STOP = driver.x();
@@ -135,6 +136,8 @@ public class DriveControls {
                 GROUND_INTAKE_OUT = operator.leftBumper();
                 GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
 
+                INTAKE_UNTIL_INTAKED = operator.getY();
+
                 // SHOOTER DEFAULT SPEED
                 SHOOTER_SPEED = () -> operator.getRightXD();
                 //SHOOTER_SPEED = operator::getRightTriggerAxis;\
@@ -184,5 +187,9 @@ public class DriveControls {
 
     public static Command getRumbleBoth() {
         return getRumbleCommand(driver).alongWith(getRumbleCommand(operator));
+    }
+
+    public static Command getRumbleOperator() {
+        return getRumbleCommand(operator);
     }
 }

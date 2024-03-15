@@ -311,10 +311,10 @@ public class DriveCommands {
                                 .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
                                 .withTimeout(2)
 
-                ).andThen(new WaitCommand(9))
+                ).andThen(new WaitCommand(3).alongWith(shooter.runVoltage((0)).withTimeout(3)))
                 .andThen(
 
-                        joystickDrive(drive, () -> -0.6, () -> 0, () -> 0).withTimeout(1.5));// );
+                        joystickDrive(drive, () -> -0.6, () -> 0, () -> 0).withTimeout(1.5).alongWith(shooter.runVoltage((0)).withTimeout(5)));// );
     }
 
     public static Command driveBack(Drive drive, PivotArm pivot, Shooter shooter, Indexer intake) {

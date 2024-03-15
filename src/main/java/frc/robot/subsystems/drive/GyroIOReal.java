@@ -50,7 +50,8 @@ public class GyroIOReal implements GyroIO {
     @Override
     public void updateInputs(GyroIOInputs inputs) {
         inputs.connected = navx.isConnected();
-        Logger.recordOutput("OtherGyro", gyro.getAngle());
+        Logger.recordOutput("OtherGyro/Angle", gyro.getAngle());
+        Logger.recordOutput("OtherGyro/thing", gyro.getRate());
         inputs.yawPosition = Rotation2d.fromDegrees(getYawAngle());
         inputs.rollPosition = Rotation2d.fromDegrees(getRollAngle());
         inputs.pitchPosition = Rotation2d.fromDegrees(getPitchAngle());

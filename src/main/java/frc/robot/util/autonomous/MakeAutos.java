@@ -33,9 +33,9 @@ public class MakeAutos {
     public static Command makeAutoCommand(Drive drive, Supplier<Command> shoot, Supplier<Command> intakeCommand, Supplier<Command> intakeWhile, Supplier<Command> zeroPivot, Command shooterPrep) {
         return new SequentialCommandGroup(
             //shoot.get(),
-            new WaitCommand(0.2).andThen(shoot.get()).deadlineWith(shooterPrep),
+            new WaitCommand(0.2).andThen(shoot.get()),
             zeroPivot.get(),
-            drive.goToPose(AutoChooser.NoteOneChooser.getSelected()).deadlineWith(intakeCommand.get()),
+            drive.goToPose(AutoChooser.NoteOneChooser.getSelected()).deadlineWith(intakeCommand.get()), //gotopose is the issue
             intakeWhile.get(),
             drive.goToPose(AutoChooser.NoteOneShotChooser.getSelected()),
             shoot.get(),
@@ -53,6 +53,34 @@ public class MakeAutos {
             drive.goToPose(AutoChooser.NoteFourChooser.getSelected()).deadlineWith(intakeCommand.get()),
             intakeWhile.get(),
             drive.goToPose(AutoChooser.NoteFourShotChooser.getSelected()),
+            shoot.get(),
+            zeroPivot.get()
+        );
+    }
+
+    public static Command makeAutoTrajectoryCommand(Drive drive, Supplier<Command> shoot, Supplier<Command> intakeCommand, Supplier<Command> intakeWhile, Supplier<Command> zeroPivot, Command shooterPrep) {
+        return new SequentialCommandGroup(
+            //shoot.get(),
+            new WaitCommand(0.2).andThen(shoot.get()),
+            zeroPivot.get(),
+            drive.driveFromPoseToPose(AutoChooser.startChooser.getSelected(), AutoChooser.NoteOneChooser.getSelected()).deadlineWith(intakeCommand.get()), //gotopose is the issue
+            intakeWhile.get(),
+            drive.driveFromPoseToPose(AutoChooser.NoteOneChooser.getSelected(),AutoChooser.NoteOneShotChooser.getSelected()),
+            shoot.get(),
+            zeroPivot.get(),
+            drive.driveFromPoseToPose(AutoChooser.NoteOneShotChooser.getSelected(), AutoChooser.NoteTwoChooser.getSelected()).deadlineWith(intakeCommand.get()),
+            intakeWhile.get(),
+            drive.driveFromPoseToPose(AutoChooser.NoteTwoChooser.getSelected(),AutoChooser.NoteTwoShotChooser.getSelected()),
+            shoot.get(),
+            zeroPivot.get(),
+            drive.driveFromPoseToPose(AutoChooser.NoteTwoShotChooser.getSelected(), AutoChooser.NoteThreeChooser.getSelected()).deadlineWith(intakeCommand.get()),
+            intakeWhile.get(),
+            drive.driveFromPoseToPose(AutoChooser.NoteThreeChooser.getSelected(), AutoChooser.NoteThreeShotChooser.getSelected()),
+            shoot.get(),
+            zeroPivot.get(),
+            drive.driveFromPoseToPose(AutoChooser.NoteThreeShotChooser.getSelected(),AutoChooser.NoteFourChooser.getSelected()).deadlineWith(intakeCommand.get()),
+            intakeWhile.get(),
+            drive.driveFromPoseToPose(AutoChooser.NoteFourChooser.getSelected(), AutoChooser.NoteFourShotChooser.getSelected()),
             shoot.get(),
             zeroPivot.get()
         );
