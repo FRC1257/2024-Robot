@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3674277229789629,
-        "y": 5.5768617000416905
+        "x": 2.5079619390008028,
+        "y": 4.084914323674802
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.367427722978963,
-        "y": 5.5768617000416905
+        "x": 1.8666106562982372,
+        "y": 4.815068091674646
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.430151368616278,
-        "y": 5.5768617000416905
+        "x": 1.3732635157578024,
+        "y": 5.564955745296107
       },
       "prevControl": {
-        "x": 1.430151368616278,
-        "y": 5.5768617000416905
+        "x": 1.3535296301361848,
+        "y": 4.558527578593619
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4 Note Auto (Mid)",
+  "folder": null,
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
