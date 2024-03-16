@@ -209,6 +209,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ShootAnywhere", shootAnywhere());
     NamedCommands.registerCommand("Intake",
         indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5)));
+    NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer));
     // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("Zero", zeroPosition());
     configureControls();

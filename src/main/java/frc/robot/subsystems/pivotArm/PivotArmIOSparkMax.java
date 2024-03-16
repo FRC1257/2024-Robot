@@ -73,6 +73,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         absoluteEncoder = new DutyCycleEncoder(ElectricalLayout.ABSOLUTE_ENCODER_ID);
         absoluteEncoder.setDistancePerRotation(2 * Constants.PI * PivotArmConstants.POSITION_CONVERSION_FACTOR);
         absoluteEncoder.setDutyCycleRange(1/1024.0, 1023.0/1024.0);
+        absoluteEncoder.reset();
         Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.getDistance());
         // make sure the pivot starts at the bottom position every time
         // absoluteEncoder.reset();

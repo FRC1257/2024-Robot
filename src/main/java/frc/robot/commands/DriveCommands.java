@@ -359,10 +359,10 @@ public class DriveCommands {
                 ).andThen(new WaitCommand(3).alongWith(shooter.runVoltage((0)).withTimeout(3)))
                 .andThen(
 
-                        joystickDrive(drive, () -> -0.6, () -> 0, () -> 0).withTimeout(1.5).alongWith(shooter.runVoltage((0)).withTimeout(5)));// );
+                        driveBack(drive).alongWith(shooter.runVoltage((0)).withTimeout(5)));// );
     }
 
-    public static Command driveBack(Drive drive, PivotArm pivot, Shooter shooter, Indexer intake) {
+    public static Command driveBack(Drive drive) {
         return joystickDrive(drive, () -> 0.6, () -> 0, () -> 0).withTimeout(1.5);// );
     }
 

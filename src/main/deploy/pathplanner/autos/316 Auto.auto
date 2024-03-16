@@ -37,6 +37,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IntakeWhile"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "n1-sc2"
@@ -68,6 +74,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IntakeWhile"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "n2-sc2"
@@ -96,6 +108,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeWhile"
           }
         },
         {

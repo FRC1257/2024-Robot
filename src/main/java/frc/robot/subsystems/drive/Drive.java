@@ -345,7 +345,7 @@ public class Drive extends SubsystemBase {
    * @param timestamp The timestamp of the vision measurement in seconds.
    */
   public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    poseEstimator.addVisionMeasurement(visionPose, timestamp);
+    // poseEstimator.addVisionMeasurement(visionPose, timestamp);
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

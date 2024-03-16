@@ -29,9 +29,14 @@ public class VisionConstants {
             new Rotation3d(0, cameraPitchAngle, Rotation2d.fromDegrees(180).getRadians()));
 
 
-    public static final Transform3d kOrangeRobotToCam = new Transform3d(new Translation3d(0.5, -0.45, 0.23),
-            new Rotation3d(0, 0, 0));
-    public static final Transform3d kRaspberryRobotToCam2 = new Transform3d(new Translation3d(-0.5, 0.45, 0.23),
+    public static final Transform3d kOrangeRobotToCam = new Transform3d(
+        new Translation3d(
+                Units.inchesToMeters(-9.5),
+                Units.inchesToMeters(7),
+                Units.inchesToMeters(4)
+        ),
+            new Rotation3d(0, Rotation2d.fromDegrees(15).getRadians(), Rotation2d.fromDegrees(180+5).getRadians()));
+    public static final Transform3d kRaspberryRobotToCam2 = new Transform3d(new Translation3d(0.5, -0.45, 0.23),
             new Rotation3d(0, 0, Rotation2d.fromDegrees(155).getRadians()));
     public static final Transform3d kNoteCameraNameToCam = new Transform3d(new Translation3d(-0.5, -0.45, 0.23),
             new Rotation3d(0, 0, Rotation2d.fromDegrees(155).getRadians()));
