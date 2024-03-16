@@ -32,6 +32,8 @@ public interface VisionIO {
     public Pose2d[] targets = new Pose2d[0];
     public Pose3d[] targets3d = new Pose3d[0];
 
+    public boolean hasEstimate = false;
+
     // note detection
     public int notes = 0;
     public double noteTimestamp = 0;

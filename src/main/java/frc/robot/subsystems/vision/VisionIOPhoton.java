@@ -71,8 +71,7 @@ public class VisionIOPhoton implements VisionIO {
         PhotonPoseEstimator[] photonEstimators = getAprilTagEstimators(currentEstimate);
         
         // add code to check if the closest target is in front or back
-        inputs.estimate = null;
-        
+        inputs.estimate = currentEstimate;
 
         // add code to check if the closest target is in front or back
         Optional<Pose2d> averageEst = getAverageEstimate(results, photonEstimators);
@@ -83,8 +82,10 @@ public class VisionIOPhoton implements VisionIO {
             inputs.targets3d = getTargetsPositions(results);
             inputs.targets = Pose3dToPose2d(inputs.targets3d);
             inputs.tagCount = tagCounts(results);
+            inputs.hasEstimate = true;
         } else {
             inputs.timestamp = inputs.timestamp;
+            inputs.hasEstimate = false;
         }
 
         // get note data
