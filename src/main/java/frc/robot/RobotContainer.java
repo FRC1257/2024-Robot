@@ -4,38 +4,7 @@
 
 package frc.robot;
 
-import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
-import static frc.robot.util.drive.DriveControls.DRIVE_FORWARD;
-import static frc.robot.util.drive.DriveControls.DRIVE_ROBOT_RELATIVE;
-import static frc.robot.util.drive.DriveControls.DRIVE_ROTATE;
-import static frc.robot.util.drive.DriveControls.DRIVE_SLOW;
-import static frc.robot.util.drive.DriveControls.DRIVE_SOURCE;
-import static frc.robot.util.drive.DriveControls.DRIVE_SPEAKER_AIM;
-import static frc.robot.util.drive.DriveControls.DRIVE_STOP;
-import static frc.robot.util.drive.DriveControls.DRIVE_STRAFE;
-import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_IN;
-import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_OUT;
-import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_ROTATE;
-import static frc.robot.util.drive.DriveControls.INTAKE_IN;
-import static frc.robot.util.drive.DriveControls.INTAKE_OUT;
-import static frc.robot.util.drive.DriveControls.INTAKE_ROTATE;
-import static frc.robot.util.drive.DriveControls.INTAKE_UNTIL_INTAKED;
-import static frc.robot.util.drive.DriveControls.LOCK_ON_SPEAKER_FULL;
-import static frc.robot.util.drive.DriveControls.PIVOT_AMP;
-import static frc.robot.util.drive.DriveControls.PIVOT_HOLD;
-import static frc.robot.util.drive.DriveControls.PIVOT_ROTATE;
-import static frc.robot.util.drive.DriveControls.PIVOT_TO_SPEAKER;
-import static frc.robot.util.drive.DriveControls.PIVOT_ZERO;
-import static frc.robot.util.drive.DriveControls.SHOOTER_FIRE_SPEAKER;
-import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND;
-import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND_INTAKE;
-import static frc.robot.util.drive.DriveControls.SHOOTER_SPEED;
-import static frc.robot.util.drive.DriveControls.SHOOTER_UNJAM;
-import static frc.robot.util.drive.DriveControls.configureControls;
-import static frc.robot.util.drive.DriveControls.getRumbleBoth;
-import static frc.robot.util.drive.DriveControls.getRumbleOperator;
-
-import java.util.function.DoubleSupplier;
+import static frc.robot.util.drive.DriveControls.*;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -62,7 +31,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -100,6 +68,7 @@ import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.autonomous.AutoChooser;
 import frc.robot.util.autonomous.MakeAutos;
+import frc.robot.util.drive.AllianceFlipUtil;
 import frc.robot.util.misc.Lookup;
 import frc.robot.util.misc.LookupTuner;
 import frc.robot.util.note.NoteVisualizer;
@@ -328,6 +297,24 @@ public class RobotContainer {
             DRIVE_FORWARD,
             DRIVE_STRAFE));
 
+    LOCK_BACK.whileTrue(DriveCommands.joystickAnglePoint(
+        drive,
+        DRIVE_FORWARD,
+        DRIVE_STRAFE,
+        () -> {
+          return AllianceFlipUtil.apply(new Rotation2d());
+        }
+      ));
+    
+    LOCK_PICKUP.whileTrue(DriveCommands.joystickAnglePoint(
+        drive,
+        DRIVE_FORWARD,
+        DRIVE_STRAFE,
+        () -> {
+          return AllianceFlipUtil.apply(Rotation2d.fromDegrees(-45));
+        }
+      ));
+
     DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
     DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose()));
@@ -342,8 +329,9 @@ public class RobotContainer {
 
     // Operator controls
     PIVOT_AMP.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_AMP_ANGLE));
-    PIVOT_ZERO.whileTrue(pivot.PIDCommandForever(0));
+    PIVOT_ZERO.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE));
     PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
+    PIVOT_PODIUM.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE));
     PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
     LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
 
@@ -439,7 +427,7 @@ public class RobotContainer {
   }
 
   public Command zeroPosition() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MIN_ANGLE)
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE)
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())
@@ -447,7 +435,7 @@ public class RobotContainer {
   }
 
   public Command zeroPositionWhileMoving() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_MIN_ANGLE)
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE)
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())).withTimeout(1);

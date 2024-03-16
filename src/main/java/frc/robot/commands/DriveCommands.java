@@ -37,6 +37,7 @@ import frc.robot.subsystems.pivotArm.PivotArm;
 import frc.robot.subsystems.pivotArm.PivotArmConstants;
 import frc.robot.subsystems.shooter.*;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
 import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
@@ -145,7 +146,8 @@ public class DriveCommands {
         angleController.enableContinuousInput(-Math.PI, Math.PI);
         return Commands.run(
                 () -> {
-                    Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12) / 2, new Rotation2d(0));
+                    Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12) / 2, new Rotation2d(0)); // this is using the wrong pose
+                                                                                                    // should use field constants
                     // Apply deadband
                     double linearMagnitude = MathUtil.applyDeadband(
                             Math.hypot(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode),
@@ -179,6 +181,49 @@ public class DriveCommands {
         drive
         );
     }
+
+    /**
+     * Drive robot while pointing at a specific point on the field.
+     */
+    public static Command joystickAnglePoint(
+            Drive drive,
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier,
+            Supplier<Rotation2d> targetDirection) {
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
+        return Commands.run(
+                () -> {
+                    // Apply deadband
+                    double linearMagnitude = MathUtil.applyDeadband(
+                            Math.hypot(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode),
+                            DEADBAND);
+                    Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble() * slowMode,
+                            ySupplier.getAsDouble() * slowMode);
+
+                    double omega = angleController.calculate(drive.getRotation().getRadians(),
+                            targetDirection.get().getRadians());
+
+                    // Square values
+                    linearMagnitude = linearMagnitude * linearMagnitude;
+                    omega = Math.copySign(omega * omega, omega);
+
+                    // Calcaulate new linear velocity
+                    Translation2d linearVelocity = new Pose2d(new Translation2d(), linearDirection)
+                            .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                            .getTranslation();
+
+                // Convert to robot relative speeds & send command
+                drive.runVelocity(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                        linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                        omega * drive.getMaxAngularSpeedRadPerSec(),
+                        drive.getRotation()));
+            },
+        drive
+        );
+    }
+
     // turns robot to speaker from current location
     public static Command turnSpeakerAngle(Drive drive) {
         Pose2d speakerPose = FieldConstants.SpeakerPosition;

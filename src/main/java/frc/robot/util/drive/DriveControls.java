@@ -28,7 +28,8 @@ public class DriveControls {
     public static Trigger DRIVE_STOP;
     public static Trigger DRIVE_ROBOT_RELATIVE;
     public static Trigger LOCK_ON_SPEAKER_FULL;
-
+    public static Trigger LOCK_BACK;
+    public static Trigger LOCK_PICKUP;
 
     public static Trigger DRIVE_SPEAKER_AIM;
     public static Trigger DRIVE_NOTE_GOTO;
@@ -47,6 +48,7 @@ public class DriveControls {
     public static Trigger PIVOT_AMP;
     public static Trigger PIVOT_ZERO;
     public static Trigger PIVOT_TO_SPEAKER;
+    public static Trigger PIVOT_PODIUM;
     public static Trigger PIVOT_HOLD;
     public static Trigger INTAKE_UNTIL_INTAKED;
 
@@ -84,10 +86,12 @@ public class DriveControls {
                 DRIVE_STRAFE = ()->(-driver.getLeftX());
                 DRIVE_ROTATE = () -> (driver.getRightX());
                 DRIVE_SLOW = driver.start();
-                DRIVE_SPEAKER_AIM = driver.leftBumper();
+                DRIVE_SPEAKER_AIM = EMPTY_TRIGGER;
+                LOCK_BACK = driver.leftBumper();
+                LOCK_PICKUP = driver.y();
                 DRIVE_STOP = driver.x();
                 DRIVE_ROBOT_RELATIVE = driver.rightBumper();
-                LOCK_ON_SPEAKER_FULL = driver.y();
+                LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
 
                 DRIVE_AMP = EMPTY_TRIGGER;
                 DRIVE_SOURCE = EMPTY_TRIGGER;
@@ -125,7 +129,8 @@ public class DriveControls {
                 PIVOT_AMP = operator.getDPad(DPad.RIGHT);
                 PIVOT_ZERO = operator.getDPad(DPad.DOWN);
                 PIVOT_TO_SPEAKER = operator.getDPad(DPad.LEFT);
-                PIVOT_HOLD = operator.getDPad(DPad.UP);
+                PIVOT_HOLD = EMPTY_TRIGGER;
+                PIVOT_PODIUM = operator.getDPad(DPad.UP);
                 
                 // intaking things
                 INTAKE_IN = operator.rightBumper();
@@ -158,6 +163,8 @@ public class DriveControls {
                 PIVOT_AMP = operator.getB();
                 PIVOT_ZERO = operator.getA();
                 PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
+                PIVOT_HOLD = EMPTY_TRIGGER;
+                PIVOT_PODIUM = operator.getDPad(DPad.UP);
                 
                 INTAKE_IN = operator.rightBumper();
                 INTAKE_OUT = operator.leftBumper();
