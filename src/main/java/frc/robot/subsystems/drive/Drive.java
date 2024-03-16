@@ -40,6 +40,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -421,12 +422,18 @@ public class Drive extends SubsystemBase {
     );
     return AutoBuilder.followPath(path);
   }
+  
+  public Translation2d FindMidPose(Pose2d start, Pose2d end){
+    return new Translation2d((start.getX()+end.getX())/2, (start.getY()+end.getY())/2);
+  }
 
   public Command driveFromPoseToPose(Pose2d start, Pose2d end) {
     return AutoBuilder.followPath(
       PathPlannerPath.fromPathPoints(
         List.of(
           new PathPoint(start.getTranslation(), new RotationTarget(0, start.getRotation(), true)),
+          new PathPoint(FindMidPose(start, end), new RotationTarget(0, start.getRotation(), true)),
+          new PathPoint(FindMidPose(new Pose2d(FindMidPose(start, end), new Rotation2d()), end), new RotationTarget(0, start.getRotation(), true)),
           new PathPoint(end.getTranslation(), new RotationTarget(0, end.getRotation(), true))
         ), 
         kPathConstraints, 

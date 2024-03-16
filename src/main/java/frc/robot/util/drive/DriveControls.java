@@ -56,6 +56,7 @@ public class DriveControls {
     public static Trigger INTAKE_IN;
     public static Trigger INTAKE_OUT;
     public static DoubleSupplier INTAKE_ROTATE;
+    public static Trigger INTAKE_SHIMMY;
 
     // Ground Intake
     public static Trigger GROUND_INTAKE_IN;
@@ -84,7 +85,7 @@ public class DriveControls {
             case MAUI:
                 DRIVE_FORWARD = () -> (-driver.getLeftY());
                 DRIVE_STRAFE = ()->(-driver.getLeftX());
-                DRIVE_ROTATE = () -> (driver.getRightX());
+                DRIVE_ROTATE = () -> (-driver.getRightX());
                 DRIVE_SLOW = driver.start();
                 DRIVE_SPEAKER_AIM = EMPTY_TRIGGER;
                 LOCK_BACK = driver.leftBumper();
@@ -136,6 +137,7 @@ public class DriveControls {
                 INTAKE_IN = operator.rightBumper();
                 INTAKE_OUT = operator.leftBumper();
                 INTAKE_ROTATE = () -> operator.getLeftYD();
+                INTAKE_SHIMMY = operator.start();
 
                 GROUND_INTAKE_IN = operator.rightBumper();
                 GROUND_INTAKE_OUT = operator.leftBumper();
@@ -169,6 +171,7 @@ public class DriveControls {
                 INTAKE_IN = operator.rightBumper();
                 INTAKE_OUT = operator.leftBumper();
                 INTAKE_ROTATE = () -> operator.getLeftYD();
+                INTAKE_SHIMMY = operator.start();
 
                 GROUND_INTAKE_IN = operator.rightBumper();
                 GROUND_INTAKE_OUT = operator.leftBumper();

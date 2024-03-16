@@ -18,11 +18,11 @@ import java.util.Optional;
 
 public class VisionIOPhoton implements VisionIO {
 
-    private final PhotonCamera raspberryCamera;
-    private final PhotonPoseEstimator raspberryEstimator;
+    private final PhotonCamera backRight;
+    private final PhotonPoseEstimator backRightEstimator;
 
-    private final PhotonCamera raspberryCamera2;
-    private final PhotonPoseEstimator raspberryEstimator2;
+    private final PhotonCamera backLeft;
+    private final PhotonPoseEstimator backLeftEstimator;
 
     // private final PhotonCamera orangeCamera;
     // private final PhotonPoseEstimator orangeEstimator;
@@ -40,15 +40,15 @@ public class VisionIOPhoton implements VisionIO {
 
         
         //Back Right
-        raspberryCamera = new PhotonCamera(kRaspberryCameraName);
-        raspberryEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam);
-        raspberryEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        backRight = new PhotonCamera(kRaspberryCameraName);
+        backRightEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backRight, kRaspberryRobotToCam);
+        backRightEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         
         //Back Left
-        raspberryCamera2 = new PhotonCamera(kRaspberryCameraName2);
-        raspberryEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, raspberryCamera, kRaspberryRobotToCam2);
-        raspberryEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        backLeft = new PhotonCamera(kRaspberryCameraName2);
+        backLeftEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backRight, kRaspberryRobotToCam2);
+        backLeftEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         //Front Left
         // orangeCamera = new PhotonCamera(kOrangeCameraName);
@@ -74,6 +74,7 @@ public class VisionIOPhoton implements VisionIO {
 
         // add code to check if the closest target is in front or back
         inputs.estimate = currentEstimate;
+        inputs.tagCount = tagCounts(results);
 
         // add code to check if the closest target is in front or back
         Optional<Pose2d> averageEst = getAverageEstimate(results, photonEstimators);
@@ -105,25 +106,35 @@ public class VisionIOPhoton implements VisionIO {
         } */
 
         // Logger.recordOutput("Vision/OrangeConnected", orangeCamera.isConnected());
-        Logger.recordOutput("Vision/RaspberryConnected", raspberryCamera.isConnected());
+        Logger.recordOutput("Vision/BackRightConnected", backRight.isConnected());
         // Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
         // Logger.recordOutput("Vision/NoteCameraPipeline", noteCamera.getPipelineIndex());
-        Logger.recordOutput("Vision/Raspberry2Connected", raspberryCamera2.isConnected());
+        Logger.recordOutput("Vision/BackLeftConnected", backLeft.isConnected());
     }
 
     private PhotonPipelineResult[] getAprilTagResults() {
-        PhotonPipelineResult front_result = getLatestResult(raspberryCamera);
+        PhotonPipelineResult front_result = getLatestResult(backRight);
             // PhotonPipelineResult back_result = getLatestResult(orangeCamera);
-        PhotonPipelineResult front_result2 = getLatestResult(raspberryCamera2);
-            return new PhotonPipelineResult[] { front_result, front_result2 };
+        PhotonPipelineResult front_result2 = getLatestResult(backLeft);
+        Logger.recordOutput("Vision/front", front_result.getTargets().size());
+        Logger.recordOutput("Vision/frontright", front_result2.getTargets().size());
+        return new PhotonPipelineResult[] { front_result, front_result2 };
     }
 
     
     private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
-        raspberryEstimator.setReferencePose(currentEstimate);
+        backRightEstimator.setReferencePose(currentEstimate);
         // orangeEstimator.setReferencePose(currentEstimate);
-        raspberryEstimator2.setReferencePose(currentEstimate);
-        return new PhotonPoseEstimator[] { raspberryEstimator, raspberryEstimator2};
+        backLeftEstimator.setReferencePose(currentEstimate);
+        return new PhotonPoseEstimator[] { backRightEstimator, backLeftEstimator};
+    }
+
+    private int tagCounts(PhotonPipelineResult[] results) {
+        int tags = 0;
+        for (PhotonPipelineResult result : results) {
+            tags += result.targets.size();
+        }
+        return tags;
     }
 
     @Override

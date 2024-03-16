@@ -367,6 +367,8 @@ public class RobotContainer {
     new Trigger(() -> (int) Timer.getMatchTime() == 90.0).onTrue(getRumbleBoth());
     new Trigger(indexer::isIntaked).onTrue(getRumbleOperator());
 
+    INTAKE_SHIMMY.onTrue(intakeShimmyCommand());
+
     // if (Constants.tuningMode) {
     // SmartDashboard.putData("Sysid Dynamic Drive Forward",
     // drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
@@ -431,14 +433,14 @@ public class RobotContainer {
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())
-                .alongWith(groundIntake.stop()));
+                .alongWith(groundIntake.stop())).withTimeout(1);
   }
 
   public Command zeroPositionWhileMoving() {
     return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE)
         .deadlineWith(
             indexer.stop()
-                .alongWith(shooter.stop())).withTimeout(1);
+                .alongWith(shooter.stop())).withTimeout(1.5);
   }
 
   public Command shootAmpTrajectory() {
@@ -528,6 +530,14 @@ public class RobotContainer {
     // probably has to do with the getRPM method
 
     // .alongWith(NoteVisualizer.shoot(drive)));//);
+  }
+
+  // Brings the note forward and back for 0.5 seconds each to center it
+  public Command intakeShimmyCommand() {
+    return (indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)
+      .alongWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE)))
+      .withTimeout(0.5)
+      .andThen(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(0.5));
   }
 
   // Returns the estimated transformation over the next tick (The change in

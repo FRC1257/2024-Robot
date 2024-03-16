@@ -338,7 +338,7 @@ public class DriveCommands {
     }
 
     public static Command driveBackAuto(Drive drive){
-        return  joystickDrive(drive, () -> -0.6, () -> 0, ()-> 0).withTimeout(1.5);
+        return  joystickDrive(drive, () -> 0.6, () -> 0, ()-> 0).withTimeout(1.5);
     }
 
 
@@ -363,7 +363,7 @@ public class DriveCommands {
     }
 
     public static Command driveBack(Drive drive, PivotArm pivot, Shooter shooter, Indexer intake) {
-        return joystickDrive(drive, () -> -0.6, () -> 0, () -> 0).withTimeout(1.5);// );
+        return joystickDrive(drive, () -> 0.6, () -> 0, () -> 0).withTimeout(1.5);// );
     }
 
     public static Command justShooter(PivotArm pivot, Shooter shooter, Indexer intake) {
