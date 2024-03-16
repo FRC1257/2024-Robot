@@ -116,7 +116,7 @@ public class VisionIOPhoton implements VisionIO {
             // PhotonPipelineResult back_result = getLatestResult(orangeCamera);
         PhotonPipelineResult front_result2 = getLatestResult(backLeft);
         Logger.recordOutput("Vision/front", front_result.getTargets().size());
-        Logger.recordOutput("Vision/frontright", front_result2.getTargets().size());
+        Logger.recordOutput("Vision/frontleft", front_result2.getTargets().size());
         return new PhotonPipelineResult[] { front_result, front_result2 };
     }
 
