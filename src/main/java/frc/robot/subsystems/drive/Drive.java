@@ -53,6 +53,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.autonomous.LocalADStarAK;
+import frc.robot.util.drive.AllianceFlipUtil;
 
 public class Drive extends SubsystemBase {
   // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
@@ -80,7 +81,6 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
-  private Pose2d lastPose = new Pose2d();
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
@@ -248,7 +248,7 @@ public class Drive extends SubsystemBase {
 
   public void resetYaw() {
     gyroIO.zeroAll();
-    setPose(lastPose);
+    setPose(AllianceFlipUtil.apply(new Pose2d()));
   }
 
   /**
