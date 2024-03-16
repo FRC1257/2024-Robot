@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -341,11 +342,15 @@ public class DriveCommands {
         return  joystickDrive(drive, () -> 0.6, () -> 0, ()-> 0).withTimeout(1.5);
     }
 
-
-
+    public static double getPivotSideAngle() {
+        if (SmartDashboard.getBoolean("ShootSide", false)) {
+            return PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE;
+        }
+        return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
+    }
    
     public static Command driveBackandShooter(Drive drive, PivotArm pivot, Shooter shooter, Indexer intake) {
-        return (pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE)
+        return (pivot.PIDCommand(DriveCommands::getPivotSideAngle)
                 .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
                 .andThen(
                         (shooter.runVoltage(11).withTimeout(2)
@@ -367,7 +372,7 @@ public class DriveCommands {
     }
 
     public static Command justShooter(PivotArm pivot, Shooter shooter, Indexer intake) {
-        return (pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE)
+        return (pivot.PIDCommand(DriveCommands::getPivotSideAngle)
                 .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
                 .andThen(
                         (shooter.runVoltage(11).withTimeout(3)

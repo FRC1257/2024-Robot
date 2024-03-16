@@ -199,6 +199,8 @@ public class RobotContainer {
       field.getObject("path").setPoses(poses);
     });
 
+    SmartDashboard.putBoolean("ShootSide", false);
+
     // Named Commands
     // command calling drivng subystem is probably here
     // NamedCommands.registerCommand("Shoot", shootAnywhere());
@@ -206,6 +208,7 @@ public class RobotContainer {
     // shootSpeaker aims pivot, shoots; zeroPosition then zeros; run after reaching
     // position
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
+    NamedCommands.registerCommand("ShootSide", shootSpeakerSide().andThen(zeroPosition()));
     NamedCommands.registerCommand("ShootAnywhere", shootAnywhere());
     NamedCommands.registerCommand("Intake",
         indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5)));
@@ -453,10 +456,10 @@ public class RobotContainer {
   }
 
   public Command altShootAnywhere() {
-    return (rotateArm()
+    return (rotateArmSpeaker()
         .andThen(
-            new WaitUntilCommand(this::isPointedAtSpeaker).deadlineWith(rotateArm())
-                .andThen(shootNote().deadlineWith(rotateArm())))) // problem is here, both of these commands can't be
+            new WaitUntilCommand(this::isPointedAtSpeaker).deadlineWith(rotateArmSpeaker())
+                .andThen(shootNote().deadlineWith(rotateArmSpeaker())))) // problem is here, both of these commands can't be
                                                                   // robotContainer
         .deadlineWith(DriveCommands.joystickSpeakerPoint(
             drive,
@@ -475,7 +478,13 @@ public class RobotContainer {
 
   public Command shootSpeaker() {
     return (
-      rotateArm()
+      rotateArmSpeaker()
+        .andThen(shootNote().deadlineWith(rotateArmtoSpeakerForever())));
+  }
+
+  public Command shootSpeakerSide() {
+    return (
+      rotateArmSpeakerSide()
         .andThen(shootNote().deadlineWith(rotateArmtoSpeakerForever())));
   }
 
@@ -488,9 +497,14 @@ public class RobotContainer {
     return pivot.PIDCommand(PivotArmConstants.PIVOT_TRAP_ANGLE);
   }
 
-  public Command rotateArm() {
+  public Command rotateArmSpeaker() {
     // return pivot.PIDCommand(this::getAngle);
     return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
+  }
+
+  public Command rotateArmSpeakerSide() {
+    // return pivot.PIDCommand(this::getAngle);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE);
   }
 
   public Command rotateArmAmp() {
