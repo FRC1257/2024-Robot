@@ -178,7 +178,9 @@ public class Drive extends SubsystemBase {
     if (useVision) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
-      poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp, visionIO.getEstimationStdDevs(getPose()));
+      if (visionInputs.estimate != null) {
+        poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp, visionIO.getEstimationStdDevs(getPose()));
+      }
     }
 
     for (var module : modules) {
