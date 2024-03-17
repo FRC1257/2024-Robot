@@ -202,4 +202,8 @@ public class DriveControls {
     public static Command getRumbleOperator() {
         return getRumbleCommand(operator);
     }
+
+    public static Command getRumbleDriver() {
+        return getRumbleCommand(driver);
+    }
 }

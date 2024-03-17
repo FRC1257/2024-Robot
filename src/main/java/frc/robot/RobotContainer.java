@@ -368,7 +368,7 @@ public class RobotContainer {
     // SHOOTER_SHOOT.onTrue(shootNote());
     // SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
-    new Trigger(() -> (int) Timer.getMatchTime() == 90.0).onTrue(getRumbleBoth());
+    new Trigger(() -> (int) Timer.getMatchTime() == 30.0).onTrue(getRumbleDriver());
     new Trigger(indexer::isIntaked).onTrue(getRumbleOperator());
 
     INTAKE_SHIMMY.onTrue(intakeShimmyCommand());
