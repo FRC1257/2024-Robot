@@ -209,7 +209,7 @@ public class RobotContainer {
     // position
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
     NamedCommands.registerCommand("ShootSide", shootSpeakerSide().andThen(zeroPosition()));
-    NamedCommands.registerCommand("ShootAnywhere", shootAnywhere());
+    // NamedCommands.registerCommand("ShootAnywhere", shootAnywhere());
     NamedCommands.registerCommand("Intake",
         indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5)));
     NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer).withTimeout(2));
@@ -233,8 +233,8 @@ public class RobotContainer {
         "Drive FF Characterization",
         new FeedForwardCharacterization(
             drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption("Drive Trajectory",
-        drive.getAuto("Forward And Spin"));
+    /* autoChooser.addOption("Drive Trajectory",
+        drive.getAuto("Forward And Spin")); */
     autoChooser.addOption("driveOutShoot", DriveCommands.driveBackandShooter(drive, pivot, shooter, indexer));
     autoChooser.addOption("drive out", DriveCommands.driveBackAuto(drive));
     autoChooser.addOption("shoot out", DriveCommands.justShooter(pivot, shooter, indexer));
