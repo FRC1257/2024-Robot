@@ -628,7 +628,7 @@ public class RobotContainer {
   }
 
   public Command intakeUntilIntaked(GroundIntake groundIntake, Indexer indexer){
-    return indexer.IntakeLoopCommand(7).deadlineWith(groundIntake.manualCommand(7));
+    return indexer.IntakeLoopCommand(3.95).deadlineWith(groundIntake.manualCommand(3.95));
   }
   
     
