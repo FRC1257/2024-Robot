@@ -166,11 +166,12 @@ public class RobotContainer {
         break;
     }
 
-    System.out.println("[Init] Setting up Logs");
+    System.out.println("[Init] Setting up Choosers");
     AutoChooser.setupChoosers();
 
+    System.out.println("[Init] Setting up Mechanisms");
+    
     // Set up robot state manager
-
     MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
 
     pivot.setMechanism(root.append(pivot.getArmMechanism()));
@@ -180,6 +181,8 @@ public class RobotContainer {
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
+
+    System.out.println("[Init] Setting up Path Planner Logging");
 
     // Logging callback for current robot pose
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
@@ -199,9 +202,10 @@ public class RobotContainer {
       field.getObject("path").setPoses(poses);
     });
 
-    SmartDashboard.putBoolean("ShootSide", false);
 
     // Named Commands
+    System.out.println("[Init] Setting up Named Commands");
+
     // command calling drivng subystem is probably here
     // NamedCommands.registerCommand("Shoot", shootAnywhere());
 
@@ -215,6 +219,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer).withTimeout(2));
     // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("Zero", zeroPosition());
+
+    System.out.println("[Init] Setting up Triggers");
     configureControls();
 
     // Set up auto routines
@@ -226,6 +232,7 @@ public class RobotContainer {
      * flywheel)
      * .withTimeout(5.0));
      */
+    System.out.println("[Init] Setting up Logged Auto Chooser");
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up feedforward characterization
@@ -250,6 +257,7 @@ public class RobotContainer {
     LookupTuner.setupTuner();
     SmartDashboard.putBoolean("Brake Mode", true);
     SmartDashboard.putBoolean("Set Start Position", false);
+    SmartDashboard.putBoolean("ShootSide", false); // TODO comp fix change later
   }
 
   public void reset() {
