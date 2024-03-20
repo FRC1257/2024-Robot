@@ -173,7 +173,6 @@ public class Shooter extends SubsystemBase {
   public void setVoltage(DoubleSupplier leftVoltage, DoubleSupplier rightVoltage){
     leftMotorVoltage = leftVoltage.getAsDouble() * 10;
     rightMotorVoltage = rightVoltage.getAsDouble() * 10;
-    //shooterIO.setVoltage(leftMotorVoltage, defaultShooterSpeedRPM); bruh I love autcorrect
     shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
   }
 
