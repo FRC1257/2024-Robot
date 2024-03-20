@@ -10,13 +10,13 @@ import edu.wpi.first.math.util.Units;
 public final class DriveConstants {
   // Driving Parameters - Note that these are not the maximum capable speeds of
   // the robot, rather the allowed maximum speeds
-  public static final double periodicTime = 0.02;
+  
   public static final double kMaxSpeedMetersPerSecond = 4.8;
-  public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+  
 
-  public static final double kDirectionSlewRate = 1.2; // radians per second
-  public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
-  public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
+  
+  
+  
 
   // Chassis configuration
   public static final double kTrackWidthX = Units.inchesToMeters(26.5);
@@ -51,19 +51,16 @@ public final class DriveConstants {
   public static final int kFrontRightTurningCanId = 2;
   public static final int kRearRightTurningCanId = 6;
 
-  public static final boolean kGyroReversed = false;
 
   public static final double kMaxAccelerationMetersPerSecondSquared = 3;
   public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
   public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
-  public static final double kPXController = 1;
-  public static final double kPYController = 1;
-  public static final double kPThetaController = 1;
+
+  
 
   // Constraint for the motion profiled robot angle controller
-  public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
-      kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+  
 
   public static final PathConstraints kPathConstraints = new PathConstraints(
       kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared,
