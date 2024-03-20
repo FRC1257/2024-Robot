@@ -2,13 +2,11 @@ package frc.robot.util.drive;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-import frc.robot.subsystems.pivotArm.PivotArmConstants;
 import frc.robot.util.drive.CommandSnailController.DPad;
 
 public class DriveControls {
@@ -65,7 +63,6 @@ public class DriveControls {
 
     // Shooter Controls
     public static DoubleSupplier SHOOTER_SPEED;
-    public static Trigger SHOOTER_PREP;
     public static Trigger SHOOTER_FULL_SEND_INTAKE;
     public static Trigger SHOOTER_FIRE_SPEAKER;
     public static Trigger SHOOTER_SHOOT;
@@ -87,18 +84,19 @@ public class DriveControls {
                 DRIVE_STRAFE = ()->(-driver.getLeftX());
                 DRIVE_ROTATE = () -> (-driver.getRightX());
                 DRIVE_SLOW = driver.start();
-                DRIVE_SPEAKER_AIM = EMPTY_TRIGGER;
+
                 LOCK_BACK = driver.leftBumper();
                 LOCK_PICKUP = driver.y();
                 DRIVE_STOP = driver.x();
                 DRIVE_ROBOT_RELATIVE = driver.rightBumper();
-                LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
 
-                DRIVE_AMP = EMPTY_TRIGGER;
-                DRIVE_SOURCE = EMPTY_TRIGGER;
-                TURN_90 = EMPTY_TRIGGER;
-                TURN_180 = EMPTY_TRIGGER;
-                LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
+                //unused commands, implement if have time
+                //DRIVE_SPEAKER_AIM = EMPTY_TRIGGER;
+                //DRIVE_AMP = EMPTY_TRIGGER;
+                //DRIVE_SOURCE = EMPTY_TRIGGER;
+                //TURN_90 = EMPTY_TRIGGER;
+                //TURN_180 = EMPTY_TRIGGER;
+                //LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
                 break;
             case PROGRAMMERS:
             default:
@@ -107,15 +105,19 @@ public class DriveControls {
                 DRIVE_ROTATE = driver::getRightX;
                 DRIVE_SLOW = driver.x();
                 DRIVE_SPEAKER_AIM = driver.b();
-                DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
+
                 DRIVE_STOP = driver.rightBumper();
-                DRIVE_ROBOT_RELATIVE = EMPTY_TRIGGER;
-                LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
+                
 
                 DRIVE_AMP = driver.leftBumper();
                 DRIVE_SOURCE = driver.a();
                 TURN_90 = driver.y();
                 TURN_180 = driver.start();
+
+                //unused commands
+                //DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
+                //DRIVE_ROBOT_RELATIVE = EMPTY_TRIGGER;
+                //LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
                 break;
         }
 
@@ -123,8 +125,7 @@ public class DriveControls {
             case ERICK:
                 // Operator controls
                 PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
-                PIVOT_PID_ROTATE = EMPTY_DOUBLE_SUPPLIER; //() -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
-                //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
+
                 
                 // Pivot things
                 PIVOT_AMP = operator.getDPad(DPad.RIGHT);
@@ -145,16 +146,19 @@ public class DriveControls {
 
                 INTAKE_UNTIL_INTAKED = operator.getY();
 
-                // SHOOTER DEFAULT SPEED
                 SHOOTER_SPEED = () -> operator.getRightXD();
-                //SHOOTER_SPEED = operator::getRightTriggerAxis;\
-                SHOOTER_PREP = EMPTY_TRIGGER;
                 SHOOTER_FULL_SEND_INTAKE = operator.getX();
-                SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;// commented out for testing
-                SHOOTER_SHOOT = EMPTY_TRIGGER;
+
+               
                 SHOOTER_FULL_SEND = operator.getA();
                 SHOOTER_UNJAM = operator.getB();
-                SHOOT_FROM_SOURCE = EMPTY_TRIGGER;
+
+                //unused commands
+                //SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;
+                //SHOOTER_SHOOT = EMPTY_TRIGGER;
+                //SHOOT_FROM_SOURCE = EMPTY_TRIGGER;
+                //PIVOT_PID_ROTATE = EMPTY_DOUBLE_SUPPLIER; //() -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+                //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
                 break;
             case PROGRAMMERS:
             default:
@@ -178,8 +182,7 @@ public class DriveControls {
                 GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
 
                 SHOOTER_SPEED = operator::getRightXD;
-                //SHOOTER_SPEED = operator::getRightTriggerAxis;\
-                SHOOTER_PREP = EMPTY_TRIGGER;
+
                 SHOOTER_FULL_SEND_INTAKE = EMPTY_TRIGGER;
                 SHOOTER_FIRE_SPEAKER = operator.getY();// commented out for testing
                 SHOOTER_SHOOT = EMPTY_TRIGGER;
