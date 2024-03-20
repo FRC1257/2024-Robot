@@ -48,7 +48,7 @@ public class ShooterIOSparkMax implements ShooterIO {
     rightEncoder.setPosition(0.0);
 
     // rotations, rps
-    leftEncoder.setPositionConversionFactor(1.0 / flywheelReduction);
+    leftEncoder.setPositionConversionFactor(1.0 / flywheelReduction); //guys its just 1
     rightEncoder.setPositionConversionFactor(1.0 / flywheelReduction);
     leftEncoder.setVelocityConversionFactor(1.0 / flywheelReduction);
     rightEncoder.setVelocityConversionFactor(1.0 / flywheelReduction);
@@ -102,16 +102,6 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   @Override
   public void setRightVoltage(double volts){
-    rightMotor.setVoltage(volts);
-  }
-
-  @Override
-  public void setLeftCharacterizationVoltage(double volts) {
-    leftMotor.setVoltage(volts);
-  }
-
-  @Override
-  public void setRightCharacterizationVoltage(double volts) {
     rightMotor.setVoltage(volts);
   }
 
