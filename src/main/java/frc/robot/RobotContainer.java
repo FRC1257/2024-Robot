@@ -289,9 +289,6 @@ public class RobotContainer {
 
     pivot.setDefaultCommand(
         pivot.ManualCommand(() -> PIVOT_ROTATE.getAsDouble() * 2));
-    // pivot.setDefaultCommand(
-    // pivot.PIDCommandForever(PIVOT_PID_ROTATE)
-    // );
 
     shooter.setDefaultCommand(
         // shooter.runPIDSpeed(0)
@@ -329,8 +326,8 @@ public class RobotContainer {
 
     DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
-    DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose()));
-    DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose()));
+    //DRIVE_AMP.onTrue(drive.goToPose(FieldConstants.ampPose()));
+    //DRIVE_SOURCE.onTrue(drive.goToPose(FieldConstants.pickupPose()));
     DRIVE_STOP.onTrue(new InstantCommand(() -> {
       drive.stopWithX();
       drive.resetYaw();
@@ -338,6 +335,7 @@ public class RobotContainer {
 
     // TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
     // TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
+
 
     // Operator controls
     PIVOT_AMP.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_AMP_ANGLE));
@@ -372,7 +370,7 @@ public class RobotContainer {
 
     // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
     // pivot::getAngle);
-    SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
+    //SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
     // SHOOTER_SHOOT.onTrue(shootNote());
     // SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
@@ -410,8 +408,8 @@ public class RobotContainer {
             new Rotation3d(0, -pivot.getAngle().getRadians(), 0)));
   }
 
-  public void setRobotPose(Pose2d pose) {
-    drive.setPose(pose);
+  public void resetRobotPose(Pose2d pose) {
+    drive.resetPose(pose);
   }
 
   /**
@@ -628,7 +626,7 @@ public class RobotContainer {
 
     if (SmartDashboard.getBoolean("Set Start Position", false)) {
       AutoChooser.setupChoosers();
-      setRobotPose(AutoChooser.getStartPose());
+      resetRobotPose(AutoChooser.getStartPose());
       SmartDashboard.putBoolean("Set Start Position", false);
     }
 

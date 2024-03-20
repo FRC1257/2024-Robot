@@ -48,6 +48,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -90,7 +91,8 @@ public class Drive extends SubsystemBase {
     // Odometry class for tracking robot pose
   private SwerveDriveOdometry odometry = new SwerveDriveOdometry(
       kinematics,
-      rawGyroRotation,
+      //rawGyroRotation,
+      getPose().getRotation(),
       lastModulePositions);
 
   private SysIdRoutine sysId;
@@ -118,7 +120,7 @@ public class Drive extends SubsystemBase {
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
         this::getPose,
-        this::setPose,
+        this::resetPose,
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         config,
@@ -179,7 +181,7 @@ public class Drive extends SubsystemBase {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
-        poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp, visionIO.getEstimationStdDevs(getPose()));
+        poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp);
       }
     }
 
@@ -214,7 +216,8 @@ public class Drive extends SubsystemBase {
       // rawGyroRotation = simRotation;
     }
     
-    poseEstimator.update(rawGyroRotation, modulePositions);
+    //poseEstimator.updateWithTime(Timer.getFPGATimestamp(), rawGyroRotation, modulePositions);
+    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), rawGyroRotation, modulePositions);
     odometry.update(rawGyroRotation, modulePositions);
 
     Logger.recordOutput("Odometry/Odometry", odometry.getPoseMeters());
@@ -253,7 +256,7 @@ public class Drive extends SubsystemBase {
 
   public void resetYaw() {
     gyroIO.zeroAll();
-    setPose(lastPose);
+    resetPose(lastPose);
   }
 
   /**
@@ -335,7 +338,7 @@ public class Drive extends SubsystemBase {
   }
 
   /** Resets the current odometry pose. */
-  public void setPose(Pose2d pose) {
+  public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
     odometry.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
@@ -347,7 +350,7 @@ public class Drive extends SubsystemBase {
    * @param timestamp The timestamp of the vision measurement in seconds.
    */
   public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    // poseEstimator.addVisionMeasurement(visionPose, timestamp);
+    poseEstimator.addVisionMeasurement(visionPose, timestamp);
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

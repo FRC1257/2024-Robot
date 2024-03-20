@@ -91,12 +91,12 @@ public class DriveControls {
                 DRIVE_ROBOT_RELATIVE = driver.rightBumper();
 
                 //unused commands, implement if have time
-                //DRIVE_SPEAKER_AIM = EMPTY_TRIGGER;
-                //DRIVE_AMP = EMPTY_TRIGGER;
-                //DRIVE_SOURCE = EMPTY_TRIGGER;
-                //TURN_90 = EMPTY_TRIGGER;
-                //TURN_180 = EMPTY_TRIGGER;
-                //LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
+                DRIVE_SPEAKER_AIM = EMPTY_TRIGGER;
+                DRIVE_AMP = EMPTY_TRIGGER;
+                DRIVE_SOURCE = EMPTY_TRIGGER;
+                TURN_90 = EMPTY_TRIGGER;
+                TURN_180 = EMPTY_TRIGGER;
+                LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
                 break;
             case PROGRAMMERS:
             default:
@@ -154,10 +154,10 @@ public class DriveControls {
                 SHOOTER_UNJAM = operator.getB();
 
                 //unused commands
-                //SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;
-                //SHOOTER_SHOOT = EMPTY_TRIGGER;
-                //SHOOT_FROM_SOURCE = EMPTY_TRIGGER;
-                //PIVOT_PID_ROTATE = EMPTY_DOUBLE_SUPPLIER; //() -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+                SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;
+                SHOOTER_SHOOT = EMPTY_TRIGGER;
+                SHOOT_FROM_SOURCE = EMPTY_TRIGGER;
+                PIVOT_PID_ROTATE = EMPTY_DOUBLE_SUPPLIER; //() -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
                 //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
                 break;
             case PROGRAMMERS:
