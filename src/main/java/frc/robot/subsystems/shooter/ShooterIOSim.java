@@ -82,14 +82,14 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void setLeftCharacterizationVoltage(double volts) {
+  public void setLeftVoltage(double volts) {
     leftSetpointRPM = null;
     leftAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
     leftSim.setInputVoltage(leftAppliedVolts);
   }
 
   @Override
-  public void setRightCharacterizationVoltage(double volts) {
+  public void setRightVoltage(double volts) {
     rightSetpointRPM = null;
     rightAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
     rightSim.setInputVoltage(rightAppliedVolts);
