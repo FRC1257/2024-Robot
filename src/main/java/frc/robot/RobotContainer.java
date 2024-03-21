@@ -495,8 +495,8 @@ public class RobotContainer {
   }
 
   public Command rotateArmtoSpeakerForever() {
-    // return pivot.PIDCommandForever(this::getAngle);
-        return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
+     return pivot.PIDCommandForever(this::getAngle);
+        // return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
   }
 
   public Command rotateArmtoTrap() {
@@ -577,6 +577,8 @@ public class RobotContainer {
   // speaker position
   private double getEstimatedDistance() {
     Transform2d targetTransform = getEstimatedPosition().minus(FieldConstants.SpeakerPosition);
+    Logger.recordOutput("DistanceAway", targetTransform.getTranslation().getNorm());
+
     return targetTransform.getTranslation().getNorm();
   }
 
@@ -593,7 +595,12 @@ public class RobotContainer {
   // Gets angle based on distance from speaker, taking into account the actual
   // shooting position
   private double getAngle() {
-    return getGeneralAngle(FieldConstants.speakerPosition3D());
+    // TODO tune tomorrow
+
+    // return getGeneralAngle(FieldConstants.speakerPosition3D());
+    // return Lookup.getAngle(getEstimatedDistance());
+    // return getGeneralAngle(FieldConstants.speakerPosition3D()) * 0.8;
+    return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
   }
 
   private double getGeneralAngle(Pose3d target) {

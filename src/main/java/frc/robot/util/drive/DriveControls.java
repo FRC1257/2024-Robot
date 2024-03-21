@@ -85,7 +85,7 @@ public class DriveControls {
                 DRIVE_ROTATE = () -> (-driver.getRightX());
                 DRIVE_SLOW = driver.start();
 
-                LOCK_BACK = driver.leftBumper();
+                LOCK_BACK = EMPTY_TRIGGER;
                 LOCK_PICKUP = driver.y();
                 DRIVE_STOP = driver.x();
                 DRIVE_ROBOT_RELATIVE = driver.rightBumper();
@@ -96,7 +96,7 @@ public class DriveControls {
                 DRIVE_SOURCE = EMPTY_TRIGGER;
                 TURN_90 = EMPTY_TRIGGER;
                 TURN_180 = EMPTY_TRIGGER;
-                LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
+                LOCK_ON_SPEAKER_FULL = driver.leftBumper();
                 break;
             case PROGRAMMERS:
             default:
