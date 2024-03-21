@@ -216,7 +216,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ShootSide", shootSpeakerSide().andThen(zeroPosition()));
     // NamedCommands.registerCommand("ShootAnywhere", shootAnywhere());
     NamedCommands.registerCommand("Intake",
-        indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5)));
+        (indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5))).deadlineWith(shooter.runVoltage(0)));
     NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer).withTimeout(2));
     // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("Zero", zeroPosition());
@@ -512,7 +512,7 @@ public class RobotContainer {
 
   public Command rotateArmSpeaker() {
     // return pivot.PIDCommand(this::getAngle);
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).deadlineWith(shooter.runVoltage(0));
   }
 
   public Command rotateArmSpeakerSide() {
@@ -647,7 +647,7 @@ public class RobotContainer {
   }
 
   public Command intakeUntilIntaked(GroundIntake groundIntake, Indexer indexer){
-    return indexer.IntakeLoopCommand(IndexerConstants.INDEXER_IN_VOLTAGE_WEAK).deadlineWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_WEAK_IN_VOLTAGE));
+    return indexer.IntakeLoopCommand(IndexerConstants.INDEXER_IN_VOLTAGE_WEAK).deadlineWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE)).deadlineWith(shooter.runVoltage(0));
   }
   
 }
