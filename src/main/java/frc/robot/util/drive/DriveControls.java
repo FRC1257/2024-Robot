@@ -91,7 +91,7 @@ public class DriveControls {
                 DRIVE_ROBOT_RELATIVE = driver.rightBumper();
 
                 //unused commands, implement if have time
-                DRIVE_SPEAKER_AIM = EMPTY_TRIGGER;
+                DRIVE_SPEAKER_AIM = driver.b();
                 DRIVE_AMP = EMPTY_TRIGGER;
                 DRIVE_SOURCE = EMPTY_TRIGGER;
                 TURN_90 = EMPTY_TRIGGER;

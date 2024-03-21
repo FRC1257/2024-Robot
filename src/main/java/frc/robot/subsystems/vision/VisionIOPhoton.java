@@ -14,6 +14,7 @@ import edu.wpi.first.net.PortForwarder;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
+import java.security.spec.ECFieldF2m;
 import java.util.Optional;
 
 public class VisionIOPhoton implements VisionIO {
@@ -108,7 +109,7 @@ public class VisionIOPhoton implements VisionIO {
 
         // Logger.recordOutput("Vision/OrangeConnected", orangeCamera.isConnected());
         Logger.recordOutput("Vision/BackRightConnected", backRight.isConnected());
-        // Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
+        Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
          Logger.recordOutput("Vision/NoteCameraPipeline", noteCamera.getPipelineIndex());
         //Logger.recordOutput("Vision/BackLeftConnected", backLeft.isConnected());
     }
@@ -152,7 +153,7 @@ public class VisionIOPhoton implements VisionIO {
                 return PhotonUtils.estimateCameraToTargetTranslation(
                 range, Rotation2d.fromDegrees(-note_result.getBestTarget().getYaw()));
         } else {
-            return null;
+            return new Translation2d();
         }
     }
 
@@ -163,7 +164,14 @@ public class VisionIOPhoton implements VisionIO {
 
     @Override
     public Rotation2d getAngleToNote() {
-        return null;
+        var note_result = getLatestResult(noteCamera);
+
+        if (note_result.hasTargets()){
+            return Rotation2d.fromDegrees(note_result.getBestTarget().getYaw());
+        }
+
+        return new Rotation2d();
+
     }
 
     @Override

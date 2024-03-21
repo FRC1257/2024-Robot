@@ -40,6 +40,8 @@ import frc.robot.subsystems.shooter.*;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import static frc.robot.subsystems.drive.DriveConstants.*;
 import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
 
@@ -302,6 +304,8 @@ public class DriveCommands {
                 // Square values
                 linearMagnitude = linearMagnitude * linearMagnitude;
                 omega = Math.copySign(omega * omega, omega);
+
+                Logger.recordOutput("OmwegA", omega);
 
                 // Convert to robot relative speeds & send command
                 drive.runVelocity(

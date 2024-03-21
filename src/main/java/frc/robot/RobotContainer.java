@@ -301,14 +301,17 @@ public class RobotContainer {
         DRIVE_STRAFE,
         DRIVE_ROTATE));
 
-    DRIVE_SPEAKER_AIM.whileTrue(
+    /* DRIVE_SPEAKER_AIM.whileTrue(
         DriveCommands.joystickSpeakerPoint(
             drive,
             DRIVE_FORWARD,
-            DRIVE_STRAFE));
+            DRIVE_STRAFE)); */
+    DRIVE_SPEAKER_AIM.whileTrue(
+      DriveCommands.driveNote(drive)
+    );
 
     DRIVE_NOTE_GOTO.whileTrue(
-      DriveCommands.driveNote(drive)
+      drive.goToNote()
     );
 
     LOCK_BACK.whileTrue(DriveCommands.joystickAnglePoint(
@@ -604,7 +607,7 @@ public class RobotContainer {
     // TODO tune tomorrow
 
     // return getGeneralAngle(FieldConstants.speakerPosition3D());
-    return Lookup.getAngle(getEstimatedDistance());
+    return (Math.PI - Lookup.getAngle(getEstimatedDistance()));
     // return getGeneralAngle(FieldConstants.speakerPosition3D()) * 0.8;
    //  return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
   }
