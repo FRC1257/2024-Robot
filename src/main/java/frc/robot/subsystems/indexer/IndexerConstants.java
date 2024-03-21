@@ -38,6 +38,7 @@ public final class IndexerConstants {
   }
 
   public static final double INDEXER_IN_VOLTAGE = 8;
+  public static final double INDEXER_IN_VOLTAGE_WEAK = 3.95;
   public static final double INDEXER_OUT_VOLTAGE = -2;
 
   public static final double SHOOTER_UNJAM_TIME = 0.2;

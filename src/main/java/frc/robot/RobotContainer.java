@@ -60,6 +60,7 @@ import frc.robot.subsystems.pivotArm.PivotArmIO;
 import frc.robot.subsystems.pivotArm.PivotArmIOSim;
 import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOSparkMax;
@@ -288,7 +289,7 @@ public class RobotContainer {
             () -> GROUND_INTAKE_ROTATE.getAsDouble() * 12));
 
     pivot.setDefaultCommand(
-        pivot.ManualCommand(() -> PIVOT_ROTATE.getAsDouble() * 2));
+        pivot.ManualCommand(() -> PIVOT_ROTATE.getAsDouble() * 3));
 
     shooter.setDefaultCommand(
         // shooter.runPIDSpeed(0)
@@ -357,16 +358,16 @@ public class RobotContainer {
     INTAKE_UNTIL_INTAKED.onTrue(intakeUntilIntaked(groundIntake, indexer));
 
     // TODO using voltage mode for now but later speed PID
-    SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(11));
+    SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE));
     SHOOTER_FULL_SEND_INTAKE.whileTrue(
-        shooter.runVoltage(11)
+        shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)
             .alongWith(
-                new WaitCommand(0.5)
+                new WaitCommand(ShooterConstants.SHOOTER_SPINUP_TIME)
                     .andThen(indexer.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE))));
 
     SHOOTER_UNJAM.whileTrue(
         (indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2)
-            .alongWith(shooter.runVoltage(-0.5))));
+            .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE))));
 
     // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
     // pivot::getAngle);
@@ -530,10 +531,9 @@ public class RobotContainer {
   }
 
   public Command shootSubwoofer() {
-    Logger.recordOutput("DistanceAway", getEstimatedDistance());
-    return (shooter.runVoltage(11).withTimeout(4)
+    return (shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE).withTimeout(4)
         .alongWith(
-            new WaitCommand(0.5)
+            new WaitCommand(ShooterConstants.SHOOTER_SPINUP_TIME)
                 .andThen(indexer.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(2)))
         .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
 
@@ -541,7 +541,7 @@ public class RobotContainer {
   }
 
   public Command shootNote() {
-    return shooter.runVoltage(11)
+    return shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)
         .alongWith(
             new WaitCommand(1)
                 .andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)))
@@ -557,8 +557,8 @@ public class RobotContainer {
   public Command intakeShimmyCommand() {
     return (indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)
       .alongWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE)))
-      .withTimeout(0.5)
-      .andThen(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(0.5));
+      .withTimeout(ShooterConstants.SHOOTER_SPINUP_TIME)
+      .andThen(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(ShooterConstants.SHOOTER_SPINUP_TIME));
   }
 
   // Returns the estimated transformation over the next tick (The change in
@@ -576,7 +576,7 @@ public class RobotContainer {
   // Returns the distance between the robot's next estimated position and the
   // speaker position
   private double getEstimatedDistance() {
-    Transform2d targetTransform = getEstimatedPosition().minus(FieldConstants.SpeakerPosition);
+    Transform2d targetTransform = getEstimatedPosition().minus(FieldConstants.speakerPosition());
     Logger.recordOutput("DistanceAway", targetTransform.getTranslation().getNorm());
 
     return targetTransform.getTranslation().getNorm();
@@ -598,9 +598,9 @@ public class RobotContainer {
     // TODO tune tomorrow
 
     // return getGeneralAngle(FieldConstants.speakerPosition3D());
-    // return Lookup.getAngle(getEstimatedDistance());
+    return Lookup.getAngle(getEstimatedDistance());
     // return getGeneralAngle(FieldConstants.speakerPosition3D()) * 0.8;
-    return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
+   //  return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
   }
 
   private double getGeneralAngle(Pose3d target) {
@@ -641,9 +641,7 @@ public class RobotContainer {
   }
 
   public Command intakeUntilIntaked(GroundIntake groundIntake, Indexer indexer){
-    return indexer.IntakeLoopCommand(3.95).deadlineWith(groundIntake.manualCommand(3.95));
+    return indexer.IntakeLoopCommand(IndexerConstants.INDEXER_IN_VOLTAGE_WEAK).deadlineWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_WEAK_IN_VOLTAGE));
   }
-  
-    
   
 }
