@@ -258,15 +258,18 @@ public class DriveCommands {
        
 
     public static Command turnToNote(Drive drive) {
-        Pose2d notePose = drive.calculateNotePose(drive.getPose(), drive.calculateNoteTranslation());
            angleController.setTolerance(0.08, 0.01);
                return new FunctionalCommand(
                    () -> {
+                            Pose2d notePose = drive.calculateNotePose(drive.getPose(), drive.calculateNoteTranslation());
+
                        Transform2d targetTransform = drive.getPose().minus(notePose);
                        Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
                        angleController.setSetpoint(targetDirection.getRadians());
                    },
                    () -> {
+                        Pose2d notePose = drive.calculateNotePose(drive.getPose(), drive.calculateNoteTranslation());
+
                        // defines distance from speaker
                        Transform2d targetTransform = drive.getPose().minus(notePose);
                        Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());

@@ -24,7 +24,7 @@ public class VisionIOPhoton implements VisionIO {
     // private final PhotonCamera orangeCamera;
     // private final PhotonPoseEstimator orangeEstimator;
 
-    // private final PhotonCamera noteCamera;
+    private final PhotonCamera noteCamera;
     // private final PhotonPoseEstimator orangeEstimator2;
     // private boolean noteCameraObjectMode = false;
     //private final PhotonPoseEstimator noteEstimator;
@@ -39,6 +39,7 @@ public class VisionIOPhoton implements VisionIO {
         backLeftEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backLeft, kRaspberryRobotToCam);
         backLeftEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
+        noteCamera = new PhotonCamera(kNoteCameraName);
     }
 
     @Override
@@ -69,8 +70,8 @@ public class VisionIOPhoton implements VisionIO {
         // get note data
         //all note information is gotten here
         //just need to do something with this information
-        /* var note_result = getLatestResult(noteCamera);
-        Logger.recordOutput("Vision/NoteCameraMode", noteCameraObjectMode);
+        var note_result = getLatestResult(noteCamera);
+        
         inputs.noteTimestamp = note_result.getTimestampSeconds();
         inputs.noteConfidence = new double[note_result.getTargets().size()];
         inputs.notePitch = new double[note_result.getTargets().size()];
@@ -81,7 +82,7 @@ public class VisionIOPhoton implements VisionIO {
             inputs.notePitch[i] = note_result.getTargets().get(i).getPitch();
             inputs.noteYaw[i] = note_result.getTargets().get(i).getYaw();
             inputs.noteArea[i] = note_result.getTargets().get(i).getArea();
-        } */
+        }
         
         Logger.recordOutput("Vision/BackLeftConnected", backLeft.isConnected());
     }

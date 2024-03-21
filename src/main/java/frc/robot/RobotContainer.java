@@ -307,6 +307,10 @@ public class RobotContainer {
             DRIVE_FORWARD,
             DRIVE_STRAFE));
 
+    DRIVE_NOTE_GOTO.whileTrue(
+      DriveCommands.driveNote(drive)
+    );
+
     LOCK_BACK.whileTrue(DriveCommands.joystickAnglePoint(
         drive,
         DRIVE_FORWARD,
@@ -457,7 +461,7 @@ public class RobotContainer {
   }
 
   public Command shootAmpTrajectory() {
-    return drive.pathfindToTrajectory(PathPlannerPath.fromPathFile("amp score"));
+    return drive.goToPose(FieldConstants.ampPose());
   }
 
   public Command shootAmp() {

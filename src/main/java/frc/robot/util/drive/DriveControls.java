@@ -97,6 +97,8 @@ public class DriveControls {
                 TURN_90 = EMPTY_TRIGGER;
                 TURN_180 = EMPTY_TRIGGER;
                 LOCK_ON_SPEAKER_FULL = driver.leftBumper();
+
+                DRIVE_NOTE_GOTO = driver.a();
                 break;
             case PROGRAMMERS:
             default:
@@ -115,9 +117,7 @@ public class DriveControls {
                 TURN_180 = driver.start();
 
                 //unused commands
-                //DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
-                //DRIVE_ROBOT_RELATIVE = EMPTY_TRIGGER;
-                //LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
+                DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
                 break;
         }
 
