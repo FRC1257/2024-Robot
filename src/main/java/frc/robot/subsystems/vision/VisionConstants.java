@@ -19,7 +19,7 @@ public class VisionConstants {
         public static final String kRaspberryCameraName2 = "April_Camera2";
         // Cam mounted facing forward, half a meter forward of center, half a meter up
         // from center.
-        private static double cameraPitchAngle = Rotation2d.fromDegrees(0).getRadians();
+        private static double cameraPitchAngle = Rotation2d.fromDegrees(15).getRadians();
         public static final Transform3d kRaspberryRobotToCam = new Transform3d(
                         new Translation3d(
                                         Units.inchesToMeters(-10.75),
@@ -44,7 +44,7 @@ public class VisionConstants {
                                 Units.inchesToMeters(9.75)
                         ),
                         new Rotation3d(0, 
-                                Rotation2d.fromDegrees(15).getRadians(),
+                                cameraPitchAngle,
                                 Rotation2d.fromDegrees(180).getRadians())
                         );
         public static final Transform3d kNoteCameraNameToCam = new Transform3d(new Translation3d(-0.5, -0.45, 0.23),
