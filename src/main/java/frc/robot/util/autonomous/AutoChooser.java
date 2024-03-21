@@ -2,6 +2,8 @@ package frc.robot.util.autonomous;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 
 public class AutoChooser {
     public static LoggedDashboardBoolean shootOnStart = new LoggedDashboardBoolean("ShootOnStart", true);
@@ -33,5 +35,9 @@ public class AutoChooser {
         NoteTwoShotChooser.setScorePosition();
         NoteThreeShotChooser.setScorePosition();
         NoteFourShotChooser.setScorePosition();
+    }
+
+    public static Pose2d getStartPose() {
+        return startChooser.getSelected();
     }
 }

@@ -22,25 +22,37 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerConstants;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.subsystems.shooter.*;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
 
 public class DriveCommands {
-  private static final double DEADBAND = 0.1;
-
-  private static double slowMode = 
-    1;
+    private static final double DEADBAND = 0.1;
+      private static double slowMode = 1;
     // kSlowModeConstant;
 
-  private static PIDController angleController = new PIDController(kTurnSpeakerP, kTurnSpeakerI, kTurnSpeakerD);
+    private static PIDController angleController = new PIDController(kTurnSpeakerP,
+            kTurnSpeakerI, kTurnSpeakerD);
 
-  private DriveCommands() {}
+    private DriveCommands() {
+    }
 
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
@@ -80,7 +92,7 @@ public class DriveCommands {
                   linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                   omega * drive.getMaxAngularSpeedRadPerSec(),
                   isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                      ? drive.getRotation()/* .plus(new Rotation2d(Math.PI)) */
                       : drive.getRotation()));
         },
         drive);
@@ -129,34 +141,35 @@ public class DriveCommands {
      * Drive robot while pointing at a specific point on the field.
      */
     public static Command joystickSpeakerPoint(
-        Drive drive,
-        DoubleSupplier xSupplier,
-        DoubleSupplier ySupplier) {
+            Drive drive,
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier) {
         angleController.enableContinuousInput(-Math.PI, Math.PI);
         return Commands.run(
-            () -> { 
-                Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
-                // Apply deadband
-                double linearMagnitude =
-                    MathUtil.applyDeadband(
-                        Math.hypot(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode), DEADBAND);
-                Rotation2d linearDirection =
-                    new Rotation2d(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode);
-                Transform2d targetTransform = drive.getPose().minus(speakerPose);
-                Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
-                // Rotation2d deltaDirection = drive.getRotation().minus(targetDirection);
-                
-                double omega = angleController.calculate(drive.getRotation().getRadians(), targetDirection.getRadians());
+                () -> {
+                    Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12) / 2, new Rotation2d(0)); // this is using the wrong pose
+                                                                                                    // should use field constants
+                    // Apply deadband
+                    double linearMagnitude = MathUtil.applyDeadband(
+                            Math.hypot(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode),
+                            DEADBAND);
+                    Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble() * slowMode,
+                            ySupplier.getAsDouble() * slowMode);
+                    Transform2d targetTransform = drive.getPose().minus(speakerPose);
+                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+                    // Rotation2d deltaDirection = drive.getRotation().minus(targetDirection);
 
-                // Square values
-                linearMagnitude = linearMagnitude * linearMagnitude;
-                omega = Math.copySign(omega * omega, omega);
+                    double omega = angleController.calculate(drive.getRotation().getRadians(),
+                            targetDirection.getRadians());
 
-                // Calcaulate new linear velocity
-                Translation2d linearVelocity =
-                    new Pose2d(new Translation2d(), linearDirection)
-                        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-                        .getTranslation();
+                    // Square values
+                    linearMagnitude = linearMagnitude * linearMagnitude;
+                    omega = Math.copySign(omega * omega, omega);
+
+                    // Calcaulate new linear velocity
+                    Translation2d linearVelocity = new Pose2d(new Translation2d(), linearDirection)
+                            .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                            .getTranslation();
 
                 // Convert to robot relative speeds & send command
                 drive.runVelocity(
@@ -169,6 +182,49 @@ public class DriveCommands {
         drive
         );
     }
+
+    /**
+     * Drive robot while pointing at a specific point on the field.
+     */
+    public static Command joystickAnglePoint(
+            Drive drive,
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier,
+            Supplier<Rotation2d> targetDirection) {
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
+        return Commands.run(
+                () -> {
+                    // Apply deadband
+                    double linearMagnitude = MathUtil.applyDeadband(
+                            Math.hypot(xSupplier.getAsDouble() * slowMode, ySupplier.getAsDouble() * slowMode),
+                            DEADBAND);
+                    Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble() * slowMode,
+                            ySupplier.getAsDouble() * slowMode);
+
+                    double omega = angleController.calculate(drive.getRotation().getRadians(),
+                            targetDirection.get().getRadians());
+
+                    // Square values
+                    linearMagnitude = linearMagnitude * linearMagnitude;
+                    omega = Math.copySign(omega * omega, omega);
+
+                    // Calcaulate new linear velocity
+                    Translation2d linearVelocity = new Pose2d(new Translation2d(), linearDirection)
+                            .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                            .getTranslation();
+
+                // Convert to robot relative speeds & send command
+                drive.runVelocity(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                        linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                        omega * drive.getMaxAngularSpeedRadPerSec(),
+                        drive.getRotation()));
+            },
+        drive
+        );
+    }
+
     // turns robot to speaker from current location
     public static Command turnSpeakerAngle(Drive drive) {
         Pose2d speakerPose = FieldConstants.SpeakerPosition;
@@ -258,9 +314,9 @@ public class DriveCommands {
         );
     }
 
-    /** 
-         * Toggle Slow Mode
-         */
+    /**
+     * Toggle Slow Mode
+     */
     public static void toggleSlowMode() {
       if (slowMode == 1) {
         slowMode = kSlowModeConstant;
@@ -269,17 +325,66 @@ public class DriveCommands {
       }
     }
 
-    public static boolean pointedAtSpeaker(Drive drive){
+    public static boolean pointedAtSpeaker(Drive drive) {
         Pose2d speakerPose = FieldConstants.SpeakerPosition;
         Transform2d targetTransform = drive.getPose().minus(speakerPose);
         Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
-        
+
         // Convert to robot relative speeds and send command
         if (Math.abs(drive.getRotation().getDegrees() - targetDirection.getDegrees()) < 1) {
             return true;
         } else {
             return false;
         }
-      }
+    }
 
-}
+    public static Command driveBackAuto(Drive drive){
+        return  joystickDrive(drive, () -> 0.6, () -> 0, ()-> 0).withTimeout(1.5);
+    }
+
+    public static double getPivotSideAngle() {
+        if (SmartDashboard.getBoolean("ShootSide", false)) {
+            return PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE;
+        }
+        return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
+    }
+   
+    public static Command driveBackandShooter(Drive drive, PivotArm pivot, Shooter shooter, Indexer intake) {
+        return (pivot.PIDCommand(DriveCommands::getPivotSideAngle)
+                .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
+                .andThen(
+                        (shooter.runVoltage(11).withTimeout(2)
+                                .alongWith(
+                                        new WaitCommand(0.5)
+                                                .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
+                                                        .withTimeout(0.5))))
+                                .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
+                                .withTimeout(2)
+
+                ).andThen(new WaitCommand(3).alongWith(shooter.runVoltage((0)).withTimeout(3)))
+                .andThen(
+
+                        driveBack(drive).alongWith(shooter.runVoltage((0)).withTimeout(5)));// );
+    }
+
+    public static Command driveBack(Drive drive) {
+        return joystickDrive(drive, () -> 0.6, () -> 0, () -> 0).withTimeout(1.5);// );
+    }
+
+    public static Command justShooter(PivotArm pivot, Shooter shooter, Indexer intake) {
+        return (pivot.PIDCommand(DriveCommands::getPivotSideAngle)
+                .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
+                .andThen(
+                        (shooter.runVoltage(11).withTimeout(3)
+                                .alongWith(
+                                        new WaitCommand(0.5)
+                                                .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
+                                                        .withTimeout(1))))
+                                .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
+                                .withTimeout(3)
+
+                );
+    }
+            
+            
+ }

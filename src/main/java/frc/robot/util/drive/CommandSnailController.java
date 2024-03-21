@@ -1,5 +1,9 @@
 package frc.robot.util.drive;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -59,6 +63,13 @@ public class CommandSnailController extends CommandXboxController {
         LEFT
     }
 
+    public void rumble(int value) {
+        System.out.println("RUMBLE");
+        getHID().setRumble(RumbleType.kLeftRumble, value);
+        getHID().setRumble(RumbleType.kRightRumble, value);
+    }
+
+
     public Trigger getDPad(DPad dpad) {
         int angle;
         switch(dpad) {
@@ -88,5 +99,21 @@ public class CommandSnailController extends CommandXboxController {
     public static double applyDeadband(double value) {
         if (Math.abs(value) < 0.08) return 0;
         else return value;
+    }
+
+    public double getRightYD() {
+        return applyDeadband(getRightY());
+    }
+
+    public double getLeftYD() {
+        return applyDeadband(getLeftY());
+    }
+
+    public double getRightXD() {
+        return applyDeadband(getRightX());
+    }
+
+    public double getLeftXD() {
+        return applyDeadband(getLeftX());
     }
 }

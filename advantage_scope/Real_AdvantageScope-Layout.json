@@ -1,0 +1,328 @@
+{
+  "version": "3.0.1",
+  "layout": [
+    {
+      "type": 8,
+      "fields": [],
+      "listFields": [],
+      "options": {
+        "ids": [
+          0,
+          1,
+          2
+        ],
+        "layouts": [
+          "Xbox Controller (White)",
+          "Xbox Controller (Blue)",
+          "None"
+        ]
+      },
+      "configHidden": false,
+      "title": "Joysticks"
+    },
+    {
+      "type": 6,
+      "fields": [],
+      "listFields": [
+        [
+          {
+            "type": "Robot",
+            "key": "/RealOutputs/PivotPoseThing",
+            "sourceTypeIndex": 1,
+            "sourceType": "Pose3d"
+          },
+          {
+            "type": "Green Ghost",
+            "key": "/Vision/Targets3d",
+            "sourceTypeIndex": 2,
+            "sourceType": "Pose3d[]"
+          }
+        ],
+        [
+          {
+            "type": "Robot",
+            "key": "/RealOutputs/Odometry/Odometry",
+            "sourceTypeIndex": 1,
+            "sourceType": "Pose2d"
+          }
+        ]
+      ],
+      "options": {
+        "field": "2024 Field",
+        "alliance": "blue",
+        "robot": "2024 KitBot",
+        "unitDistance": "meters",
+        "unitRotation": "radians",
+        "cameraIndex": -1,
+        "fov": 50
+      },
+      "configHidden": false,
+      "title": "3D Field"
+    },
+    {
+      "type": 1,
+      "legends": {
+        "left": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": [
+            {
+              "key": "/PivotArm/AngleRads",
+              "color": "#2b66a2",
+              "show": true
+            }
+          ]
+        },
+        "discrete": {
+          "fields": [
+            {
+              "key": "/PivotArm/TempCelsius",
+              "color": "#e5b31b",
+              "show": true
+            }
+          ]
+        },
+        "right": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": [
+            {
+              "key": "/PivotArm/CurrentAmps/0",
+              "color": "#af2437",
+              "show": true
+            }
+          ]
+        }
+      },
+      "title": "Pivot Arm"
+    },
+    {
+      "type": 1,
+      "legends": {
+        "left": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": [
+            {
+              "key": "/Intake/VelocityRadsPerSec",
+              "color": "#af2437",
+              "show": true
+            }
+          ]
+        },
+        "discrete": {
+          "fields": [
+            {
+              "key": "/Intake/TempCelcius",
+              "color": "#2b66a2",
+              "show": true
+            }
+          ]
+        },
+        "right": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": [
+            {
+              "key": "/GroundIntake/CurrentAmps/0",
+              "color": "#e5b31b",
+              "show": true
+            }
+          ]
+        }
+      },
+      "title": "Intake"
+    },
+    {
+      "type": 1,
+      "legends": {
+        "left": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": [
+            {
+              "key": "/GroundIntake/AppliedVoltage",
+              "color": "#e5b31b",
+              "show": true
+            },
+            {
+              "key": "/GroundIntake/CurrentAmps/0",
+              "color": "#af2437",
+              "show": true
+            }
+          ]
+        },
+        "discrete": {
+          "fields": [
+            {
+              "key": "/Intake/TempCelcius",
+              "color": "#2b66a2",
+              "show": true
+            }
+          ]
+        },
+        "right": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": [
+            {
+              "key": "/GroundIntake/SpeedSetpoint",
+              "color": "#80588e",
+              "show": true
+            }
+          ]
+        }
+      },
+      "title": "GroundIntake"
+    },
+    {
+      "type": 1,
+      "legends": {
+        "left": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": [
+            {
+              "key": "/Shooter/LeftFlywheelOutputCurrent",
+              "color": "#2b66a2",
+              "show": true
+            },
+            {
+              "key": "/Shooter/LeftFlywheelAppliedVolts",
+              "color": "#e5b31b",
+              "show": true
+            },
+            {
+              "key": "/Shooter/RightFlywheelOutputCurrent",
+              "color": "#e48b32",
+              "show": true
+            }
+          ]
+        },
+        "discrete": {
+          "fields": []
+        },
+        "right": {
+          "lockedRange": null,
+          "unitConversion": {
+            "type": null,
+            "factor": 1
+          },
+          "fields": [
+            {
+              "key": "/Shooter/RightFlywheelOutputCurrent",
+              "color": "#80588e",
+              "show": true
+            },
+            {
+              "key": "/Shooter/RightFlywheelAppliedVolts",
+              "color": "#af2437",
+              "show": true
+            },
+            {
+              "key": "/Shooter/RightFlywheelOutputCurrent",
+              "color": "#aacaee",
+              "show": true
+            }
+          ]
+        }
+      },
+      "title": "Shooter"
+    },
+    {
+      "type": 9,
+      "fields": [
+        {
+          "key": "/RealOutputs/SwerveStates/Measured",
+          "sourceTypeIndex": 1,
+          "sourceType": "SwerveModuleState[]"
+        },
+        {
+          "key": "/RealOutputs/SwerveStates/SetpointsOptimized",
+          "sourceTypeIndex": 1,
+          "sourceType": "SwerveModuleState[]"
+        },
+        {
+          "key": "/RealOutputs/Odometry/Robot/rotation",
+          "sourceTypeIndex": 1,
+          "sourceType": "Rotation2d"
+        }
+      ],
+      "listFields": [],
+      "options": {
+        "maxSpeed": 4.5,
+        "rotationUnits": "radians",
+        "arrangement": "0,1,2,3",
+        "sizeLeftRight": 0.65,
+        "sizeFrontBack": 0.65,
+        "forwardDirection": "up"
+      },
+      "configHidden": false,
+      "title": "Swerve"
+    },
+    {
+      "type": 3,
+      "field": "/RealOutputs/Console",
+      "title": "Console"
+    },
+    {
+      "type": 5,
+      "fields": [],
+      "listFields": [
+        [
+          {
+            "type": "Robot",
+            "key": "/RealOutputs/Odometry/Robot",
+            "sourceTypeIndex": 1,
+            "sourceType": "Pose2d"
+          },
+          {
+            "type": "Ghost",
+            "key": "/RealOutputs/Odometry/Odometry",
+            "sourceTypeIndex": 1,
+            "sourceType": "Pose2d"
+          },
+          {
+            "type": "Vision Target",
+            "key": "/Vision/Targets",
+            "sourceTypeIndex": 2,
+            "sourceType": "Pose2d[]"
+          }
+        ]
+      ],
+      "options": {
+        "game": "2024 Field",
+        "unitDistance": "meters",
+        "unitRotation": "radians",
+        "origin": "right",
+        "size": 0.75,
+        "allianceBumpers": "auto",
+        "allianceOrigin": "blue",
+        "orientation": "blue left, red right"
+      },
+      "configHidden": false,
+      "title": "Odometry"
+    }
+  ]
+}

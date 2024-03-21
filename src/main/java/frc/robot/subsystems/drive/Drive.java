@@ -15,7 +15,10 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.useVision;
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.subsystems.drive.DriveConstants.kMaxSpeedMetersPerSecond;
+import static frc.robot.subsystems.drive.DriveConstants.kPathConstraints;
+import static frc.robot.subsystems.drive.DriveConstants.kTrackWidthX;
+import static frc.robot.subsystems.drive.DriveConstants.kTrackWidthY;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -27,6 +30,8 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -35,6 +40,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -42,14 +48,15 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.autonomous.LocalADStarAK;
-import frc.robot.commands.DriveCommands;
 
 public class Drive extends SubsystemBase {
   // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
@@ -84,7 +91,8 @@ public class Drive extends SubsystemBase {
     // Odometry class for tracking robot pose
   private SwerveDriveOdometry odometry = new SwerveDriveOdometry(
       kinematics,
-      rawGyroRotation,
+      //rawGyroRotation,
+      getPose().getRotation(),
       lastModulePositions);
 
   private SysIdRoutine sysId;
@@ -112,7 +120,7 @@ public class Drive extends SubsystemBase {
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
         this::getPose,
-        this::setPose,
+        this::resetPose,
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         config,
@@ -172,7 +180,10 @@ public class Drive extends SubsystemBase {
     if (useVision) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
-      poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp, visionIO.getEstimationStdDevs(getPose()));
+      if (visionInputs.hasEstimate) {
+        // poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp);
+        resetPose(visionInputs.estimate);
+      }
     }
 
     for (var module : modules) {
@@ -203,10 +214,11 @@ public class Drive extends SubsystemBase {
       // Use the real gyro angle
       rawGyroRotation = gyroInputs.yawPosition;
     } else {
-      rawGyroRotation = simRotation;
+      // rawGyroRotation = simRotation;
     }
     
-    poseEstimator.update(rawGyroRotation, modulePositions);
+    //poseEstimator.updateWithTime(Timer.getFPGATimestamp(), rawGyroRotation, modulePositions);
+    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), rawGyroRotation, modulePositions);
     odometry.update(rawGyroRotation, modulePositions);
 
     Logger.recordOutput("Odometry/Odometry", odometry.getPoseMeters());
@@ -241,6 +253,11 @@ public class Drive extends SubsystemBase {
   /** Stops the drive. */
   public void stop() {
     runVelocity(new ChassisSpeeds());
+  }
+
+  public void resetYaw() {
+    gyroIO.zeroAll();
+    resetPose(lastPose);
   }
 
   /**
@@ -312,13 +329,19 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the current odometry rotation. */
-  public Rotation2d getRotation() {
+  /* public Rotation2d getRotation() {
     return getPose().getRotation();
+  } */
+  public Rotation2d getRotation() {
+    // return new Rotation2d(gyroIO.getYawAngle());
+    return getPose().getRotation();
+    // return new Rotation2d(); // use if nothing works
   }
 
   /** Resets the current odometry pose. */
-  public void setPose(Pose2d pose) {
+  public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    odometry.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
   /**
@@ -405,8 +428,25 @@ public class Drive extends SubsystemBase {
     );
     return AutoBuilder.followPath(path);
   }
+  
+  public Translation2d FindMidPose(Pose2d start, Pose2d end){
+    return new Translation2d((start.getX()+end.getX())/2, (start.getY()+end.getY())/2);
+  }
 
-  public Command goToNote(){ //not supported for Sim yet
+  public Command driveFromPoseToPose(Pose2d start, Pose2d end) {
+    return AutoBuilder.followPath(
+      PathPlannerPath.fromPathPoints(
+        List.of(
+          new PathPoint(start.getTranslation(), new RotationTarget(0, start.getRotation(), true)),
+          new PathPoint(FindMidPose(start, end), new RotationTarget(0, start.getRotation(), true)),
+          new PathPoint(FindMidPose(new Pose2d(FindMidPose(start, end), new Rotation2d()), end), new RotationTarget(0, start.getRotation(), true)),
+          new PathPoint(end.getTranslation(), new RotationTarget(0, end.getRotation(), true))
+        ), 
+        kPathConstraints, 
+        new GoalEndState(0, end.getRotation())));
+  }
+
+  public Command goToNote() { //not supported for Sim yet
     return DriveCommands.turnToNote(this).andThen(goToPose(visionIO.calculateNotePose(getPose(), visionIO.calculateNoteTranslation(visionInputs))));
     //might have to negate direction or angle due to orientation of the robot's intake
   }

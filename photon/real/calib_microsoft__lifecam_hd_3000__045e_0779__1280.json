@@ -1,0 +1,36 @@
+{
+    "camera": "Microsoft® LifeCam HD-3000 (045e:0779)",
+    "platform": "Windows NT 10.0; Win64; x64",
+    "camera_matrix": [
+        [
+            1144.7401397417605,
+            0,
+            638.8222204040876
+        ],
+        [
+            0,
+            1140.9812486743958,
+            353.28842049663695
+        ],
+        [
+            0,
+            0,
+            1
+        ]
+    ],
+    "distortion_coefficients": [
+        0.18660652168622113,
+        -1.4549885297445235,
+        0.002544251682735074,
+        0.001422510350487072,
+        2.9165007310516655
+    ],
+    "distortion_model": "rectilinear",
+    "avg_reprojection_error": 0.26049871826013377,
+    "img_size": [
+        1280,
+        720
+    ],
+    "keyframes": 9,
+    "calibration_time": "Sat, 09 Mar 2024 04:37:31 GMT"
+}

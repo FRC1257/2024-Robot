@@ -2,6 +2,8 @@ package frc.robot.subsystems.drive;
 
 import java.util.Queue;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -48,6 +50,8 @@ public class GyroIOReal implements GyroIO {
     @Override
     public void updateInputs(GyroIOInputs inputs) {
         inputs.connected = navx.isConnected();
+        Logger.recordOutput("OtherGyro/Angle", gyro.getAngle());
+        Logger.recordOutput("OtherGyro/thing", gyro.getRate());
         inputs.yawPosition = Rotation2d.fromDegrees(getYawAngle());
         inputs.rollPosition = Rotation2d.fromDegrees(getRollAngle());
         inputs.pitchPosition = Rotation2d.fromDegrees(getPitchAngle());
@@ -68,6 +72,7 @@ public class GyroIOReal implements GyroIO {
      * 
      * @return The angle in degrees limited to the range -180 to 180.
      */
+    @Override
     public double getYawAngle() {
         double angle = navx.getAngle() - resetYaw;
         while(angle <= -180) angle += 360;
@@ -191,6 +196,7 @@ public class GyroIOReal implements GyroIO {
         gyro.reset();
     }
 
+    @Override
     public void zeroAll() {
         zeroYawAngle();
         zeroPitchAngle();

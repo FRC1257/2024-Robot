@@ -112,6 +112,7 @@ public class VisionIOSim implements VisionIO {
             inputs.estimate = averageEst.get();
             inputs.targets3d = getTargetsPositions(results);
             inputs.targets = Pose3dToPose2d(inputs.targets3d);
+            inputs.hasEstimate = true;
         }
 
         Logger.recordOutput("Vision/OrangeConnected", camera.isConnected());

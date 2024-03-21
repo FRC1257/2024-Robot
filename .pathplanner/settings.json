@@ -3,9 +3,12 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
+    "2 note autps",
+    "316 Auto Paths",
     "4 Note Auto (Bottom)",
+    "4 Note Auto (Mid)",
     "4 Note Auto (Top)",
-    "4 Note Auto (Mid)"
+    "New Folder"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,

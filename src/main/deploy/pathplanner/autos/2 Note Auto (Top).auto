@@ -2,31 +2,81 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.9091890867867262,
-      "y": 6.766332202498135
+      "x": 0.6699236223008809,
+      "y": 6.710309340732804
     },
-    "rotation": 0
+    "rotation": 61.28157316265236
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "s1-n1"
+            "name": "ShootSide"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "top thing"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeWhile"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "n1-sc1-n4"
+            "pathName": "top thing 2"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "n4-sc2"
+            "name": "ShootSide"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "thing 21"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeWhile"
           }
         }
       ]

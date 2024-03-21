@@ -29,4 +29,10 @@ public interface GyroIO {
   }
 
   public default void updateInputs(GyroIOInputs inputs) {}
+
+  public default double getYawAngle() {
+    return 0.0;
+  }
+
+  public default void zeroAll() {}
 }

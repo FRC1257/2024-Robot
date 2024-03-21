@@ -102,12 +102,12 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/RightRPM", shooterInputs.rightFlywheelVelocityRPM);
   }
 
-  public void runLeftCharacterizationVolts(double volts) {
-    shooterIO.setLeftCharacterizationVoltage(volts);
+  public void runLeftVolts(double volts) {
+    shooterIO.setLeftVoltage(volts);
   }
 
-  public void runRightCharacterizationVolts(double volts) {
-    shooterIO.setRightCharacterizationVoltage(volts);
+  public void runRightVolts(double volts) {
+    shooterIO.setRightVoltage(volts);
   }
 
   public double getLeftCharacterizationVelocity() {
@@ -130,27 +130,6 @@ public class Shooter extends SubsystemBase {
             <= shooterTolerance.get();
   }
 
-  public Command runSpeed(double speed) {
-    return new RunCommand(
-      () -> setRPM(speed, speed),
-      this
-    );
-  }
-
-  public Command runSpeed(DoubleSupplier speed) {
-    return new FunctionalCommand(
-      () -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
-      () -> {},
-      (interrupted) -> {
-        if (interrupted) {
-          shooterIO.stop();
-        }
-      },
-      () -> false,
-      this
-    );
-  }
-
   public Command runVoltage(DoubleSupplier volts) {
     return new FunctionalCommand(
       //() -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
@@ -166,15 +145,23 @@ public class Shooter extends SubsystemBase {
     );
   }
 
+  public Command runVoltage(double volts) {
+    return runVoltage(() -> volts);
+  }
+
   public void setVoltage(DoubleSupplier leftVoltage, DoubleSupplier rightVoltage){
     leftMotorVoltage = leftVoltage.getAsDouble() * 10;
     rightMotorVoltage = rightVoltage.getAsDouble() * 10;
-    //shooterIO.setVoltage(leftMotorVoltage, defaultShooterSpeedRPM); bruh I love autcorrect
     shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
   }
 
+  public void setVoltage(double volts){
+    shooterIO.setVoltage(volts, volts);
+  }
+
+ 
   public void setRPM(double leftRPM, double rightRPM) {
-    leftSetpointRPM = leftRPM;
+    leftSetpointRPM = leftRPM; //RPM setpoint is being set here
     rightSetpointRPM = rightRPM;
     shooterIO.setRPM(leftRPM, rightRPM);
   }

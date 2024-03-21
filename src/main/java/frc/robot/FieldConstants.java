@@ -6,7 +6,10 @@ import java.io.IOException;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
@@ -36,6 +39,8 @@ public class FieldConstants {
 
   public static Translation2d ampCenter =
       new Translation2d(Units.inchesToMeters(72.455), Units.inchesToMeters(322.996));
+
+  public static Pose2d TrapPose = new Pose2d(0,0, new Rotation2d(0)); // NEEDS TO BE ADJUSTED
 
   public static Pose2d ampPose = new Pose2d(ampCenter, Rotation2d.fromDegrees(-90));
 
@@ -98,6 +103,7 @@ public class FieldConstants {
   public static Translation3d bottomLeftSpeaker =
       new Translation3d(0.0, Units.inchesToMeters(197.765), Units.inchesToMeters(78.324));
   public static final Pose2d SpeakerPosition = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
+  public static final Pose3d SpeakerPosition3D = new Pose3d(SpeakerPosition).transformBy(new Transform3d(0,0, Units.inchesToMeters(100.324), new Rotation3d()));
   public static double aprilTagWidth = Units.inchesToMeters(6.50);
   public static AprilTagFieldLayout aprilTags;
 
@@ -121,9 +127,9 @@ public class FieldConstants {
   };
 
   private static Pose2d[] START_POSITIONS = new Pose2d[] {
-    new Pose2d(0.73,6.74,Rotation2d.fromDegrees(0)),
+    new Pose2d(0.73,6.74,Rotation2d.fromDegrees(60)),
     new Pose2d(1.51,5.57,Rotation2d.fromDegrees(0)),
-    new Pose2d(0.73,4.43,Rotation2d.fromDegrees(0)),
+    new Pose2d(0.73,4.43,Rotation2d.fromDegrees(-60)),
     new Pose2d(0.73,3.25,Rotation2d.fromDegrees(0)),
     new Pose2d(0.73,2.27,Rotation2d.fromDegrees(0)),
   };
@@ -168,6 +174,20 @@ public class FieldConstants {
 
   public static Pose2d[] SCORE_POSITIONS() {
     return AllianceFlipUtil.apply(SCORE_POSITIONS);
+  }
+
+  public static Pose3d speakerPosition3D() {
+    Pose2d flippedPose = flippedPose(SpeakerPosition);
+    return new Pose3d(
+      flippedPose.getTranslation().getX(),
+      flippedPose.getTranslation().getY(),
+      SpeakerPosition3D.getTranslation().getZ(),
+      new Rotation3d(
+        0,
+        0,
+        flippedPose.getRotation().getRadians()
+      )
+    );
   }
 
   public static Pose2d pickupPose() {
