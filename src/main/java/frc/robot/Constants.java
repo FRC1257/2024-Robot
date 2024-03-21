@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -126,17 +128,17 @@ public final class Constants {
 
   public final static int NEO_CURRENT_LIMIT = 80; // amps
 
-  public static final double[][] LookupTable = {
-    {0,1000,10},
-    {1,2000,30},
-    {2,3000,50},
-    {3,4000,60},
-    {4,5500,70},
-    {5,6500,70},
-    {6,6500,75},
-    {7,6500,77},
-    {8,6700,79},
-    {9,6900,83},
-    {10,6500,85}
+  public static final double[][] LookupTable = { // {distance, rpm, angle}
+    {0, 1000, 30},
+    {1, 2000, 30},
+    {2, 3000, 50},
+    {3, 4000, 60},
+    {4, 5500, 70},
+    {5, 6500, 70},
+    {6, 6500, 75},
+    {7, 6500, 77},
+    {8, 6700, 79},
+    {9, 6900, 83},
+    {10, 6500, 85}
   };
 }

@@ -3,12 +3,10 @@ package frc.robot.subsystems.shooter;
 import frc.robot.Constants;
 
 public class ShooterConstants {
-  public static final double RIGHT_MOTOR_MIN_SPEED = 0;
-  public static final double RIGHT_MOTOR_MAX_SPEED = 0;
-  public static final double LEFT_MOTOR_MIN_SPEED = 0;
-  public static final double LEFT_MOTOR_MAX_SPEED = 0;
-  
-  public static double defaultShooterSpeedRPM = 1000;
+  public static final double SHOOTER_SPINUP_TIME = 0.5;
+  public static final double SHOOTER_UNJAM_VOLTAGE = -0.5;
+
+  public static final double SHOOTER_FULL_VOLTAGE = 11;
 
   public static class ShooterSimConstants {
     public static final double RIGHT_MOTOR_MIN_SPEED = 0;
