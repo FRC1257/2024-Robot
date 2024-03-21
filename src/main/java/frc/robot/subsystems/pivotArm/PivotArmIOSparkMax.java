@@ -5,12 +5,18 @@ import static frc.robot.Constants.ElectricalLayout.PIVOT_ARM_ID;
 import static frc.robot.Constants.ElectricalLayout.RIGHT_SLAVE_BACK_ID;
 import static frc.robot.Constants.ElectricalLayout.RIGHT_SLAVE_FRONT_ID;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants;
 import frc.robot.Constants.ElectricalLayout;
@@ -18,7 +24,8 @@ import frc.robot.Constants.ElectricalLayout;
 public class PivotArmIOSparkMax implements PivotArmIO {
     // Motor and Encoders
     private CANSparkMax pivotMotor, leftSlave, rightSlaveFront, rightSlaveBack;
-    private SparkPIDController pidController;
+    private final ProfiledPIDController pidController;
+    private ArmFeedforward feedforward = new ArmFeedforward(0, 0, 0, 0);
     
     private DutyCycleEncoder absoluteEncoder;
     private RelativeEncoder motorEncoder;
@@ -63,37 +70,49 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
         //wasn't burning the flash to all the motors, this might be the issue
 
-        configurePID();
-
-        /* 
-        absoluteEncoder = pivotMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
-        absoluteEncoder.setPositionConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR);
-        absoluteEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0); */
-
         absoluteEncoder = new DutyCycleEncoder(ElectricalLayout.ABSOLUTE_ENCODER_ID);
-        absoluteEncoder.setDistancePerRotation(2 * Constants.PI);
+        absoluteEncoder.setDistancePerRotation(2 * Constants.PI * PivotArmConstants.POSITION_CONVERSION_FACTOR);
         absoluteEncoder.setDutyCycleRange(1/1024.0, 1023.0/1024.0);
+        Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.getDistance());
+        // make sure the pivot starts at the bottom position every time
+        // absoluteEncoder.reset();
 
+        pidController = new ProfiledPIDController(PivotArmConstants.PIVOT_ARM_PID_REAL[0], PivotArmConstants.PIVOT_ARM_PID_REAL[1], PivotArmConstants.PIVOT_ARM_PID_REAL[2],
+                new TrapezoidProfile.Constraints(2.45, 2.45));
+        
+        pidController.setTolerance(PivotArmConstants.PIVOT_ARM_PID_TOLERANCE, PivotArmConstants.PIVOT_ARM_PID_VELOCITY_TOLERANCE);
+
+ 
         //0 position for absolute encoder is at 0.2585 rad, so subtract that value from everything
 
         motorEncoder = pivotMotor.getEncoder();
         motorEncoder.setPositionConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR);
         motorEncoder.setVelocityConversionFactor(PivotArmConstants.POSITION_CONVERSION_FACTOR / 60.0);
+        configurePID();
+        configureFeedForward();
+
     }
 
     private void configurePID() {
-        pidController = pivotMotor.getPIDController();
-        pidController.setOutputRange(PivotArmConstants.PIVOT_ARM_MIN_ANGLE, PivotArmConstants.PIVOT_ARM_MAX_ANGLE);
+        // pidController.setOutputRange(PivotArmConstants.PIVOT_ARM_MIN_ANGLE, PivotArmConstants.PIVOT_ARM_MAX_ANGLE);
         pidController.setP(PivotArmConstants.PIVOT_ARM_PID_REAL[0]);
         pidController.setI(PivotArmConstants.PIVOT_ARM_PID_REAL[1]);
         pidController.setD(PivotArmConstants.PIVOT_ARM_PID_REAL[2]);
-        pidController.setFF(PivotArmConstants.PIVOT_ARM_PID_REAL[3]);
+    }
+
+    private void configureFeedForward() {
+        setkS(PivotArmConstants.PIVOT_ARM_FEEDFORWARD_REAL[0]);
+        setkG(PivotArmConstants.PIVOT_ARM_FEEDFORWARD_REAL[1]);
+        setkV(PivotArmConstants.PIVOT_ARM_FEEDFORWARD_REAL[2]);
+        setkA(PivotArmConstants.PIVOT_ARM_FEEDFORWARD_REAL[3]);
     }
 
     /** Updates the set of loggable inputs. */
     @Override
     public void updateInputs(PivotArmIOInputs inputs) {
-        inputs.angleRads = absoluteEncoder.getAbsolutePosition();
+        inputs.angleRads = getAngle();
+        Logger.recordOutput("PivotArm/Absolute", absoluteEncoder.getAbsolutePosition());
+        Logger.recordOutput("PivotArm/MotorEncoder", motorEncoder.getPosition());
         inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
         inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
         inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
@@ -104,20 +123,38 @@ public class PivotArmIOSparkMax implements PivotArmIO {
     /** Run open loop at the specified voltage. */
     @Override
     public void setVoltage(double motorVolts) {
+        Logger.recordOutput("PivotArm/AppliedVolts", motorVolts);
         pivotMotor.setVoltage(motorVolts);
     }
 
     /** Returns the current distance measurement. */
     @Override
     public double getAngle() {
-        return absoluteEncoder.getAbsolutePosition();
+        return -absoluteEncoder.getDistance() + PivotArmConstants.PIVOT_ARM_OFFSET;
     }
 
     /** Go to Setpoint */
     @Override
     public void goToSetpoint(double setpoint) {
-        this.setpoint = setpoint;
-        pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
+        pidController.setGoal(setpoint);
+        // With the setpoint value we run PID control like normal
+        double pidOutput = MathUtil.clamp(pidController.calculate(getAngle()), -3, 3);
+        double feedforwardOutput = feedforward.calculate(getAngle(), pidController.getSetpoint().velocity);
+
+        Logger.recordOutput("PivotArm/FeedforwardOutput", feedforwardOutput);
+        Logger.recordOutput("PivotArm/PIDOutput", pidOutput);
+
+        setVoltage(MathUtil.clamp(pidOutput + feedforwardOutput, -4, 4));
+    }
+
+    @Override
+    public void holdSetpoint(double setpoint) {
+        pidController.setGoal(setpoint);
+        // With the setpoint value we run PID control like normal
+        double pidOutput = MathUtil.clamp(pidController.calculate(getAngle()), -3, 3);
+        Logger.recordOutput("PivotArm/PIDOutput", pidOutput);
+
+        setVoltage(MathUtil.clamp(pidOutput, -4, 4));
     }
 
     @Override
@@ -150,7 +187,47 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
     @Override
     public void setFF(double ff) {
-        pidController.setFF(ff);
+        // pidController.setFF(ff);
+    }
+
+    @Override
+    public void setkS(double kS) {
+        feedforward = new ArmFeedforward(kS, feedforward.kg, feedforward.kv, feedforward.ka);
+    }
+
+    @Override
+    public void setkG(double kG) {
+        feedforward = new ArmFeedforward(feedforward.ks, kG, feedforward.kv, feedforward.ka);
+    }
+
+    @Override
+    public void setkV(double kV) {
+        feedforward = new ArmFeedforward(feedforward.ks, feedforward.kg, kV, feedforward.ka);
+    }
+
+    @Override
+    public void setkA(double kA) {
+        feedforward = new ArmFeedforward(feedforward.ks, feedforward.kg, feedforward.kv, kA);
+    }
+
+    @Override 
+    public double getkS(){
+        return feedforward.ks;
+    }
+
+    @Override 
+    public double getkG(){
+        return feedforward.kg;
+    }
+
+    @Override 
+    public double getkV(){
+        return feedforward.kv;
+    }
+
+    @Override 
+    public double getkA(){
+        return feedforward.ka;
     }
 
     @Override
@@ -170,7 +247,8 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
     @Override
     public double getFF() {
-        return pidController.getFF();
+        // return pidController.getFF();
+        return 0;
     }
 
 }

@@ -16,9 +16,21 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "s1-n1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
                 }
               },
               {
@@ -34,6 +46,12 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "sc2-n2"
@@ -46,6 +64,12 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "sc3-n5"
@@ -54,7 +78,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "n2-n1"
+                  "pathName": "n5-sc3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
                 }
               }
             ]

@@ -1,18 +1,27 @@
 package frc.robot.subsystems.pivotArm;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.util.Units;
 
 public class PivotArmConstants {
 
-    public static final double POSITION_CONVERSION_FACTOR = 1;
+    public static final double POSITION_CONVERSION_FACTOR = 21.0/35.0;
     public static final double PIVOT_ARM_ROTATION_DIAM_M = 1;
 
-    public static final double[] PIVOT_ARM_PID_REAL = {0.25, 0, 0, 0};
+    public static final double[] PIVOT_ARM_PID_REAL = {4, 0, 0, 0.01};
+    public static final double[] PIVOT_ARM_FEEDFORWARD_REAL = {0, 0.7, 0, 0};
     public static final double PIVOT_ARM_PID_TOLERANCE = Units.degreesToRadians(1);
+    public static final double PIVOT_ARM_PID_VELOCITY_TOLERANCE = Units.degreesToRadians(5) / 60.0;
 
-    public static final double PIVOT_ARM_MAX_ANGLE = Units.degreesToRadians(120.0);
-    public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(0.0);
-    public static final double PIVOT_ARM_AMP_ANGLE = Units.degreesToRadians(90);
+    public static final double PIVOT_ARM_OFFSET = 1;
+
+    public static final double PIVOT_ARM_MAX_ANGLE = Units.degreesToRadians(110.0);
+    public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(2.0);
+
+    public static final double PIVOT_AMP_ANGLE = Units.degreesToRadians(105.0);
+    public static final double PIVOT_SUBWOOFER_ANGLE = Units.degreesToRadians(39.0);
+    public static final double PIVOT_TRAP_ANGLE = Units.degreesToRadians(30.0);
 
     public static class PivotArmSimConstants {
       public static final double[] kPivotSimPID = {15, 0, 0, 0};

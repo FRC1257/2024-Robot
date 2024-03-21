@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.4348734737355513,
-        "y": 5.5430292057165325
+        "x": 2.902639651437554,
+        "y": 5.554723360151765
       },
       "prevControl": {
-        "x": 2.3958744408681274,
-        "y": 5.504030172849109
+        "x": 2.86364061857013,
+        "y": 5.5157243272843415
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,16 +34,6 @@
     {
       "name": "Intake",
       "waypointRelativePos": 1.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
-        }
-      }
-    },
-    {
-      "name": "Zero",
-      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {

@@ -15,7 +15,10 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.useVision;
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.subsystems.drive.DriveConstants.kMaxSpeedMetersPerSecond;
+import static frc.robot.subsystems.drive.DriveConstants.kPathConstraints;
+import static frc.robot.subsystems.drive.DriveConstants.kTrackWidthX;
+import static frc.robot.subsystems.drive.DriveConstants.kTrackWidthY;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -46,10 +49,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.autonomous.LocalADStarAK;
-import frc.robot.commands.DriveCommands;
+import frc.robot.util.drive.AllianceFlipUtil;
 
 public class Drive extends SubsystemBase {
   // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
@@ -77,7 +81,6 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
-  private Pose2d lastPose = new Pose2d();
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
@@ -243,6 +246,11 @@ public class Drive extends SubsystemBase {
     runVelocity(new ChassisSpeeds());
   }
 
+  public void resetYaw() {
+    gyroIO.zeroAll();
+    setPose(AllianceFlipUtil.apply(new Pose2d()));
+  }
+
   /**
    * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will
    * return to their normal orientations the next time a nonzero velocity is requested.
@@ -312,13 +320,18 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the current odometry rotation. */
-  public Rotation2d getRotation() {
+  /* public Rotation2d getRotation() {
     return getPose().getRotation();
+  } */
+  public Rotation2d getRotation() {
+    return new Rotation2d(gyroIO.getYawAngle());
+    //return getPose().getRotation();
   }
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    odometry.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
   /**

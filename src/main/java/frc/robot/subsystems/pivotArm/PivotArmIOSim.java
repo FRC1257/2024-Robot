@@ -18,7 +18,7 @@ public class PivotArmIOSim implements PivotArmIO {
 
     // Standard classes for controlling our arm
     private final ProfiledPIDController m_controller;
-    private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(PivotArmConstants.PivotArmSimConstants.kArmMass, PivotArmConstants.PivotArmSimConstants.kArmLength);
+    private SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(0, 0);
     private final Encoder m_encoder;
 
     // Simulation classes help us simulate what's going on, including gravity.
@@ -96,6 +96,16 @@ public class PivotArmIOSim implements PivotArmIO {
     public void setD(double d) {
         m_controller.setD(d);
     }
+
+    @Override
+    public void setkS(double kS) {
+        m_feedforward = new SimpleMotorFeedforward(kS, m_feedforward.kv);
+    }
+
+    @Override
+    public void setkV(double kV) {
+        m_feedforward = new SimpleMotorFeedforward(m_feedforward.ks, kV);
+    }
     
     @Override
     public double getP() {
@@ -110,6 +120,16 @@ public class PivotArmIOSim implements PivotArmIO {
     @Override
     public double getD() {
         return m_controller.getD();
+    }
+
+    @Override
+    public double getkS() {
+        return m_feedforward.ks;
+    }
+
+    @Override
+    public double getkV() {
+        return m_feedforward.kv;
     }
 
 }

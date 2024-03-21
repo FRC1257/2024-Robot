@@ -166,6 +166,10 @@ public class Shooter extends SubsystemBase {
     );
   }
 
+  public Command runVoltage(double volts) {
+    return runVoltage(() -> volts);
+  }
+
   public void setVoltage(DoubleSupplier leftVoltage, DoubleSupplier rightVoltage){
     leftMotorVoltage = leftVoltage.getAsDouble() * 10;
     rightMotorVoltage = rightVoltage.getAsDouble() * 10;
@@ -173,10 +177,19 @@ public class Shooter extends SubsystemBase {
     shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
   }
 
+  public void setVoltage(double volts){
+    shooterIO.setVoltage(volts, volts);
+  }
+
+ 
   public void setRPM(double leftRPM, double rightRPM) {
-    leftSetpointRPM = leftRPM;
+    leftSetpointRPM = leftRPM; //RPM setpoint is being set here
     rightSetpointRPM = rightRPM;
     shooterIO.setRPM(leftRPM, rightRPM);
+  }
+
+  public void setRPM(double rpm) {
+    setRPM(rpm, rpm);
   }
 
   public void setRPM(DoubleSupplier leftRPM, DoubleSupplier rightRPM) {

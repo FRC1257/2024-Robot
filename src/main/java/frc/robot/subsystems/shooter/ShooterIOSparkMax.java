@@ -1,12 +1,16 @@
 package frc.robot.subsystems.shooter;
 
-import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.*;
+import static frc.robot.Constants.ElectricalLayout.SHOOTER_LEFT_ID;
+import static frc.robot.Constants.ElectricalLayout.SHOOTER_RIGHT_ID;
+import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.flywheelReduction;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import frc.robot.Constants;
 
 public class ShooterIOSparkMax implements ShooterIO {
   private CANSparkFlex leftMotor;
@@ -21,8 +25,8 @@ public class ShooterIOSparkMax implements ShooterIO {
   private SimpleMotorFeedforward rightFF = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
 
   public ShooterIOSparkMax() {
-    leftMotor = new CANSparkFlex(leftShooter.id(), CANSparkFlex.MotorType.kBrushless);
-    rightMotor = new CANSparkFlex(rightShooter.id(), CANSparkFlex.MotorType.kBrushless);
+    leftMotor = new CANSparkFlex(SHOOTER_LEFT_ID, CANSparkFlex.MotorType.kBrushless);
+    rightMotor = new CANSparkFlex(SHOOTER_RIGHT_ID, CANSparkFlex.MotorType.kBrushless);
 
     leftEncoder = leftMotor.getEncoder();
     rightEncoder = rightMotor.getEncoder();
@@ -30,23 +34,18 @@ public class ShooterIOSparkMax implements ShooterIO {
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
 
-    leftMotor.setInverted(leftShooter.inverted());
-    //rightMotor.setInverted(rightShooter.inverted());
-    //invert rightMotor for now because they're running in opposite directions for some reason
-    //probably how they are oriented
-    leftMotor.setSmartCurrentLimit(60);
-    rightMotor.setSmartCurrentLimit(60);
-    leftMotor.enableVoltageCompensation(12.0);
-    rightMotor.enableVoltageCompensation(12.0);
+    setLeftBrakeMode(false);
+    setRightBrakeMode(false);
 
-    setShooterBrakeMode(false);
+    rightMotor.setInverted(true);
+
+    leftMotor.setSmartCurrentLimit(Constants.NEO_VORTEX_CURRENT_LIMIT);
+    rightMotor.setSmartCurrentLimit(Constants.NEO_VORTEX_CURRENT_LIMIT);
+    //leftMotor.enableVoltageCompensation(12.0);
+    //rightMotor.enableVoltageCompensation(12.0);
 
     leftEncoder.setPosition(0.0);
     rightEncoder.setPosition(0.0);
-    //    leftEncoder.setMeasurementPeriod(10);
-    //    rightEncoder.setMeasurementPeriod(10);
-    //    leftEncoder.setAverageDepth(2);
-    //    rightEncoder.setAverageDepth(2);
 
     // rotations, rps
     leftEncoder.setPositionConversionFactor(1.0 / flywheelReduction);
@@ -67,15 +66,15 @@ public class ShooterIOSparkMax implements ShooterIO {
   public void updateInputs(ShooterIOInputs inputs) {
     inputs.leftShooterPositionRotations = leftEncoder.getPosition();
     inputs.leftFlywheelVelocityRPM = leftEncoder.getVelocity();
-    inputs.leftFlywheelAppliedVolts = leftMotor.getAppliedOutput();
+    inputs.leftFlywheelAppliedVolts = leftMotor.getAppliedOutput() * 12;
     inputs.leftFlywheelOutputCurrent = leftMotor.getOutputCurrent();
 
     inputs.rightFlywheelPositionRotations = rightEncoder.getPosition();
     inputs.rightFlywheelVelocityRPM = rightEncoder.getVelocity();
-    inputs.rightFlywheelAppliedVolts = rightMotor.getAppliedOutput();
+    inputs.rightFlywheelAppliedVolts = rightMotor.getAppliedOutput() * 12;
     inputs.rightFlywheelOutputCurrent = rightMotor.getOutputCurrent();
   }
-
+  
   @Override
   public void setLeftRPM(double rpm) {
     leftController.setReference(

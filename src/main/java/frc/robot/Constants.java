@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
 
   public static final Mode mode = Mode.REAL;
-  public static final Drivers driver = Drivers.PROGRAMMERS;
-  public static final Operators operator = Operators.PROGRAMMERS;
+  public static final Drivers driver = Drivers.MAUI;
+  public static final Operators operator = Operators.ERICK;
 
   public static final Mode currentMode = getRobotMode();
 
@@ -76,8 +76,6 @@ public final class Constants {
     return Mode.REAL;
   }
 
-  
-
   public static class BuildConstants {
     public static int DIRTY = 1;
     public static String MAVEN_NAME = "Snail";
@@ -101,42 +99,44 @@ public final class Constants {
     public final static int GROUND_INTAKE_MOTOR = 9;
 
     // Intake Sensors
-    public final static int INTAKE_PHOTO_ELECTRIC = 0;
-    public final static int GROUND_INTAKE_BREAK_BEAM = 1;
+    public final static int INTAKE_PHOTO_ELECTRIC = 6;
     
-    // CHANGE CONSTANTS, THESE ARE TEMPORARY
     public static final int PIVOT_ARM_ID = 16;
     public static final int LEFT_SLAVE_ID = 12;
     public static final int RIGHT_SLAVE_FRONT_ID = 10;
     public static final int RIGHT_SLAVE_BACK_ID = 11;
-    
+
     public static final int ABSOLUTE_ENCODER_ID = 0;
 
     // LED
     public static final int BLINKIN_LED_CONTROLLER_PORT = 1;
+
+    // Shooter
+    public static final int SHOOTER_LEFT_ID = 14; // master
+    public static final int SHOOTER_RIGHT_ID = 13;
+    public static final int PHOTOELECTRIC_SENSOR_CHANNEL = 17; // NEEDS TO BE CHANGED 
   };
 
   public static double PI = 3.141592653589793238462643;
   public static double UPDATE_PERIOD = 0.010; // seconds
   public final static int NEO_550_CURRENT_LIMIT = 25; // amps
+  public final static int NEO_VORTEX_CURRENT_LIMIT = 60;
   public final static int QUADRATURE_COUNTS_PER_REV = 8192; // encoder resolution
   // https://www.revrobotics.com/rev-11-1271/
 
   public final static int NEO_CURRENT_LIMIT = 80; // amps
 
-
-  
   public static final double[][] LookupTable = {
-    {0,5000,10},
-    {1,5000,30},
-    {2,5000,50},
-    {3,5000,60},
+    {0,1000,10},
+    {1,2000,30},
+    {2,3000,50},
+    {3,4000,60},
     {4,5500,70},
-    {5,5500,70},
-    {6,5500,75},
-    {7,5500,77},
-    {8,6000,79},
-    {9,6500,83},
+    {5,6500,70},
+    {6,6500,75},
+    {7,6500,77},
+    {8,6700,79},
+    {9,6900,83},
     {10,6500,85}
   };
 }
