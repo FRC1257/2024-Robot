@@ -46,6 +46,10 @@ public class FieldConstants {
 
   public static Pose2d pickupPose = new Pose2d(15.331, 1, Rotation2d.fromDegrees(-60));
 
+  public static final class RobotConstants {
+    public static double armLength = Units.inchesToMeters(20.5);
+    public static double robotHeight = Units.inchesToMeters(11);
+  }
   /** Staging locations for each note */
   public static final class StagingLocations {
     public static double centerlineX = Units.inchesToMeters(fieldLength / 2);

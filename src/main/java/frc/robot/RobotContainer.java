@@ -334,6 +334,8 @@ public class RobotContainer {
       drive.resetYaw();
     }, drive));
 
+    DRIVE_AMP.onTrue(shootAmpTrajectory());
+
     // TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
     // TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
@@ -455,7 +457,7 @@ public class RobotContainer {
   }
 
   public Command shootAmpTrajectory() {
-    return drive.pathfindToTrajectory(PathPlannerPath.fromPathFile("amp score")).andThen(shootAmp());
+    return drive.pathfindToTrajectory(PathPlannerPath.fromPathFile("amp score"));
   }
 
   public Command shootAmp() {

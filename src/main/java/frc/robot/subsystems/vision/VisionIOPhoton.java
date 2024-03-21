@@ -18,9 +18,6 @@ import java.util.Optional;
 
 public class VisionIOPhoton implements VisionIO {
 
-    private final PhotonCamera backRight;
-    private final PhotonPoseEstimator backRightEstimator;
-
     private final PhotonCamera backLeft;
     private final PhotonPoseEstimator backLeftEstimator;
 
@@ -37,29 +34,10 @@ public class VisionIOPhoton implements VisionIO {
     public VisionIOPhoton() {
         PortForwarder.add(5800, "photonvision.local", 5800);
         //These directions are arbitrary for now
-
-        
-        //Back Right
-        backRight = new PhotonCamera(kRaspberryCameraName);
-        backRightEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backRight, kRaspberryRobotToCam);
-        backRightEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
-        
         //Back Left
         backLeft = new PhotonCamera(kRaspberryCameraName2);
-        backLeftEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backRight, kRaspberryRobotToCam2);
+        backLeftEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backLeft, kRaspberryRobotToCam);
         backLeftEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
-        //Front Left
-        // orangeCamera = new PhotonCamera(kOrangeCameraName);
-        // orangeEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, orangeCamera, kOrangeRobotToCam);
-        // orangeEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
-        //Front Right
-        // noteCamera = new PhotonCamera(kNoteCameraName);
-        // orangeEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, noteCamera, kOrangeRobotToCam);
-        // orangeEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        //used for estimating pose based off 
 
     }
 
@@ -104,29 +82,20 @@ public class VisionIOPhoton implements VisionIO {
             inputs.noteYaw[i] = note_result.getTargets().get(i).getYaw();
             inputs.noteArea[i] = note_result.getTargets().get(i).getArea();
         } */
-
-        // Logger.recordOutput("Vision/OrangeConnected", orangeCamera.isConnected());
-        Logger.recordOutput("Vision/BackRightConnected", backRight.isConnected());
-        // Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
-        // Logger.recordOutput("Vision/NoteCameraPipeline", noteCamera.getPipelineIndex());
+        
         Logger.recordOutput("Vision/BackLeftConnected", backLeft.isConnected());
     }
 
     private PhotonPipelineResult[] getAprilTagResults() {
-        PhotonPipelineResult front_result = getLatestResult(backRight);
-            // PhotonPipelineResult back_result = getLatestResult(orangeCamera);
         PhotonPipelineResult front_result2 = getLatestResult(backLeft);
-        Logger.recordOutput("Vision/front", front_result.getTargets().size());
         Logger.recordOutput("Vision/frontleft", front_result2.getTargets().size());
-        return new PhotonPipelineResult[] { front_result, front_result2 };
+        return new PhotonPipelineResult[] { front_result2 };
     }
 
     
     private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
-        backRightEstimator.setReferencePose(currentEstimate);
-        // orangeEstimator.setReferencePose(currentEstimate);
         backLeftEstimator.setReferencePose(currentEstimate);
-        return new PhotonPoseEstimator[] { backRightEstimator, backLeftEstimator};
+        return new PhotonPoseEstimator[] { backLeftEstimator};
     }
 
     private int tagCounts(PhotonPipelineResult[] results) {
