@@ -354,6 +354,7 @@ public class RobotContainer {
     PIVOT_PODIUM.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE));
     PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
     LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
+    LOCK_ON_AMP.whileTrue(joystickAmpPoint());
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
@@ -446,6 +447,20 @@ public class RobotContainer {
           );
     }
     return autoChooser.get();
+  }
+
+  /**
+   * Drives while continuously facing the amp
+   */
+  public Command joystickAmpPoint() {
+    return DriveCommands.joystickAnglePoint(
+      drive,
+      DRIVE_FORWARD,
+      DRIVE_STRAFE,
+      () -> {
+        return AllianceFlipUtil.apply(new Rotation2d(Units.degreesToRadians(90)));
+      }
+    );
   }
 
   public Command zeroPosition() {

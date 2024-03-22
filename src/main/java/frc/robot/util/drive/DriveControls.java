@@ -34,6 +34,7 @@ public class DriveControls {
 
     // Drive Trajectories
     public static Trigger DRIVE_AMP;
+    public static Trigger LOCK_ON_AMP;
     public static Trigger DRIVE_SOURCE;
 
     // Drive Turns
@@ -97,6 +98,7 @@ public class DriveControls {
                 TURN_90 = EMPTY_TRIGGER;
                 TURN_180 = EMPTY_TRIGGER;
                 LOCK_ON_SPEAKER_FULL = driver.leftBumper();
+                LOCK_ON_AMP = EMPTY_TRIGGER;
 
                 DRIVE_NOTE_GOTO = driver.a();
                 break;

@@ -148,14 +148,13 @@ public class VisionIOSim implements VisionIO {
                 return PhotonUtils.estimateCameraToTargetTranslation(
                 range, Rotation2d.fromDegrees(-note_result.getBestTarget().getYaw()));
         } else {
-            return null;
+            return new Translation2d();
         }
     }
 
     @Override
     public Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation){
-        //return new Pose2d(robotPose.getX() + noteTranslation.getX(), robotPose.getY() + noteTranslation.getY(), robotPose.getRotation());
-        return null;
+        return new Pose2d(robotPose.getX() + noteTranslation.getX(), robotPose.getY() + noteTranslation.getY(), robotPose.getRotation());
     }
     
 }
