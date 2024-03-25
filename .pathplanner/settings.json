@@ -10,7 +10,9 @@
     "4 Note Auto (Top)",
     "New Folder"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "2 Note"
+  ],
   "defaultMaxVel": 6.0,
   "defaultMaxAccel": 4.0,
   "defaultMaxAngVel": 540.0,
