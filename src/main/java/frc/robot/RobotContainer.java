@@ -4,14 +4,46 @@
 
 package frc.robot;
 
-import static frc.robot.util.drive.DriveControls.*;
+import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
+import static frc.robot.util.drive.DriveControls.DRIVE_FORWARD;
+import static frc.robot.util.drive.DriveControls.DRIVE_NOTE_GOTO;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROBOT_RELATIVE;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROTATE;
+import static frc.robot.util.drive.DriveControls.DRIVE_SLOW;
+import static frc.robot.util.drive.DriveControls.DRIVE_SPEAKER_AIM;
+import static frc.robot.util.drive.DriveControls.DRIVE_STOP;
+import static frc.robot.util.drive.DriveControls.DRIVE_STRAFE;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_IN;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_OUT;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.INTAKE_IN;
+import static frc.robot.util.drive.DriveControls.INTAKE_OUT;
+import static frc.robot.util.drive.DriveControls.INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.INTAKE_SHIMMY;
+import static frc.robot.util.drive.DriveControls.INTAKE_UNTIL_INTAKED;
+import static frc.robot.util.drive.DriveControls.LOCK_BACK;
+import static frc.robot.util.drive.DriveControls.LOCK_ON_AMP;
+import static frc.robot.util.drive.DriveControls.LOCK_ON_SPEAKER_FULL;
+import static frc.robot.util.drive.DriveControls.LOCK_PICKUP;
+import static frc.robot.util.drive.DriveControls.PIVOT_AMP;
+import static frc.robot.util.drive.DriveControls.PIVOT_HOLD;
+import static frc.robot.util.drive.DriveControls.PIVOT_PODIUM;
+import static frc.robot.util.drive.DriveControls.PIVOT_ROTATE;
+import static frc.robot.util.drive.DriveControls.PIVOT_TO_SPEAKER;
+import static frc.robot.util.drive.DriveControls.PIVOT_ZERO;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND_INTAKE;
+import static frc.robot.util.drive.DriveControls.SHOOTER_SPEED;
+import static frc.robot.util.drive.DriveControls.SHOOTER_UNJAM;
+import static frc.robot.util.drive.DriveControls.configureControls;
+import static frc.robot.util.drive.DriveControls.getRumbleDriver;
+import static frc.robot.util.drive.DriveControls.getRumbleOperator;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -220,6 +252,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer).withTimeout(3));
     // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("Zero", zeroPosition());
+    NamedCommands.registerCommand("ZeroPivot", pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE));
+    NamedCommands.registerCommand("PrepShot", rotateArmSpeaker());
 
     System.out.println("[Init] Setting up Triggers");
     configureControls();
@@ -530,7 +564,7 @@ public class RobotContainer {
 
   public Command rotateArmSpeaker() {
     // return pivot.PIDCommand(this::getAngle);
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).deadlineWith(shooter.runVoltage(0));
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
   }
 
   public Command rotateArmSpeakerSide() {
