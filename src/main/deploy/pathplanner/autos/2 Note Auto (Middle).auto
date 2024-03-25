@@ -45,7 +45,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "n2-sc2"
+            "pathName": "n2-s2"
           }
         },
         {
@@ -61,7 +61,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "sc2-n4"
+                  "pathName": null
                 }
               },
               {
