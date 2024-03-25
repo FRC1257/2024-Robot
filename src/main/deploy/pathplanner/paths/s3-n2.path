@@ -54,7 +54,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Start s3",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

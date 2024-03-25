@@ -3,12 +3,17 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "2 note autps",
-    "316 Auto Paths",
-    "4 Note Auto (Bottom)",
-    "4 Note Auto (Mid)",
-    "4 Note Auto (Top)",
-    "New Folder"
+    "Start n1",
+    "Start n2",
+    "Start n3",
+    "Start n4",
+    "Start n5",
+    "Start n6",
+    "Start n7",
+    "Start n8",
+    "Start s1",
+    "Start s2",
+    "Start s3"
   ],
   "autoFolders": [
     "2 Note"
