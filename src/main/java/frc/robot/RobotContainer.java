@@ -656,7 +656,7 @@ public class RobotContainer {
     // TODO tune tomorrow
 
     // return getGeneralAngle(FieldConstants.speakerPosition3D());
-    return (Math.PI - Lookup.getAngle(getEstimatedDistance()));
+    return Lookup.getAngle(getEstimatedDistance());
     // return getGeneralAngle(FieldConstants.speakerPosition3D()) * 0.8;
    //  return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
   }
