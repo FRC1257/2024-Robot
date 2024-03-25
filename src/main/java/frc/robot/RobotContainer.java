@@ -221,6 +221,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Zero", zeroPosition());
     NamedCommands.registerCommand("ZeroPivot", pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE));
     NamedCommands.registerCommand("PrepShot", rotateArmSpeaker());
+    NamedCommands.registerCommand("PrepShootAnywhere", rotateArmtoSpeakerForever());
 
     System.out.println("[Init] Setting up Triggers");
     configureControls();

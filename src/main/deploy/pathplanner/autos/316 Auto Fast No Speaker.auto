@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6924444618120023,
-      "y": 4.440124264863915
+      "x": 1.383130458568611,
+      "y": 5.594556573728532
     },
-    "rotation": -55.980650010173584
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootSide"
+            "name": "Shoot"
           }
         },
         {
@@ -24,13 +24,19 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "s2-n3"
+                  "pathName": "s2-n1"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "IntakeWhile"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
                 }
               }
             ]
@@ -43,25 +49,25 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "ZeroPivot"
-          }
-        },
-        {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "s3-n8"
+                  "pathName": "n1-n2"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "IntakeWhile"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
                 }
               }
             ]
@@ -70,13 +76,32 @@
         {
           "type": "named",
           "data": {
-            "name": "IntakeWhile"
+            "name": "ShootAnywhere"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "n8-s6"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "n2-n3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWhile"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
+              }
+            ]
           }
         },
         {
