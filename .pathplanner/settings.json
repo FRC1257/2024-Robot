@@ -3,24 +3,17 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "Start n1",
-    "Start n2",
-    "Start n3",
-    "Start n4",
-    "Start n5",
-    "Start n6",
-    "Start n7",
-    "Start n8",
-    "Start s1",
-    "Start s2",
-    "Start s3"
+    "2 note autps",
+    "316 Auto Paths",
+    "4 Note Auto (Bottom)",
+    "4 Note Auto (Mid)",
+    "4 Note Auto (Top)",
+    "New Folder"
   ],
-  "autoFolders": [
-    "2 Note"
-  ],
-  "defaultMaxVel": 6.0,
-  "defaultMaxAccel": 4.0,
+  "autoFolders": [],
+  "defaultMaxVel": 4.0,
+  "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
-  "maxModuleSpeed": 4.5
+  "maxModuleSpeed": 3.5
 }
