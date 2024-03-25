@@ -69,6 +69,7 @@ public class DriveControls {
     public static Trigger SHOOTER_SHOOT;
     public static Trigger SHOOTER_FULL_SEND;
     public static Trigger SHOOTER_UNJAM;
+    public static Trigger SHOOT_ANYWHERE;
 
     // Rumble Controls
     public static Trigger TIMED_RUMBLE;
@@ -101,6 +102,8 @@ public class DriveControls {
                 LOCK_ON_AMP = EMPTY_TRIGGER;
 
                 DRIVE_NOTE_GOTO = driver.a();
+
+                SHOOT_ANYWHERE = driver.back();
                 break;
             case PROGRAMMERS:
             default:
@@ -120,6 +123,7 @@ public class DriveControls {
 
                 //unused commands
                 DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
+                SHOOT_ANYWHERE = driver.back();
                 break;
         }
 
