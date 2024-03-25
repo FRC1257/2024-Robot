@@ -217,7 +217,7 @@ public class RobotContainer {
     // NamedCommands.registerCommand("ShootAnywhere", shootAnywhere());
     NamedCommands.registerCommand("Intake",
         (indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5))).deadlineWith(shooter.runVoltage(0)));
-    NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer).withTimeout(2));
+    NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer).withTimeout(3));
     // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("Zero", zeroPosition());
 
@@ -509,13 +509,13 @@ public class RobotContainer {
 
   public Command shootSpeaker() {
     return (
-      rotateArmSpeaker()
+      rotateArmSpeaker().deadlineWith(shooter.runVoltage(0))
         .andThen(shootNote().deadlineWith(rotateArmtoSpeakerForever())));
   }
 
   public Command shootSpeakerSide() {
     return (
-      rotateArmSpeakerSide()
+      rotateArmSpeakerSide().deadlineWith(shooter.runVoltage(0))
         .andThen(shootNote().deadlineWith(rotateArmtoSpeakerForever())));
   }
 
