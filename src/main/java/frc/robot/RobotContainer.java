@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.ElectricalLayout.PHOTOELECTRIC_SENSOR_CHANNEL;
 import static frc.robot.util.drive.DriveControls.*;
 
 import org.littletonrobotics.junction.Logger;
@@ -505,7 +506,7 @@ public class RobotContainer {
   }
 
   public Command shootAnywhere() {
-    return (new WaitUntilCommand(this::isPointedAtSpeaker).andThen(shootNote()))
+    return (new WaitUntilCommand(this::isPointedAtSpeaker).deadlineWith(shooter.runVoltage(0)).andThen(shootNote()))
               .deadlineWith(lockOnSpeakerFull());
   }
 
@@ -641,12 +642,13 @@ public class RobotContainer {
   }
 
   public void LEDPeriodic() {
-    BlinkinLEDController.isEndgame = DriverStation.getMatchTime() <= 30;
+    BlinkinLEDController.isEndgame = (int) DriverStation.getMatchTime() == 30;
     BlinkinLEDController.isEnabled = DriverStation.isEnabled();
     // BlinkinLEDController.noteInIntake = intake.isIntaked();
     BlinkinLEDController.pivotArmDown = pivot.getAngle()
         .getRadians() < (PivotArmConstants.PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
-    BlinkinLEDController.shooting = shooter.getLeftSpeedMetersPerSecond() > 10_000;
+    BlinkinLEDController.shooting = shooter.getLeftSpeedMetersPerSecond() > 4000;
+    BlinkinLEDController.noteInIntake = indexer.isIntaked();
     ledController.periodic();
   }
 

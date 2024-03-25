@@ -269,7 +269,7 @@ public class BlinkinLEDController {
       setAllianceColorSolid();
     }
     else {
-      setPattern(BlinkinPattern.BLACK);
+      setPattern(BlinkinPattern.CP1_2_SPARKLE_1_ON_2);
     }
   }
 }

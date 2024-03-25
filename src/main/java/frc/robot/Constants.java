@@ -109,12 +109,12 @@ public final class Constants {
     public static final int ABSOLUTE_ENCODER_ID = 8;
 
     // LED
-    public static final int BLINKIN_LED_CONTROLLER_PORT = 1;
+    public static final int BLINKIN_LED_CONTROLLER_PORT = 7;
 
     // Shooter
     public static final int SHOOTER_LEFT_ID = 14; // master
     public static final int SHOOTER_RIGHT_ID = 13;
-    public static final int PHOTOELECTRIC_SENSOR_CHANNEL = 17; // NEEDS TO BE CHANGED 
+    public static final int PHOTOELECTRIC_SENSOR_CHANNEL = 9; // NEEDS TO BE CHANGED 
   };
 
   public static double PI = 3.141592653589793238462643;
