@@ -228,7 +228,18 @@ public class PivotArm extends SubsystemBase {
     //no commmand yalee
 
     public Command bringDownCommand() {
-        return PIDCommand(0).withTimeout(1.5);
+        return new FunctionalCommand(
+            () -> {}, 
+            () -> {
+                move(-2);
+            }, 
+            (interrupted) -> {
+                move(0);
+            }, 
+            () -> {
+                return io.getAngle() < 0.1;
+            }, 
+            this);
     }
 
 }

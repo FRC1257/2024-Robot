@@ -287,13 +287,13 @@ public class RobotContainer {
             drive,
             DRIVE_FORWARD,
             DRIVE_STRAFE)); */
-    DRIVE_SPEAKER_AIM.whileTrue(
+    /* DRIVE_SPEAKER_AIM.whileTrue(
       DriveCommands.driveNote(drive)
     );
 
     DRIVE_NOTE_GOTO.whileTrue(
       drive.goToNote()
-    );
+    ); */
 
     LOCK_BACK.whileTrue(DriveCommands.joystickAnglePoint(
         drive,

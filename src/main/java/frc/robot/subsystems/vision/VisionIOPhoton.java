@@ -4,65 +4,45 @@ import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.PortForwarder;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
-import java.security.spec.ECFieldF2m;
 import java.util.Optional;
 
 public class VisionIOPhoton implements VisionIO {
 
-    private final PhotonCamera backRight;
-    private final PhotonPoseEstimator backRightEstimator;
+    private final PhotonCamera camera1;
+    private final PhotonPoseEstimator camera1Estimator;
 
-    //private final PhotonCamera backLeft;
-    //private final PhotonPoseEstimator backLeftEstimator;
+    private final PhotonCamera camera2;
+    private final PhotonPoseEstimator camera2Estimator;
 
-    // private final PhotonCamera orangeCamera;
-    // private final PhotonPoseEstimator orangeEstimator;
-
-     private final PhotonCamera noteCamera;
-    // private final PhotonPoseEstimator orangeEstimator2;
-    // private boolean noteCameraObjectMode = false;
-    //private final PhotonPoseEstimator noteEstimator;
+    private final PhotonCamera camera3;
+    private final PhotonPoseEstimator camera3Estimator;
 
     private Pose2d lastEstimate = new Pose2d();
     
     public VisionIOPhoton() {
         PortForwarder.add(5800, "photonvision.local", 5800);
-        //These directions are arbitrary for now
-
         
-        //Back Right
-        backRight = new PhotonCamera(kRaspberryCameraName);
-        backRightEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backRight, kRaspberryRobotToCam);
-        backRightEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        // Camera 1
+        camera1 = new PhotonCamera(cam1Name);
+        camera1Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera1, 
+            cam1RobotToCam);
+        camera1Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
-        
-        //Back Left
-        //backLeft = new PhotonCamera(kRaspberryCameraName2);
-        //backLeft = new PhotonCamera(kNoteCameraName);
-        //backLeftEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backRight, kRaspberryRobotToCam2);
-        //backLeftEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        // Camera 2
+        camera2 = new PhotonCamera(cam2Name);
+        camera2Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera2, cam2RobotToCam);
+        camera2Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         //Front Left
-        // orangeCamera = new PhotonCamera(kOrangeCameraName);
-        // orangeEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, orangeCamera, kOrangeRobotToCam);
-        // orangeEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
-        //Front Right
-        noteCamera = new PhotonCamera(kNoteCameraName);
-        // orangeEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, noteCamera, kOrangeRobotToCam);
-        // orangeEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        //used for estimating pose based off 
-
+        camera3 = new PhotonCamera(cam3Name);
+        camera3Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera3, cam3RobotToCam);
+        camera3Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     @Override
@@ -73,116 +53,66 @@ public class VisionIOPhoton implements VisionIO {
         PhotonPoseEstimator[] photonEstimators = getAprilTagEstimators(currentEstimate);
         
         // add code to check if the closest target is in front or back
-        inputs.estimate = currentEstimate;
+        inputs.estimate = new Pose2d[0];
 
         // add code to check if the closest target is in front or back
         Optional<Pose2d> averageEst = getAverageEstimate(results, photonEstimators);
         inputs.timestamp = estimateLatestTimestamp(results);
 
         if (averageEst.isPresent()) {
-            inputs.estimate = averageEst.get();
+            inputs.estimate = getEstimatesArray(results, photonEstimators);
             inputs.targets3d = getTargetsPositions(results);
             inputs.targets = Pose3dToPose2d(inputs.targets3d);
             inputs.tagCount = tagCounts(results);
             inputs.hasEstimate = true;
+            Logger.recordOutput("Vision/EstimateAverage", averageEst.get());
         } else {
             inputs.timestamp = inputs.timestamp;
             inputs.hasEstimate = false;
         }
 
-        // get note data
-        //all note information is gotten here
-        //just need to do something with this information
-        var note_result = getLatestResult(noteCamera);
-        //Logger.recordOutput("Vision/NoteCameraMode", noteCameraObjectMode);
-        inputs.noteTimestamp = note_result.getTimestampSeconds();
-        inputs.noteConfidence = new double[note_result.getTargets().size()];
-        inputs.notePitch = new double[note_result.getTargets().size()];
-        inputs.noteYaw = new double[note_result.getTargets().size()];
-        inputs.noteArea = new double[note_result.getTargets().size()];
-        for (int i = 0; i < note_result.getTargets().size(); i++) {
-            // inputs.noteConfidence[i] = note_result.getTargets().get(i).getConfidence();
-            inputs.notePitch[i] = note_result.getTargets().get(i).getPitch();
-            inputs.noteYaw[i] = note_result.getTargets().get(i).getYaw();
-            inputs.noteArea[i] = note_result.getTargets().get(i).getArea();
-        } 
-
-        // Logger.recordOutput("Vision/OrangeConnected", orangeCamera.isConnected());
-        Logger.recordOutput("Vision/BackRightConnected", backRight.isConnected());
-        Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
-         Logger.recordOutput("Vision/NoteCameraPipeline", noteCamera.getPipelineIndex());
-        //Logger.recordOutput("Vision/BackLeftConnected", backLeft.isConnected());
+        // Log if the robot code can see these cameras
+        Logger.recordOutput("Vision/cam1/Connected", camera1.isConnected());
+        Logger.recordOutput("Vision/cam2/Connected", camera2.isConnected());
+        Logger.recordOutput("Vision/cam3/Connected", camera3.isConnected());
     }
 
     private PhotonPipelineResult[] getAprilTagResults() {
-        PhotonPipelineResult front_result = getLatestResult(backRight);
-            // PhotonPipelineResult back_result = getLatestResult(orangeCamera);
-        //PhotonPipelineResult front_result2 = getLatestResult(backLeft);
-        Logger.recordOutput("Vision/front", front_result.getTargets().size());
-        //Logger.recordOutput("Vision/frontleft", front_result2.getTargets().size());
-        return new PhotonPipelineResult[] { front_result};//, front_result2 };
+        PhotonPipelineResult cam1_result = getLatestResult(camera1);
+        PhotonPipelineResult cam2_result = getLatestResult(camera2);
+        PhotonPipelineResult cam3_result = getLatestResult(camera3);
+
+        // Number of targets
+        Logger.recordOutput("Vision/cam1/results", cam1_result.getTargets().size());
+        Logger.recordOutput("Vision/cam2/results", cam2_result.getTargets().size());
+        Logger.recordOutput("Vision/cam3/results", cam3_result.getTargets().size());
+
+        // Pose Ambiguity
+        Logger.recordOutput("Vision/cam1/PoseAmbiguity", cam1_result.getBestTarget().getPoseAmbiguity());
+        Logger.recordOutput("Vision/cam2/PoseAmbiguity", cam2_result.getBestTarget().getPoseAmbiguity());
+        Logger.recordOutput("Vision/cam3/PoseAmbiguity", cam3_result.getBestTarget().getPoseAmbiguity());
+
+        // Target Yaw
+        Logger.recordOutput("Vision/cam1/TargetYaw", cam1_result.getBestTarget().getYaw());
+        Logger.recordOutput("Vision/cam2/TargetYaw", cam2_result.getBestTarget().getYaw());
+        Logger.recordOutput("Vision/cam3/TargetYaw", cam3_result.getBestTarget().getYaw());
+
+        return new PhotonPipelineResult[] { cam1_result, cam2_result, cam3_result };
     }
 
-    
     private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
-        backRightEstimator.setReferencePose(currentEstimate);
-        // orangeEstimator.setReferencePose(currentEstimate);
-        //backLeftEstimator.setReferencePose(currentEstimate);
-        return new PhotonPoseEstimator[] { backRightEstimator};//, backLeftEstimator};
-    }
+        camera1Estimator.setReferencePose(currentEstimate);
+        camera2Estimator.setReferencePose(currentEstimate);
+        camera3Estimator.setReferencePose(currentEstimate);
 
-    private int tagCounts(PhotonPipelineResult[] results) {
-        int tags = 0;
-        for (PhotonPipelineResult result : results) {
-            tags += result.targets.size();
-        }
-        return tags;
-    }
-
-    @Override
-    public Translation2d calculateNoteTranslation(VisionIOInputs inputs) {
-        PhotonPipelineResult note_result = getLatestResult(noteCamera);
-        //height of the note shouldn't matter, because ideally it's going to be on the ground
-          if (note_result.hasTargets()) {
-                double range =
-                        PhotonUtils.calculateDistanceToTargetMeters(
-                                NoteCameraHeight, //need to set
-                                NoteHeight, //should be 0 or the height of the note
-                                0, //CAMERA_PITCH_RADIANS
-                                Units.degreesToRadians(note_result.getBestTarget().getPitch()));            
-                return PhotonUtils.estimateCameraToTargetTranslation(
-                range, Rotation2d.fromDegrees(-note_result.getBestTarget().getYaw()));
-        } else {
-            return new Translation2d();
-        }
-    }
-
-    @Override
-    public Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation){
-        return new Pose2d(robotPose.getX() + noteTranslation.getX(), robotPose.getY() + noteTranslation.getY(), robotPose.getRotation());
-    }
-
-    @Override
-    public Rotation2d getAngleToNote() {
-        var note_result = getLatestResult(noteCamera);
-
-        if (note_result.hasTargets()){
-            return Rotation2d.fromDegrees(note_result.getBestTarget().getYaw());
-        }
-
-        return new Rotation2d();
-
+        return new PhotonPoseEstimator[] { camera1Estimator, camera2Estimator, camera3Estimator };
     }
 
     @Override
     public boolean goodResult(PhotonPipelineResult result) {
-        return result.hasTargets()/*   && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD *//* 
+        return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD/* 
                 && kTagLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d().getTranslation()
                         .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE */;
     }
 
-    @Override
-    public void setNoteCameraObjectMode(boolean mode) {
-        return;
-    }
 }

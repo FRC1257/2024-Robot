@@ -181,7 +181,9 @@ public class Drive extends SubsystemBase {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
-        poseEstimator.addVisionMeasurement(visionInputs.estimate, visionInputs.timestamp);
+        for (int i = 0; i < visionInputs.estimate.length; i++) {
+          poseEstimator.addVisionMeasurement(visionInputs.estimate[i], visionInputs.timestamp);
+        }
       }
     }
 
@@ -445,21 +447,4 @@ public class Drive extends SubsystemBase {
         new GoalEndState(0, end.getRotation())));
   }
 
-  public Command goToNote() { //not supported for Sim yet
-    return DriveCommands.turnToNote(this).andThen(goToPose(visionIO.calculateNotePose(getPose(), visionIO.calculateNoteTranslation(visionInputs))));
-    //might have to negate direction or angle due to orientation of the robot's intake
-  }
-
-  public Translation2d calculateNoteTranslation() {
-    return visionIO.calculateNoteTranslation(visionInputs);
-  }
-
-  public Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation) {
-    return visionIO.calculateNotePose(robotPose, noteTranslation);
-  }
-
-  public Rotation2d getAngleToNote() {
-    return visionIO.getAngleToNote();
-  }
-  
 }

@@ -22,103 +22,110 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
 public class VisionIOSim implements VisionIO {
-    private final PhotonCamera camera;
-    private final PhotonCamera backCamera;
-    private final PhotonCamera camera2;
+    private final PhotonCamera cam1;
+    private final PhotonCamera cam2;
+    private final PhotonCamera cam3;
     private final PhotonCamera noteCamera;
 
-    private final PhotonPoseEstimator photonEstimator;
-    private final PhotonPoseEstimator backPhotonEstimator;
-    private final PhotonPoseEstimator photonEstimator2;
+    private final PhotonPoseEstimator cam1Estimator;
+    private final PhotonPoseEstimator cam2Estimator;
+    private final PhotonPoseEstimator cam3Estimator;
 
     // Simulation
-    private PhotonCameraSim cameraSim;
-    private PhotonCameraSim backCameraSim;
-    private PhotonCameraSim cameraSim2;
+    private PhotonCameraSim cam1Sim;
+    private PhotonCameraSim cam2Sim;
+    private PhotonCameraSim cam3Sim;
     private PhotonCameraSim noteCameraSim;
+
     private VisionSystemSim visionSim;
 
     private Pose2d lastEstimate = new Pose2d();
 
     public VisionIOSim() {
-        camera = new PhotonCamera(kRaspberryCameraName);
-        backCamera = new PhotonCamera(kOrangeCameraName);
-        camera2 = new PhotonCamera(kRaspberryCameraName2);
+        cam1 = new PhotonCamera(cam1Name);
+        cam2 = new PhotonCamera(cam2Name);
+        cam3 = new PhotonCamera(cam3Name);
         noteCamera = new PhotonCamera(kNoteCameraName);
 
-        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera,
-                kRaspberryRobotToCam);
-        photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        backPhotonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, backCamera,
-                kOrangeRobotToCam);
-        backPhotonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        photonEstimator2 = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera2,
-                kRaspberryRobotToCam);
-        photonEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        cam1Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam1,
+                getSimVersion(cam1RobotToCam));
+        cam1Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        cam2Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam2,
+                getSimVersion(cam2RobotToCam));
+        cam2Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        cam3Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam3,
+                getSimVersion(cam3RobotToCam));
+        cam3Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
-        // Create the vision system simulation which handles cameras and targets on the
+        // Create the vision system simulation which handles cam1s and targets on the
         // field.
         visionSim = new VisionSystemSim("main");
         // Add all the AprilTags inside the tag layout as visible targets to this
         // simulated field.
         visionSim.addAprilTags(kTagLayout);
-        // Create simulated camera properties. These can be set to mimic your actual
-        // camera.
-        var cameraProp = new SimCameraProperties();
-        cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
-        cameraProp.setCalibError(0.35, 0.10);
-        cameraProp.setFPS(15);
-        cameraProp.setAvgLatencyMs(50);
-        cameraProp.setLatencyStdDevMs(15);
+        // Create simulated cam1 properties. These can be set to mimic your actual
+        // cam1.
+        var cam1Prop = new SimCameraProperties();
+        cam1Prop.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+        cam1Prop.setCalibError(0.35, 0.10);
+        cam1Prop.setFPS(15);
+        cam1Prop.setAvgLatencyMs(50);
+        cam1Prop.setLatencyStdDevMs(15);
 
         // Create a PhotonCameraSim which will update the linked PhotonCamera's values
         // with visible
         // targets.
-        cameraSim = new PhotonCameraSim(camera, cameraProp);
-        backCameraSim = new PhotonCameraSim(backCamera, cameraProp);
-        cameraSim2 = new PhotonCameraSim(camera2, cameraProp);
-        noteCameraSim = new PhotonCameraSim(noteCamera, cameraProp);
+        cam1Sim = new PhotonCameraSim(cam1, cam1Prop);
+        cam2Sim = new PhotonCameraSim(cam2, cam1Prop);
+        cam3Sim = new PhotonCameraSim(cam3, cam1Prop);
+        noteCameraSim = new PhotonCameraSim(noteCamera, cam1Prop);
 
-        // Add the simulated camera to view the targets on this simulated field.
-        visionSim.addCamera(cameraSim, kRaspberryRobotToCam);
-        visionSim.addCamera(backCameraSim, kOrangeRobotToCam);
-        visionSim.addCamera(cameraSim2, kRaspberryRobotToCam2);
-        visionSim.addCamera(noteCameraSim, kNoteRobotToCam);
+        // Add the simulated cam1 to view the targets on this simulated field.
+        visionSim.addCamera(cam1Sim, getSimVersion(cam1RobotToCam));
+        visionSim.addCamera(cam2Sim, getSimVersion(cam2RobotToCam));
+        visionSim.addCamera(cam3Sim, getSimVersion(cam3RobotToCam));
+        visionSim.addCamera(noteCameraSim, getSimVersion(kNoteRobotToCam));
 
-        cameraSim.enableDrawWireframe(true);
+        cam1Sim.enableDrawWireframe(true);
     }
 
     @Override
     public void updateInputs(VisionIOInputs inputs, Pose2d currentEstimate) {
         lastEstimate = currentEstimate;
         visionSim.update(currentEstimate);
-        photonEstimator.setReferencePose(currentEstimate);
-        backPhotonEstimator.setReferencePose(currentEstimate);
-        photonEstimator2.setReferencePose(currentEstimate);
+        cam1Estimator.setReferencePose(currentEstimate);
+        cam2Estimator.setReferencePose(currentEstimate);
+        cam3Estimator.setReferencePose(currentEstimate);
 
-        PhotonPipelineResult front_result = getLatestResult(camera);
-        PhotonPipelineResult back_result = getLatestResult(backCamera);
-        PhotonPipelineResult front_result2 = getLatestResult(camera2);
+        PhotonPipelineResult front_result = getLatestResult(cam1);
+        PhotonPipelineResult back_result = getLatestResult(cam2);
+        PhotonPipelineResult front_result2 = getLatestResult(cam3);
+        
         PhotonPipelineResult[] results = { front_result, back_result, front_result2 };
-        PhotonPoseEstimator[] photonEstimators = { photonEstimator, backPhotonEstimator, photonEstimator2 };
+        PhotonPoseEstimator[] photonEstimators = { cam1Estimator, cam2Estimator, cam3Estimator };
 
-        inputs.estimate = currentEstimate;
+        inputs.estimate = new Pose2d[0];
 
         // add code to check if the closest target is in front or back
         Optional<Pose2d> averageEst = getAverageEstimate(results, photonEstimators);
         inputs.timestamp = estimateLatestTimestamp(results);
 
         if (averageEst.isPresent()) {
-            inputs.estimate = averageEst.get();
+            inputs.estimate = getEstimatesArray(results, photonEstimators);
             inputs.targets3d = getTargetsPositions(results);
             inputs.targets = Pose3dToPose2d(inputs.targets3d);
+            inputs.tagCount = tagCounts(results);
             inputs.hasEstimate = true;
+            Logger.recordOutput("Vision/EstimateAverage", averageEst.get());
+        } else {
+            inputs.timestamp = inputs.timestamp;
+            inputs.hasEstimate = false;
         }
 
-        Logger.recordOutput("Vision/OrangeConnected", camera.isConnected());
-        Logger.recordOutput("Vision/RaspberryConnected", backCamera.isConnected());
+        Logger.recordOutput("Vision/OrangeConnected", cam1.isConnected());
+        Logger.recordOutput("Vision/RaspberryConnected", cam2.isConnected());
         Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
-        Logger.recordOutput("Vision/Raspberry2Connected", camera2.isConnected());
+        Logger.recordOutput("Vision/Raspberry2Connected", cam3.isConnected());
         
     }
 
@@ -133,28 +140,5 @@ public class VisionIOSim implements VisionIO {
                 && kTagLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d().getTranslation()
                         .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE;
     }
-
-    @Override
-    public Translation2d calculateNoteTranslation(VisionIOInputs inputs) {
-        PhotonPipelineResult note_result = getLatestResult(noteCamera);
-        //height of the note shouldn't matter, because ideally it's going to be on the ground
-          if (note_result.hasTargets()) {
-                double range =
-                        PhotonUtils.calculateDistanceToTargetMeters(
-                                NoteCameraHeight, //need to set
-                                NoteHeight, //should be 0 or the height of the note
-                                0, //CAMERA_PITCH_RADIANS
-                                Units.degreesToRadians(note_result.getBestTarget().getPitch()));            
-                return PhotonUtils.estimateCameraToTargetTranslation(
-                range, Rotation2d.fromDegrees(-note_result.getBestTarget().getYaw()));
-        } else {
-            return new Translation2d();
-        }
-    }
-
-    @Override
-    public Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation){
-        return new Pose2d(robotPose.getX() + noteTranslation.getX(), robotPose.getY() + noteTranslation.getY(), robotPose.getRotation());
-    }
-    
+ 
 }
