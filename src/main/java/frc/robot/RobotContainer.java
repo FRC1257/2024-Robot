@@ -192,7 +192,7 @@ public class RobotContainer {
     // position
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
     NamedCommands.registerCommand("ShootSide", shootSpeakerSide().andThen(zeroPosition()));
-    NamedCommands.registerCommand("ShootAnywhere", shootAnywhere());
+    NamedCommands.registerCommand("ShootAnywhere", shootAnywhereAuto());
     NamedCommands.registerCommand("Intake",
         (indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5))).deadlineWith(shooter.runVoltage(0)));
     NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer));
@@ -486,6 +486,13 @@ public class RobotContainer {
   public Command shootAnywhere() {
     return (new WaitUntilCommand(this::isPointedAtSpeaker).andThen(shootNote()))
               .deadlineWith(lockOnSpeakerFull());
+  }
+
+  public Command shootAnywhereAuto() {
+    return (new WaitCommand(1.5).andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE).withTimeout(1)))
+              .deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+              .deadlineWith(DriveCommands.joystickSpeakerPoint(drive, () -> 0, () -> 0))
+              .deadlineWith(rotateArmtoSpeakerForever());
   }
 
   public Command shootSpeaker() {
