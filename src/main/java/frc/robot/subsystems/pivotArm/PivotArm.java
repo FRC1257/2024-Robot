@@ -235,6 +235,7 @@ public class PivotArm extends SubsystemBase {
             ()-> {return io.getAngle() < 0.1;},
             this
         );
+
     }
 
 }
