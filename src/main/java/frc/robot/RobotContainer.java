@@ -37,32 +37,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.LED.BlinkinLEDController;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOReal;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOSparkMax;
-import frc.robot.subsystems.groundIntake.GroundIntake;
-import frc.robot.subsystems.groundIntake.GroundIntakeConstants;
-import frc.robot.subsystems.groundIntake.GroundIntakeIO;
-import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
-import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
-import frc.robot.subsystems.indexer.Indexer;
-import frc.robot.subsystems.indexer.IndexerConstants;
-import frc.robot.subsystems.indexer.IndexerIO;
-import frc.robot.subsystems.indexer.IndexerIOSim;
-import frc.robot.subsystems.indexer.IndexerIOSparkMax;
-import frc.robot.subsystems.pivotArm.PivotArm;
-import frc.robot.subsystems.pivotArm.PivotArmConstants;
-import frc.robot.subsystems.pivotArm.PivotArmIO;
-import frc.robot.subsystems.pivotArm.PivotArmIOSim;
-import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterConstants;
-import frc.robot.subsystems.shooter.ShooterIO;
-import frc.robot.subsystems.shooter.ShooterIOSim;
-import frc.robot.subsystems.shooter.ShooterIOSparkMax;
+import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.groundIntake.*;
+import frc.robot.subsystems.indexer.*;
+import frc.robot.subsystems.pivotArm.*;
+import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
@@ -219,7 +198,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer));
     // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("Zero", zeroPosition());
-    NamedCommands.registerCommand("ZeroPivot", pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE));
+    NamedCommands.registerCommand("ZeroPivot", pivot.bringDownCommand());
     NamedCommands.registerCommand("PrepShot", rotateArmSpeaker());
     NamedCommands.registerCommand("PrepShootAnywhere", rotateArmtoSpeakerForever());
 
@@ -466,7 +445,7 @@ public class RobotContainer {
   }
 
   public Command zeroPosition() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE)
+    return pivot.bringDownCommand()
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())
@@ -474,7 +453,7 @@ public class RobotContainer {
   }
 
   public Command zeroPositionWhileMoving() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE)
+    return pivot.bringDownCommand()
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())).withTimeout(1.5);
@@ -511,13 +490,13 @@ public class RobotContainer {
 
   public Command shootSpeaker() {
     return (
-      rotateArmSpeaker().deadlineWith(shooter.runVoltage(0))
+      rotateArmSpeaker()
         .andThen(shootNote().deadlineWith(rotateArmtoSpeakerForever())));
   }
 
   public Command shootSpeakerSide() {
     return (
-      rotateArmSpeakerSide().deadlineWith(shooter.runVoltage(0))
+      rotateArmSpeakerSide()
         .andThen(shootNote().deadlineWith(rotateArmtoSpeakerForever())));
   }
 
@@ -531,13 +510,11 @@ public class RobotContainer {
   }
 
   public Command rotateArmSpeaker() {
-    // return pivot.PIDCommand(this::getAngle);
     return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
   }
 
   public Command rotateArmSpeakerSide() {
-    // return pivot.PIDCommand(this::getAngle);
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltage(0));
   }
 
   public Command rotateArmAmp() {

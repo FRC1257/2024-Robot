@@ -11,6 +11,7 @@ public class PivotArmConstants {
 
     public static final double[] PIVOT_ARM_PID_REAL = {2, 0, 0, 0.01};
     public static final double[] PIVOT_ARM_FEEDFORWARD_REAL = {0, 0.3, 0, 0};
+
     public static final double PIVOT_ARM_PID_TOLERANCE = Units.degreesToRadians(1);
     public static final double PIVOT_ARM_PID_VELOCITY_TOLERANCE = Units.degreesToRadians(5) / 60.0;
 

@@ -18,13 +18,13 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "s2-n1"
+                  "pathName": "straight"
                 }
               },
               {
@@ -49,13 +49,13 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "n1-n2"
+                  "pathName": "wip around"
                 }
               },
               {
@@ -80,13 +80,13 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "n2-n3"
+                  "pathName": "far out"
                 }
               },
               {
@@ -105,9 +105,28 @@
           }
         },
         {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "align"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepShot"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "ShootAnywhere"
+            "name": "Shoot"
           }
         }
       ]
