@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3674277229789629,
-      "y": 5.5768617000416905
+      "x": 1.383130458568611,
+      "y": 5.594556573728532
     },
     "rotation": 0
   },
@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "s2-n2"
+                  "pathName": "straight"
                 }
               },
               {
@@ -43,22 +43,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "n2-s2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              }
-            ]
+            "name": "ShootAnywhere"
           }
         },
         {
@@ -68,7 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "s2-m1"
+                  "pathName": "wip around"
                 }
               },
               {
@@ -76,8 +63,70 @@
                 "data": {
                   "name": "IntakeWhile"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootAnywhere"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "far out"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWhile"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "align"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepShot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]
