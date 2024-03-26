@@ -109,7 +109,7 @@ public final class Constants {
     public static final int ABSOLUTE_ENCODER_ID = 8;
 
     // LED
-    public static final int BLINKIN_LED_CONTROLLER_PORT = 1;
+    public static final int BLINKIN_LED_CONTROLLER_PORT = 7;
 
     // Shooter
     public static final int SHOOTER_LEFT_ID = 14; // master

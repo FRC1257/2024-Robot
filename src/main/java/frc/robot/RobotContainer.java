@@ -644,9 +644,8 @@ public class RobotContainer {
     BlinkinLEDController.isEndgame = DriverStation.getMatchTime() <= 30;
     BlinkinLEDController.isEnabled = DriverStation.isEnabled();
     // BlinkinLEDController.noteInIntake = intake.isIntaked();
-    BlinkinLEDController.pivotArmDown = pivot.getAngle()
-        .getRadians() < (PivotArmConstants.PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
-    BlinkinLEDController.shooting = shooter.getLeftSpeedMetersPerSecond() > 10_000;
+    BlinkinLEDController.pivotArmDown = pivot.getAngle().getRadians() < (PivotArmConstants.PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
+    BlinkinLEDController.shooting = shooter.getLeftSpeedMetersPerSecond() > 5_000;
     ledController.periodic();
   }
 

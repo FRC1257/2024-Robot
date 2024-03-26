@@ -152,6 +152,7 @@ public class BlinkinLEDController {
     BlinkinPattern.SHOT_RED,
     BlinkinPattern.STROBE_RED
   };
+
   private static final BlinkinPattern[] BLUE_ALLIANCE_PATTERNS = {
     BlinkinPattern.BLUE,
     BlinkinPattern.BREATH_BLUE,
@@ -269,7 +270,7 @@ public class BlinkinLEDController {
       setAllianceColorSolid();
     }
     else {
-      setPattern(BlinkinPattern.BLACK);
+      setPattern(BlinkinPattern.CP1_2_SPARKLE_1_ON_2);
     }
   }
 }
