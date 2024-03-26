@@ -501,7 +501,7 @@ public class RobotContainer {
   }
 
   public Command rotateArmtoSpeakerForever() {
-     return pivot.PIDCommandForever(this::getAngle);
+     return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE - Units.degreesToRadians(1));
         // return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
   }
 
