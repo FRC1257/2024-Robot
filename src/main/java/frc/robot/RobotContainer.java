@@ -198,7 +198,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer));
     // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("Zero", zeroPosition());
-    NamedCommands.registerCommand("ZeroPivot", pivot.bringDownCommand());
+    NamedCommands.registerCommand("ZeroPivot", pivot.BringDownBangBang());
     NamedCommands.registerCommand("PrepShot", rotateArmSpeaker());
     NamedCommands.registerCommand("PrepShootAnywhere", rotateArmtoSpeakerForever());
 
@@ -445,7 +445,7 @@ public class RobotContainer {
   }
 
   public Command zeroPosition() {
-    return pivot.bringDownCommand()
+    return pivot.BringDownBangBang()
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())
@@ -453,7 +453,7 @@ public class RobotContainer {
   }
 
   public Command zeroPositionWhileMoving() {
-    return pivot.bringDownCommand()
+    return pivot.BringDownBangBang()
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())).withTimeout(1.5);
