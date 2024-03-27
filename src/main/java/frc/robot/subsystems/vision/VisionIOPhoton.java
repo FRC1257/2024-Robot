@@ -10,8 +10,6 @@ import edu.wpi.first.net.PortForwarder;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
-import java.util.Optional;
-
 public class VisionIOPhoton implements VisionIO {
 
     private final PhotonCamera camera1;
