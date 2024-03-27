@@ -30,7 +30,7 @@ public final class Constants {
   public static final boolean tuning = true;
 
   public static final boolean tuningMode = true;
-  public static final boolean useVision = true;
+  public static final boolean useVision = false;
 
 
   public static enum Mode {
