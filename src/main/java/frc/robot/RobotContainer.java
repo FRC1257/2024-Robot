@@ -519,11 +519,11 @@ public class RobotContainer {
   }
 
   public Command rotateArmSpeaker() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).withTimeout(2);
   }
 
   public Command rotateArmSpeakerSide() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltage(0));
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltage(0)).withTimeout(2);
   }
 
   public Command rotateArmAmp() {

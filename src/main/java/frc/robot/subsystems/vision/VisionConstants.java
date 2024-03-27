@@ -13,10 +13,9 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
-        public static final String cam1Name = "April_Camera3";
-        public static final String cam3Name = "";
-        public static final String kNoteCameraName = "Note_Camera";
-        public static final String cam2Name = "April_Camera2";
+        public static final String cam1Name = "Back_Camera";
+        public static final String cam3Name = "Left_Camera";
+        public static final String cam2Name = "Right_Camera";
         // Cam mounted facing forward, half a meter forward of center, half a meter up
         // from center.
         public static final Transform3d cam1RobotToCam = new Transform3d(

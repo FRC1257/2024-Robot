@@ -231,13 +231,13 @@ public class PivotArm extends SubsystemBase {
         return new FunctionalCommand(
             () -> {}, 
             () -> {
-                move(-2);
+                move(-1);
             }, 
             (interrupted) -> {
                 move(0);
             }, 
             () -> {
-                return io.getAngle() < 0.1;
+                return io.getAngle() < 0.15;
             }, 
             this);
     }
