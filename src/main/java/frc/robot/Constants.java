@@ -64,7 +64,7 @@ public final class Constants {
     if (RobotBase.isSimulation()) {
       switch (mode) {
         case REAL:
-          System.out.println("WARNING: Running in real mode while in simulation");
+          // System.out.println("WARNING: Running in real mode while in simulation");
         case SIM:
           return Mode.SIM;
         case TEST:

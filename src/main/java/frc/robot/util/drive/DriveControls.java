@@ -30,7 +30,7 @@ public class DriveControls {
     public static Trigger LOCK_PICKUP;
 
     public static Trigger DRIVE_SPEAKER_AIM;
-    public static Trigger DRIVE_NOTE_GOTO;
+    public static Trigger DRIVE_NOTE_GOTO; // TODO not needed for now
 
     // Drive Trajectories
     public static Trigger DRIVE_AMP;

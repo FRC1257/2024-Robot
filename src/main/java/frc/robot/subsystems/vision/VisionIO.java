@@ -26,9 +26,10 @@ public interface VisionIO {
 
   @AutoLog
   public static class VisionIOInputs {
-    public Pose2d estimate = new Pose2d();
+    public Pose2d[] estimate = new Pose2d[0];
     public int tagCount = 0;
     public double timestamp = 0;
+    public double[] timestampArray = new double[0];
     public Pose2d[] targets = new Pose2d[0];
     public Pose3d[] targets3d = new Pose3d[0];
 
@@ -81,6 +82,55 @@ public interface VisionIO {
     }
     Logger.recordOutput("PoseEstimates", poseArray);
     return Optional.of(new Pose2d(x / count, y / count, new Rotation2d(rot / count)));
+  }
+
+  public default Optional<Pose2d>[] getEstimates(PhotonPipelineResult[] results,
+      PhotonPoseEstimator[] photonEstimator) {
+    ArrayList<Optional<Pose2d>> estimates = new ArrayList<>();
+    for (int i = 0; i < results.length; i++) {
+      PhotonPipelineResult result = results[i];
+      if (result.hasTargets()) {
+        var est = photonEstimator[i].update();
+        if (est.isPresent() && goodResult(result)) {
+          estimates.add(Optional.of(est.get().estimatedPose.toPose2d()));
+        } else {
+          estimates.add(Optional.empty());
+        }
+      } else {
+        estimates.add(Optional.empty());
+      }
+    }
+    
+    Optional<Pose2d>[] estimatesArray = estimates.toArray(new Optional[0]);
+    return estimatesArray;
+  }
+
+  public default Pose2d[] getEstimatesArray(PhotonPipelineResult[] results, PhotonPoseEstimator[] photonEstimator) {
+    Optional<Pose2d>[] estimates = getEstimates(results, photonEstimator);
+    Pose2d[] estimatesArray = new Pose2d[estimates.length];
+    for (int i = 0; i < estimates.length; i++) {
+      if (estimates[i].isPresent() && estimates[i].get() != null) {
+        estimatesArray[i] = estimates[i].get();
+      }
+    }
+
+    int count = 0;
+    for (int i = 0; i < estimatesArray.length; i++) {
+      if (estimatesArray[i] != null) {
+        count++;
+      }
+    }
+
+    Pose2d[] finalEstimates = new Pose2d[count];
+    int index = 0;
+    for (int i = 0; i < estimatesArray.length; i++) {
+      if (estimatesArray[i] != null) {
+        finalEstimates[index] = estimatesArray[i];
+        index++;
+      }
+    }
+
+    return finalEstimates;
   }
 
   public default double estimateLatestTimestamp(PhotonPipelineResult[] results) {
@@ -173,11 +223,28 @@ public interface VisionIO {
     return kSingleTagStdDevs;
   }
 
-  public default Translation2d calculateNoteTranslation(VisionIOInputs inputs) {return null;} 
+  public default int tagCounts(PhotonPipelineResult[] results) {
+    int tags = 0;
+    for (PhotonPipelineResult result : results) {
+        tags += result.targets.size();
+    }
+    return tags;
+  }
 
-  public default Pose2d calculateNotePose(Pose2d robotPose, Translation2d noteTranslation) {return null;}
+  public default double[] getTimestampArray(PhotonPipelineResult[] results) {
+    double[] timestamps = new double[results.length];
+    for (int i = 0; i < results.length; i++) {
+      timestamps[i] = results[i].getTimestampSeconds();
+    }
+    return timestamps;
+  }
 
-  public default Rotation2d getAngleToNote() {return null;}
-
-  public default void setNoteCameraObjectMode(boolean mode) {}
+  public default boolean hasEstimate(PhotonPipelineResult[] results) {
+    for (PhotonPipelineResult result : results) {
+      if (result.hasTargets()) {
+        return true;
+      }
+    }
+    return false;
+  } 
 }
