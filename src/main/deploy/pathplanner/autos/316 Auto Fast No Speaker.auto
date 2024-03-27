@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3674277229789629,
-      "y": 5.5768617000416905
+      "x": 1.383130458568611,
+      "y": 5.594556573728532
     },
     "rotation": 0
   },
@@ -18,13 +18,13 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "s2-n2"
+                  "pathName": "s2-n1"
                 }
               },
               {
@@ -43,32 +43,19 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "n2-s2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              }
-            ]
+            "name": "ShootAnywhere"
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "s2-m1"
+                  "pathName": "n1-n2"
                 }
               },
               {
@@ -76,8 +63,57 @@
                 "data": {
                   "name": "IntakeWhile"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootAnywhere"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "n2-n3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWhile"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootAnywhere"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ZeroPivot"
           }
         }
       ]

@@ -18,7 +18,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -43,44 +43,25 @@
           }
         },
         {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "n1-s1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "PrepShot"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "ShootSide"
+            "name": "ShootAnywhere"
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "s1-m1"
+                  "pathName": "n1-n4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "IntakeWhile"
                 }
               },
               {
@@ -93,9 +74,34 @@
           }
         },
         {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "n4-sc4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepShootAnywhere"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "IntakeWhile"
+            "name": "ShootAnywhere"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ZeroPivot"
           }
         }
       ]

@@ -9,8 +9,8 @@ public class PivotArmConstants {
     public static final double POSITION_CONVERSION_FACTOR = 21.0/35.0;
     public static final double PIVOT_ARM_ROTATION_DIAM_M = 1;
 
-    public static final double[] PIVOT_ARM_PID_REAL = {2, 0, 0, 0.01};
-    public static final double[] PIVOT_ARM_FEEDFORWARD_REAL = {0, 0.3, 0, 0};
+    public static final double[] PIVOT_ARM_PID_REAL = {3.6, 0, 0, 0.01};
+    public static final double[] PIVOT_ARM_FEEDFORWARD_REAL = {0, 0.45, 0, 0};
 
     public static final double PIVOT_ARM_PID_TOLERANCE = Units.degreesToRadians(1);
     public static final double PIVOT_ARM_PID_VELOCITY_TOLERANCE = Units.degreesToRadians(5) / 60.0;
@@ -21,7 +21,7 @@ public class PivotArmConstants {
     public static final double PIVOT_ARM_MIN_ANGLE = Units.degreesToRadians(2.0);
 
     public static final double PIVOT_AMP_ANGLE = Units.degreesToRadians(105.0);
-    public static final double PIVOT_SUBWOOFER_ANGLE = Units.degreesToRadians(39.5);
+    public static final double PIVOT_SUBWOOFER_ANGLE = Units.degreesToRadians(38);
     public static final double PIVOT_SUBWOOFER_SIDE_ANGLE = Units.degreesToRadians(42);
     public static final double PIVOT_PODIUM_ANGLE = Units.degreesToRadians(53.0);
     public static final double PIVOT_TRAP_ANGLE = Units.degreesToRadians(30.0);

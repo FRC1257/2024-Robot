@@ -32,6 +32,12 @@
                 "data": {
                   "name": "IntakeWhile"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
               }
             ]
           }
@@ -63,6 +69,12 @@
                 "data": {
                   "name": "IntakeWhile"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
               }
             ]
           }
@@ -74,7 +86,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "n4-s2"
+                  "pathName": "n4-sc4"
                 }
               },
               {
@@ -90,6 +102,12 @@
           "type": "named",
           "data": {
             "name": "ShootAnywhere"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ZeroPivot"
           }
         }
       ]

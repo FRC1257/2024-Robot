@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -192,15 +193,16 @@ public class RobotContainer {
     // position
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
     NamedCommands.registerCommand("ShootSide", shootSpeakerSide().andThen(zeroPosition()));
-    NamedCommands.registerCommand("ShootAnywhere", shootAnywhere());
+    NamedCommands.registerCommand("ShootAnywhere", shootAnywhereAuto());
     NamedCommands.registerCommand("Intake",
         (indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5))).deadlineWith(shooter.runVoltage(0)));
     NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer));
     // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("Zero", zeroPosition());
-    NamedCommands.registerCommand("ZeroPivot", pivot.bringDownCommand());
+    NamedCommands.registerCommand("ZeroPivot", pivot.BringDownBangBang());
     NamedCommands.registerCommand("PrepShot", rotateArmSpeaker());
-    NamedCommands.registerCommand("PrepShootAnywhere", rotateArmtoSpeakerForever());
+    NamedCommands.registerCommand("PrepShootAnywhere", rotateArmtoSpeakerForever()
+                                                              .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)));
 
     System.out.println("[Init] Setting up Triggers");
     configureControls();
@@ -445,7 +447,7 @@ public class RobotContainer {
   }
 
   public Command zeroPosition() {
-    return pivot.bringDownCommand()
+    return pivot.BringDownBangBang()
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())
@@ -453,7 +455,7 @@ public class RobotContainer {
   }
 
   public Command zeroPositionWhileMoving() {
-    return pivot.bringDownCommand()
+    return pivot.BringDownBangBang()
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())).withTimeout(1.5);
@@ -488,6 +490,13 @@ public class RobotContainer {
               .deadlineWith(lockOnSpeakerFull());
   }
 
+  public Command shootAnywhereAuto() {
+    return (new WaitUntilCommand(pivot::atSetpoint).andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE).withTimeout(1)))
+              .deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+              .deadlineWith(DriveCommands.joystickSpeakerPoint(drive, () -> 0, () -> 0))
+              .deadlineWith(rotateArmtoSpeakerForever());
+  }
+
   public Command shootSpeaker() {
     return (
       rotateArmSpeaker()
@@ -501,7 +510,7 @@ public class RobotContainer {
   }
 
   public Command rotateArmtoSpeakerForever() {
-     return pivot.PIDCommandForever(this::getAngle);
+     return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE - Units.degreesToRadians(1));
         // return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
   }
 
