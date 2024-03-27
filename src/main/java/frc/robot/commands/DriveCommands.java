@@ -148,7 +148,7 @@ public class DriveCommands {
         angleController.enableContinuousInput(-Math.PI, Math.PI);
         return Commands.run(
                 () -> {
-                    Pose2d speakerPose = new Pose2d(-0.2, (5 + 6.12) / 2, new Rotation2d(0)); // this is using the wrong
+                    Pose2d speakerPose = FieldConstants.speakerPosition(); // this is using the wrong
                                                                                               // pose
                                                                                               // should use field
                                                                                               // constants
@@ -228,7 +228,7 @@ public class DriveCommands {
 
     // turns robot to speaker from current location
     public static Command turnSpeakerAngle(Drive drive) {
-        Pose2d speakerPose = FieldConstants.SpeakerPosition;
+        Pose2d speakerPose = FieldConstants.speakerPosition();
         angleController.setTolerance(0.08, 0.01);
         return new FunctionalCommand(
                 () -> {
@@ -270,7 +270,7 @@ public class DriveCommands {
     }
 
     public static boolean pointedAtSpeaker(Drive drive) {
-        Pose2d speakerPose = FieldConstants.SpeakerPosition;
+        Pose2d speakerPose = FieldConstants.speakerPosition();
         Transform2d targetTransform = drive.getPose().minus(speakerPose);
         Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
 
