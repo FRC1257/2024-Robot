@@ -104,19 +104,17 @@ public class VisionIOSim implements VisionIO {
         PhotonPipelineResult[] results = { front_result, back_result, front_result2 };
         PhotonPoseEstimator[] photonEstimators = { cam1Estimator, cam2Estimator, cam3Estimator };
 
-        inputs.estimate = new Pose2d[0];
+        inputs.estimate = new Pose2d[] { new Pose2d() };
 
         // add code to check if the closest target is in front or back
-        Optional<Pose2d> averageEst = getAverageEstimate(results, photonEstimators);
         inputs.timestamp = estimateLatestTimestamp(results);
 
-        if (averageEst.isPresent()) {
+        if (hasEstimate(results)) {
             inputs.estimate = getEstimatesArray(results, photonEstimators);
             inputs.targets3d = getTargetsPositions(results);
             inputs.targets = Pose3dToPose2d(inputs.targets3d);
             inputs.tagCount = tagCounts(results);
             inputs.hasEstimate = true;
-            Logger.recordOutput("Vision/EstimateAverage", averageEst.get());
         } else {
             inputs.timestamp = inputs.timestamp;
             inputs.hasEstimate = false;

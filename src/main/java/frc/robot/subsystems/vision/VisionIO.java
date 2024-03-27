@@ -113,7 +113,24 @@ public interface VisionIO {
         estimatesArray[i] = estimates[i].get();
       }
     }
-    return estimatesArray;
+
+    int count = 0;
+    for (int i = 0; i < estimatesArray.length; i++) {
+      if (estimatesArray[i] != null) {
+        count++;
+      }
+    }
+
+    Pose2d[] finalEstimates = new Pose2d[count];
+    int index = 0;
+    for (int i = 0; i < estimatesArray.length; i++) {
+      if (estimatesArray[i] != null) {
+        finalEstimates[index] = estimatesArray[i];
+        index++;
+      }
+    }
+
+    return finalEstimates;
   }
 
   public default double estimateLatestTimestamp(PhotonPipelineResult[] results) {
@@ -221,4 +238,13 @@ public interface VisionIO {
     }
     return timestamps;
   }
+
+  public default boolean hasEstimate(PhotonPipelineResult[] results) {
+    for (PhotonPipelineResult result : results) {
+      if (result.hasTargets()) {
+        return true;
+      }
+    }
+    return false;
+  } 
 }
