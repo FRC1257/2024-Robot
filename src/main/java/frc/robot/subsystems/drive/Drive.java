@@ -181,7 +181,8 @@ public class Drive extends SubsystemBase {
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
         for (int i = 0; i < visionInputs.estimate.length; i++) {
-          poseEstimator.addVisionMeasurement(visionInputs.estimate[i], visionInputs.timestamp);
+          poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp());
+          // System.out.println("Adding measurement "  + visionInputs.estimate[i].getX() + " at time " + visionInputs.timestamp);
         }
       }
     }
@@ -221,6 +222,7 @@ public class Drive extends SubsystemBase {
     
     //poseEstimator.updateWithTime(Timer.getFPGATimestamp(), rawGyroRotation, modulePositions);
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), rawGyroRotation, modulePositions);
+    System.out.println(Timer.getFPGATimestamp());
     odometry.update(rawGyroRotation, modulePositions);
 
     Logger.recordOutput("Odometry/Odometry", odometry.getPoseMeters());
