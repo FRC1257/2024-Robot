@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.8093860062363999,
-        "y": 4.163118981508619
+        "x": 0.7097126343300538,
+        "y": 4.389448681851466
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2009903848867527,
-        "y": 4.092954054853979
+        "x": 1.3105999106285322,
+        "y": 4.12008566998091
       },
       "isLocked": false,
       "linkedName": null
@@ -36,28 +36,10 @@
     }
   ],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "Intake",
-      "waypointRelativePos": 0.0,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Intake"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -67,9 +49,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4 Note Auto (Bottom)",
+  "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -59.53445204996412,
     "velocity": 0
   },
   "useDefaultConstraints": true

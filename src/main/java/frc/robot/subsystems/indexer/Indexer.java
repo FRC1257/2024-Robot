@@ -45,22 +45,13 @@ public class Indexer extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         // Update PID constants to ensure they are up to date
-        if(logP.get() != io.getP()) {
-            io.setP(logP.get());
-        }
-        if(logI.get() != io.getI()) {
-            io.setI(logI.get());
-        }
-        if(logD.get() != io.getD()) {
-            io.setD(logD.get());
-        }
         Logger.processInputs("Intake", inputs);
 
         // Updates state of where the note is in the intake
-        if(noteState == NoteState.NOT_ENOUGH && isIntaked()) { // Note just entered the right spot
+        if(noteState == NoteState.NOT_ENOUGH && inputs.breakBeam) { // Note just entered the right spot
             noteState = NoteState.GOLDILOCKS;
         }
-        else if(noteState == NoteState.GOLDILOCKS && !isIntaked()) { // Note just left the right spot
+        else if(noteState == NoteState.GOLDILOCKS && !inputs.breakBeam) { // Note just left the right spot
             if(io.getSpeed() > 0) {
                 noteState = NoteState.MIDDLE;
             } else {
@@ -68,14 +59,14 @@ public class Indexer extends SubsystemBase {
             }
             currentVoltage = Math.max(currentVoltage - 2, 0); // Intake gets progressively slower every time you overshoot
         }
-        else if(noteState == NoteState.MIDDLE && isIntaked()) { // Note either overshot or got to the right spot from middle
+        else if(noteState == NoteState.MIDDLE && inputs.breakBeam) { // Note either overshot or got to the right spot from middle
             if(io.getSpeed() > 0) {
                 noteState = NoteState.OVERSHOOT;
             } else {
                 noteState = NoteState.GOLDILOCKS;
             }
         }
-        else if(noteState == NoteState.OVERSHOOT && !isIntaked()) { // Note is either shot out or goes to the middle
+        else if(noteState == NoteState.OVERSHOOT && !inputs.breakBeam) { // Note is either shot out or goes to the middle
             if(io.getSpeed() > 0) {
                 noteState = NoteState.NOT_ENOUGH;
             } else {
@@ -90,6 +81,8 @@ public class Indexer extends SubsystemBase {
         else {
             timeInIntake = 0;
         }
+
+        Logger.recordOutput("Indexer/State", noteState.name());
     }
 
     public void setVoltage(double voltage) {

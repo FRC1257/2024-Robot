@@ -4,7 +4,6 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 public final class DriveConstants {
@@ -12,7 +11,7 @@ public final class DriveConstants {
   // the robot, rather the allowed maximum speeds
 
   // public static final double periodicTime = 0.02;
-  public static final double kMaxSpeedMetersPerSecond = 4.8;
+  public static final double kMaxSpeedMetersPerSecond = 6;
   // public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
   //public static final double kDirectionSlewRate = 1.2; // radians per second
@@ -59,20 +58,12 @@ public final class DriveConstants {
   public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
   public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
-  // public static final double kPXController = 1;
-  // public static final double kPYController = 1;
-  //public static final double kPThetaController = 1;
-
-  // Constraint for the motion profiled robot angle controller
-  public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
-      kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-
   public static final PathConstraints kPathConstraints = new PathConstraints(
       kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared,
       kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
 
   public static final double kSlowModeConstant = 0.5;
-  public static final double kTurnSpeakerP = 0.9;
+  public static final double kTurnSpeakerP = 1.3;
   public static final double kTurnSpeakerI = 0;
   public static final double kTurnSpeakerD = 0;
   public static final double kTurnSpeakerTolerance = 0.05;

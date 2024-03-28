@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5049725484066367,
-      "y": 2.466735702702175
+      "x": 0.5345733768390629,
+      "y": 2.12139270432387
     },
     "rotation": 0
   },
@@ -18,13 +18,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "drive far"
+                  "pathName": "drivefar"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "IntakeWhile"
                 }
               }
             ]

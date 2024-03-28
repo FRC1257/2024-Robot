@@ -8,10 +8,10 @@ import static frc.robot.util.drive.DriveControls.*;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -60,6 +60,7 @@ import frc.robot.subsystems.pivotArm.PivotArmIO;
 import frc.robot.subsystems.pivotArm.PivotArmIOSim;
 import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOSparkMax;
@@ -96,6 +97,10 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
+  private LoggedDashboardNumber autoWait = new LoggedDashboardNumber("AutoWait", 0);
+  private LoggedDashboardNumber rightShooterVolts = new LoggedDashboardNumber("RightShooter", ShooterConstants.SHOOTER_FULL_VOLTAGE);
+  private LoggedDashboardNumber leftShooterVolts = new LoggedDashboardNumber("LeftShooter", ShooterConstants.SHOOTER_FULL_VOLTAGE);
 
   // Field
   private final Field2d field;
@@ -213,12 +218,16 @@ public class RobotContainer {
     // position
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
     NamedCommands.registerCommand("ShootSide", shootSpeakerSide().andThen(zeroPosition()));
-    // NamedCommands.registerCommand("ShootAnywhere", shootAnywhere());
+    NamedCommands.registerCommand("ShootAnywhere", shootAnywhereAuto());
     NamedCommands.registerCommand("Intake",
-        indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5)));
-    NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer).withTimeout(2));
+        (indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5))).deadlineWith(shooter.runVoltage(0)));
+    NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer));
     // Preps pivot arm at correct angle; may want to run as parallel to movement
     NamedCommands.registerCommand("Zero", zeroPosition());
+    NamedCommands.registerCommand("ZeroPivot", pivot.bringDownCommand());
+    NamedCommands.registerCommand("PrepShot", rotateArmSpeaker());
+    NamedCommands.registerCommand("PrepShootAnywhere", rotateArmtoSpeakerForever()
+                                                              .alongWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)));
 
     System.out.println("[Init] Setting up Triggers");
     configureControls();
@@ -288,7 +297,7 @@ public class RobotContainer {
             () -> GROUND_INTAKE_ROTATE.getAsDouble() * 12));
 
     pivot.setDefaultCommand(
-        pivot.ManualCommand(() -> PIVOT_ROTATE.getAsDouble() * 2));
+        pivot.ManualCommand(() -> PIVOT_ROTATE.getAsDouble() * 3));
 
     shooter.setDefaultCommand(
         // shooter.runPIDSpeed(0)
@@ -300,11 +309,18 @@ public class RobotContainer {
         DRIVE_STRAFE,
         DRIVE_ROTATE));
 
-    DRIVE_SPEAKER_AIM.whileTrue(
+    /* DRIVE_SPEAKER_AIM.whileTrue(
         DriveCommands.joystickSpeakerPoint(
             drive,
             DRIVE_FORWARD,
-            DRIVE_STRAFE));
+            DRIVE_STRAFE)); */
+    /* DRIVE_SPEAKER_AIM.whileTrue(
+      DriveCommands.driveNote(drive)
+    );
+
+    DRIVE_NOTE_GOTO.whileTrue(
+      drive.goToNote()
+    ); */
 
     LOCK_BACK.whileTrue(DriveCommands.joystickAnglePoint(
         drive,
@@ -333,6 +349,8 @@ public class RobotContainer {
       drive.resetYaw();
     }, drive));
 
+    DRIVE_AMP.onTrue(shootAmpTrajectory());
+
     // TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
     // TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
 
@@ -344,6 +362,11 @@ public class RobotContainer {
     PIVOT_PODIUM.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE));
     PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
     LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
+    LOCK_ON_AMP.whileTrue(joystickAmpPoint());
+    LOCK_PASS.whileTrue(DriveCommands.joystickPasserPoint(
+            drive,
+            DRIVE_FORWARD,
+            DRIVE_STRAFE));
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
@@ -357,20 +380,20 @@ public class RobotContainer {
     INTAKE_UNTIL_INTAKED.onTrue(intakeUntilIntaked(groundIntake, indexer));
 
     // TODO using voltage mode for now but later speed PID
-    SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(11));
+    SHOOTER_FULL_SEND.whileTrue(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get));
     SHOOTER_FULL_SEND_INTAKE.whileTrue(
-        shooter.runVoltage(11)
+        shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)
             .alongWith(
-                new WaitCommand(0.5)
+                new WaitCommand(ShooterConstants.SHOOTER_SPINUP_TIME)
                     .andThen(indexer.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE))));
 
     SHOOTER_UNJAM.whileTrue(
         (indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2)
-            .alongWith(shooter.runVoltage(-0.5))));
+            .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE))));
 
     // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
     // pivot::getAngle);
-    //SHOOTER_FIRE_SPEAKER.onTrue(shootAnywhere());
+    SHOOT_ANYWHERE.onTrue(shootAnywhere());
     // SHOOTER_SHOOT.onTrue(shootNote());
     // SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
@@ -420,7 +443,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     AutoChooser.setupChoosers();
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
-      return MakeAutos.makeAutoTrajectoryCommand(
+      return new WaitCommand(autoWait.get()).andThen(MakeAutos.makeAutoCommand(
           drive,
           //this::shootAnywhere,
           this::shootSpeaker,
@@ -433,13 +456,27 @@ public class RobotContainer {
           },
           this::zeroPositionWhileMoving,
           lockOnSpeakerFull()
-          );
+          ));
     }
-    return autoChooser.get();
+    return new WaitCommand(autoWait.get()).andThen(autoChooser.get());
+  }
+
+  /**
+   * Drives while continuously facing the amp
+   */
+  public Command joystickAmpPoint() {
+    return DriveCommands.joystickAnglePoint(
+      drive,
+      DRIVE_FORWARD,
+      DRIVE_STRAFE,
+      () -> {
+        return AllianceFlipUtil.apply(new Rotation2d(Units.degreesToRadians(-90)));
+      }
+    );
   }
 
   public Command zeroPosition() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE)
+    return pivot.bringDownCommand()
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())
@@ -447,14 +484,14 @@ public class RobotContainer {
   }
 
   public Command zeroPositionWhileMoving() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE)
+    return pivot.bringDownCommand()
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())).withTimeout(1.5);
   }
 
   public Command shootAmpTrajectory() {
-    return drive.pathfindToTrajectory(PathPlannerPath.fromPathFile("amp score")).andThen(shootAmp());
+    return drive.goToPose(FieldConstants.ampPose());
   }
 
   public Command shootAmp() {
@@ -482,6 +519,13 @@ public class RobotContainer {
               .deadlineWith(lockOnSpeakerFull());
   }
 
+  public Command shootAnywhereAuto() {
+    return (new WaitUntilCommand(pivot::atSetpoint).andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE).withTimeout(1)))
+              .deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get))
+              .deadlineWith(DriveCommands.joystickSpeakerPoint(drive, () -> 0, () -> 0))
+              .deadlineWith(rotateArmtoSpeakerForever());
+  }
+
   public Command shootSpeaker() {
     return (
       rotateArmSpeaker()
@@ -495,8 +539,9 @@ public class RobotContainer {
   }
 
   public Command rotateArmtoSpeakerForever() {
-     return pivot.PIDCommandForever(this::getAngle);
+     // return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE - Units.degreesToRadians(1));
         // return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
+      return pivot.PIDCommandForever(this::getAngle);
   }
 
   public Command rotateArmtoTrap() {
@@ -504,13 +549,11 @@ public class RobotContainer {
   }
 
   public Command rotateArmSpeaker() {
-    // return pivot.PIDCommand(this::getAngle);
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)).withTimeout(2.5);
   }
 
   public Command rotateArmSpeakerSide() {
-    // return pivot.PIDCommand(this::getAngle);
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)).withTimeout(2.5);
   }
 
   public Command rotateArmAmp() {
@@ -530,10 +573,9 @@ public class RobotContainer {
   }
 
   public Command shootSubwoofer() {
-    Logger.recordOutput("DistanceAway", getEstimatedDistance());
-    return (shooter.runVoltage(11).withTimeout(4)
+    return (shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get).withTimeout(4)
         .alongWith(
-            new WaitCommand(0.5)
+            new WaitCommand(ShooterConstants.SHOOTER_SPINUP_TIME)
                 .andThen(indexer.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(2)))
         .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
 
@@ -541,11 +583,11 @@ public class RobotContainer {
   }
 
   public Command shootNote() {
-    return shooter.runVoltage(11)
+    return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)
         .alongWith(
-            new WaitCommand(1)
+            new WaitCommand(0.25)
                 .andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)))
-        .withTimeout(2);
+        .withTimeout(1);
     // figure out why the shooter is so weaksauce
     // it's only shooting it out fast when I mash the button
     // probably has to do with the getRPM method
@@ -557,8 +599,8 @@ public class RobotContainer {
   public Command intakeShimmyCommand() {
     return (indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)
       .alongWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE)))
-      .withTimeout(0.5)
-      .andThen(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(0.5));
+      .withTimeout(ShooterConstants.SHOOTER_SPINUP_TIME)
+      .andThen(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(ShooterConstants.SHOOTER_SPINUP_TIME));
   }
 
   // Returns the estimated transformation over the next tick (The change in
@@ -576,7 +618,7 @@ public class RobotContainer {
   // Returns the distance between the robot's next estimated position and the
   // speaker position
   private double getEstimatedDistance() {
-    Transform2d targetTransform = getEstimatedPosition().minus(FieldConstants.SpeakerPosition);
+    Transform2d targetTransform = getEstimatedPosition().minus(FieldConstants.speakerPosition());
     Logger.recordOutput("DistanceAway", targetTransform.getTranslation().getNorm());
 
     return targetTransform.getTranslation().getNorm();
@@ -598,9 +640,9 @@ public class RobotContainer {
     // TODO tune tomorrow
 
     // return getGeneralAngle(FieldConstants.speakerPosition3D());
-    // return Lookup.getAngle(getEstimatedDistance());
+    return Lookup.getAngle(getEstimatedDistance());
     // return getGeneralAngle(FieldConstants.speakerPosition3D()) * 0.8;
-    return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
+   //  return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
   }
 
   private double getGeneralAngle(Pose3d target) {
@@ -618,9 +660,8 @@ public class RobotContainer {
     BlinkinLEDController.isEndgame = DriverStation.getMatchTime() <= 30;
     BlinkinLEDController.isEnabled = DriverStation.isEnabled();
     // BlinkinLEDController.noteInIntake = intake.isIntaked();
-    BlinkinLEDController.pivotArmDown = pivot.getAngle()
-        .getRadians() < (PivotArmConstants.PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
-    BlinkinLEDController.shooting = shooter.getLeftSpeedMetersPerSecond() > 10_000;
+    BlinkinLEDController.pivotArmDown = pivot.getAngle().getRadians() < (PivotArmConstants.PIVOT_ARM_MIN_ANGLE + Math.PI / 6);
+    BlinkinLEDController.shooting = shooter.getLeftSpeedMetersPerSecond() > 5_000;
     ledController.periodic();
   }
 
@@ -638,12 +679,11 @@ public class RobotContainer {
     }
 
     setPivotPose3d();
+    field.setRobotPose(drive.getPose());
   }
 
   public Command intakeUntilIntaked(GroundIntake groundIntake, Indexer indexer){
-    return indexer.IntakeLoopCommand(3.95).deadlineWith(groundIntake.manualCommand(3.95));
+    return indexer.IntakeLoopCommand(IndexerConstants.INDEXER_IN_VOLTAGE_WEAK).deadlineWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE)).deadlineWith(shooter.runVoltage(0));
   }
-  
-    
   
 }

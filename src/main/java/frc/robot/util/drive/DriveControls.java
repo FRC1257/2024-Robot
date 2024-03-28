@@ -29,11 +29,14 @@ public class DriveControls {
     public static Trigger LOCK_BACK;
     public static Trigger LOCK_PICKUP;
 
+    public static Trigger LOCK_PASS;
+
     public static Trigger DRIVE_SPEAKER_AIM;
-    public static Trigger DRIVE_NOTE_GOTO;
+    public static Trigger DRIVE_NOTE_GOTO; // TODO not needed for now
 
     // Drive Trajectories
     public static Trigger DRIVE_AMP;
+    public static Trigger LOCK_ON_AMP;
     public static Trigger DRIVE_SOURCE;
 
     // Drive Turns
@@ -68,6 +71,7 @@ public class DriveControls {
     public static Trigger SHOOTER_SHOOT;
     public static Trigger SHOOTER_FULL_SEND;
     public static Trigger SHOOTER_UNJAM;
+    public static Trigger SHOOT_ANYWHERE;
 
     // Rumble Controls
     public static Trigger TIMED_RUMBLE;
@@ -86,17 +90,23 @@ public class DriveControls {
                 DRIVE_SLOW = driver.start();
 
                 LOCK_BACK = EMPTY_TRIGGER;
-                LOCK_PICKUP = driver.y();
+                LOCK_PICKUP = EMPTY_TRIGGER;
+                LOCK_PASS = driver.a();
                 DRIVE_STOP = driver.x();
-                DRIVE_ROBOT_RELATIVE = driver.rightBumper();
+                DRIVE_ROBOT_RELATIVE = driver.y();
 
                 //unused commands, implement if have time
-                DRIVE_SPEAKER_AIM = EMPTY_TRIGGER;
+                DRIVE_SPEAKER_AIM = driver.b();
                 DRIVE_AMP = EMPTY_TRIGGER;
                 DRIVE_SOURCE = EMPTY_TRIGGER;
                 TURN_90 = EMPTY_TRIGGER;
                 TURN_180 = EMPTY_TRIGGER;
                 LOCK_ON_SPEAKER_FULL = driver.leftBumper();
+                LOCK_ON_AMP = driver.rightBumper();
+
+                DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
+
+                SHOOT_ANYWHERE = driver.back();
                 break;
             case PROGRAMMERS:
             default:
@@ -108,6 +118,7 @@ public class DriveControls {
 
                 DRIVE_STOP = driver.rightBumper();
                 
+                LOCK_PASS = driver.a();
 
                 DRIVE_AMP = driver.leftBumper();
                 DRIVE_SOURCE = driver.a();
@@ -115,9 +126,8 @@ public class DriveControls {
                 TURN_180 = driver.start();
 
                 //unused commands
-                //DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
-                //DRIVE_ROBOT_RELATIVE = EMPTY_TRIGGER;
-                //LOCK_ON_SPEAKER_FULL = EMPTY_TRIGGER;
+                DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
+                SHOOT_ANYWHERE = driver.back();
                 break;
         }
 

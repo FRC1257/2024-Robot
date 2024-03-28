@@ -227,5 +227,20 @@ public class PivotArm extends SubsystemBase {
     }//not calling move
     //no commmand yalee
 
+    public Command bringDownCommand() {
+        return new FunctionalCommand(
+            () -> {}, 
+            () -> {
+                move(-1);
+            }, 
+            (interrupted) -> {
+                move(0);
+            }, 
+            () -> {
+                return io.getAngle() < 0.15;
+            }, 
+            this);
+    }
+
 }
 

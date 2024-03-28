@@ -145,6 +145,21 @@ public class Shooter extends SubsystemBase {
     );
   }
 
+  public Command runVoltageBoth(DoubleSupplier rightVolts, DoubleSupplier leftVolts) {
+    return new FunctionalCommand(
+      //() -> setRPM(speed.getAsDouble(), speed.getAsDouble()),
+      () -> setVoltage(leftVolts, rightVolts), //no PID for now
+      () -> {setVoltage(leftVolts, rightVolts);},
+      (interrupted) -> {
+        if (interrupted) {
+          shooterIO.stop();
+        }
+      },
+      () -> false,
+      this
+    );
+  }
+
   public Command runVoltage(double volts) {
     return runVoltage(() -> volts);
   }

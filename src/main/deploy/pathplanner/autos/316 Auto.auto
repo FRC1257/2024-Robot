@@ -30,22 +30,16 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "IntakeWhile"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "IntakeWhile"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "n1-sc2"
+            "pathName": "n1-s2"
           }
         },
         {
@@ -67,7 +61,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "IntakeWhile"
                 }
               }
             ]
@@ -82,7 +76,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "n2-sc2"
+            "pathName": "n2-s2"
           }
         },
         {
@@ -98,22 +92,16 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "sc2-n3"
+                  "pathName": "s2-n3"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "IntakeWhile"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeWhile"
           }
         },
         {

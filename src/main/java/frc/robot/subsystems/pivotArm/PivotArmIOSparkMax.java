@@ -145,6 +145,8 @@ public class PivotArmIOSparkMax implements PivotArmIO {
         Logger.recordOutput("PivotArm/FeedforwardOutput", feedforwardOutput);
         Logger.recordOutput("PivotArm/PIDOutput", pidOutput);
 
+        Logger.recordOutput("PivotArm/VelocityError", pidController.getVelocityError());
+
         setVoltage(MathUtil.clamp(pidOutput + feedforwardOutput, -4, 4));
     }
 

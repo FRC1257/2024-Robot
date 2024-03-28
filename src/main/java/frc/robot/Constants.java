@@ -64,7 +64,7 @@ public final class Constants {
     if (RobotBase.isSimulation()) {
       switch (mode) {
         case REAL:
-          System.out.println("WARNING: Running in real mode while in simulation");
+          // System.out.println("WARNING: Running in real mode while in simulation");
         case SIM:
           return Mode.SIM;
         case TEST:
@@ -109,12 +109,12 @@ public final class Constants {
     public static final int ABSOLUTE_ENCODER_ID = 8;
 
     // LED
-    public static final int BLINKIN_LED_CONTROLLER_PORT = 1;
+    public static final int BLINKIN_LED_CONTROLLER_PORT = 7;
 
     // Shooter
     public static final int SHOOTER_LEFT_ID = 14; // master
     public static final int SHOOTER_RIGHT_ID = 13;
-    public static final int PHOTOELECTRIC_SENSOR_CHANNEL = 17; // NEEDS TO BE CHANGED 
+    public static final int PHOTOELECTRIC_SENSOR_CHANNEL = 9; // NEEDS TO BE CHANGED 
   };
 
   public static double PI = 3.141592653589793238462643;
@@ -126,17 +126,18 @@ public final class Constants {
 
   public final static int NEO_CURRENT_LIMIT = 80; // amps
 
+  //{distance, rpm, angle} The distance column must go from lowest to highest, top to bottom
+  //manually insert velocity!!!!!
   public static final double[][] LookupTable = {
-    {0,1000,10},
-    {1,2000,30},
-    {2,3000,50},
-    {3,4000,60},
-    {4,5500,70},
-    {5,6500,70},
-    {6,6500,75},
-    {7,6500,77},
-    {8,6700,79},
-    {9,6900,83},
-    {10,6500,85}
+    {0	          ,0,   13.26773004},
+    {0.1151611524	,0, 16.15608368},
+    {0.3522449123	,0, 21.93279096},
+    {0.8765935905	,0, 33.48620553},
+    {1.351392365	,0,   42.15126645},
+    {1.959336833	,0,   50.81632738},
+    {2.823481946	,0,   55},
+    {3.211524819	,0,   56},
+    {4.258293028	,0,   57},
+    {5	          ,0,   60}
   };
 }
