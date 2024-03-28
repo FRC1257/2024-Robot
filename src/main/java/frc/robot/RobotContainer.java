@@ -4,39 +4,7 @@
 
 package frc.robot;
 
-import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
-import static frc.robot.util.drive.DriveControls.DRIVE_FORWARD;
-import static frc.robot.util.drive.DriveControls.DRIVE_ROBOT_RELATIVE;
-import static frc.robot.util.drive.DriveControls.DRIVE_ROTATE;
-import static frc.robot.util.drive.DriveControls.DRIVE_SLOW;
-import static frc.robot.util.drive.DriveControls.DRIVE_STOP;
-import static frc.robot.util.drive.DriveControls.DRIVE_STRAFE;
-import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_IN;
-import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_OUT;
-import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_ROTATE;
-import static frc.robot.util.drive.DriveControls.INTAKE_IN;
-import static frc.robot.util.drive.DriveControls.INTAKE_OUT;
-import static frc.robot.util.drive.DriveControls.INTAKE_ROTATE;
-import static frc.robot.util.drive.DriveControls.INTAKE_SHIMMY;
-import static frc.robot.util.drive.DriveControls.INTAKE_UNTIL_INTAKED;
-import static frc.robot.util.drive.DriveControls.LOCK_BACK;
-import static frc.robot.util.drive.DriveControls.LOCK_ON_AMP;
-import static frc.robot.util.drive.DriveControls.LOCK_ON_SPEAKER_FULL;
-import static frc.robot.util.drive.DriveControls.LOCK_PICKUP;
-import static frc.robot.util.drive.DriveControls.PIVOT_AMP;
-import static frc.robot.util.drive.DriveControls.PIVOT_HOLD;
-import static frc.robot.util.drive.DriveControls.PIVOT_PODIUM;
-import static frc.robot.util.drive.DriveControls.PIVOT_ROTATE;
-import static frc.robot.util.drive.DriveControls.PIVOT_TO_SPEAKER;
-import static frc.robot.util.drive.DriveControls.PIVOT_ZERO;
-import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND;
-import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND_INTAKE;
-import static frc.robot.util.drive.DriveControls.SHOOTER_SPEED;
-import static frc.robot.util.drive.DriveControls.SHOOTER_UNJAM;
-import static frc.robot.util.drive.DriveControls.SHOOT_ANYWHERE;
-import static frc.robot.util.drive.DriveControls.configureControls;
-import static frc.robot.util.drive.DriveControls.getRumbleDriver;
-import static frc.robot.util.drive.DriveControls.getRumbleOperator;
+import static frc.robot.util.drive.DriveControls.*;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -131,6 +99,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   private LoggedDashboardNumber autoWait = new LoggedDashboardNumber("AutoWait", 0);
+  private LoggedDashboardNumber rightShooterVolts = new LoggedDashboardNumber("RightShooter", ShooterConstants.SHOOTER_FULL_VOLTAGE);
+  private LoggedDashboardNumber leftShooterVolts = new LoggedDashboardNumber("LeftShooter", ShooterConstants.SHOOTER_FULL_VOLTAGE);
 
   // Field
   private final Field2d field;
@@ -257,7 +227,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ZeroPivot", pivot.bringDownCommand());
     NamedCommands.registerCommand("PrepShot", rotateArmSpeaker());
     NamedCommands.registerCommand("PrepShootAnywhere", rotateArmtoSpeakerForever()
-                                                              .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)));
+                                                              .alongWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)));
 
     System.out.println("[Init] Setting up Triggers");
     configureControls();
@@ -393,6 +363,10 @@ public class RobotContainer {
     PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
     LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
     LOCK_ON_AMP.whileTrue(joystickAmpPoint());
+    LOCK_PASS.whileTrue(DriveCommands.joystickPasserPoint(
+            drive,
+            DRIVE_FORWARD,
+            DRIVE_STRAFE));
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
         shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
@@ -406,9 +380,9 @@ public class RobotContainer {
     INTAKE_UNTIL_INTAKED.onTrue(intakeUntilIntaked(groundIntake, indexer));
 
     // TODO using voltage mode for now but later speed PID
-    SHOOTER_FULL_SEND.whileTrue(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE));
+    SHOOTER_FULL_SEND.whileTrue(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get));
     SHOOTER_FULL_SEND_INTAKE.whileTrue(
-        shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)
+        shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)
             .alongWith(
                 new WaitCommand(ShooterConstants.SHOOTER_SPINUP_TIME)
                     .andThen(indexer.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE))));
@@ -496,7 +470,7 @@ public class RobotContainer {
       DRIVE_FORWARD,
       DRIVE_STRAFE,
       () -> {
-        return AllianceFlipUtil.apply(new Rotation2d(Units.degreesToRadians(90)));
+        return AllianceFlipUtil.apply(new Rotation2d(Units.degreesToRadians(-90)));
       }
     );
   }
@@ -547,7 +521,7 @@ public class RobotContainer {
 
   public Command shootAnywhereAuto() {
     return (new WaitUntilCommand(pivot::atSetpoint).andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE).withTimeout(1)))
-              .deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+              .deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get))
               .deadlineWith(DriveCommands.joystickSpeakerPoint(drive, () -> 0, () -> 0))
               .deadlineWith(rotateArmtoSpeakerForever());
   }
@@ -575,11 +549,11 @@ public class RobotContainer {
   }
 
   public Command rotateArmSpeaker() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)).withTimeout(2.5);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)).withTimeout(2.5);
   }
 
   public Command rotateArmSpeakerSide() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)).withTimeout(2.5);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)).withTimeout(2.5);
   }
 
   public Command rotateArmAmp() {
@@ -599,7 +573,7 @@ public class RobotContainer {
   }
 
   public Command shootSubwoofer() {
-    return (shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE).withTimeout(4)
+    return (shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get).withTimeout(4)
         .alongWith(
             new WaitCommand(ShooterConstants.SHOOTER_SPINUP_TIME)
                 .andThen(indexer.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(2)))
@@ -609,7 +583,7 @@ public class RobotContainer {
   }
 
   public Command shootNote() {
-    return shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)
+    return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)
         .alongWith(
             new WaitCommand(0.25)
                 .andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)))
@@ -705,6 +679,7 @@ public class RobotContainer {
     }
 
     setPivotPose3d();
+    field.setRobotPose(drive.getPose());
   }
 
   public Command intakeUntilIntaked(GroundIntake groundIntake, Indexer indexer){

@@ -29,6 +29,8 @@ public class DriveControls {
     public static Trigger LOCK_BACK;
     public static Trigger LOCK_PICKUP;
 
+    public static Trigger LOCK_PASS;
+
     public static Trigger DRIVE_SPEAKER_AIM;
     public static Trigger DRIVE_NOTE_GOTO; // TODO not needed for now
 
@@ -88,9 +90,10 @@ public class DriveControls {
                 DRIVE_SLOW = driver.start();
 
                 LOCK_BACK = EMPTY_TRIGGER;
-                LOCK_PICKUP = driver.y();
+                LOCK_PICKUP = EMPTY_TRIGGER;
+                LOCK_PASS = driver.a();
                 DRIVE_STOP = driver.x();
-                DRIVE_ROBOT_RELATIVE = driver.rightBumper();
+                DRIVE_ROBOT_RELATIVE = driver.y();
 
                 //unused commands, implement if have time
                 DRIVE_SPEAKER_AIM = driver.b();
@@ -99,9 +102,9 @@ public class DriveControls {
                 TURN_90 = EMPTY_TRIGGER;
                 TURN_180 = EMPTY_TRIGGER;
                 LOCK_ON_SPEAKER_FULL = driver.leftBumper();
-                LOCK_ON_AMP = EMPTY_TRIGGER;
+                LOCK_ON_AMP = driver.rightBumper();
 
-                DRIVE_NOTE_GOTO = driver.a();
+                DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
 
                 SHOOT_ANYWHERE = driver.back();
                 break;
@@ -115,6 +118,7 @@ public class DriveControls {
 
                 DRIVE_STOP = driver.rightBumper();
                 
+                LOCK_PASS = driver.a();
 
                 DRIVE_AMP = driver.leftBumper();
                 DRIVE_SOURCE = driver.a();

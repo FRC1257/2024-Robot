@@ -108,6 +108,8 @@ public class FieldConstants {
       new Translation3d(0.0, Units.inchesToMeters(197.765), Units.inchesToMeters(78.324));
   private static final Pose2d SpeakerPosition = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
   public static final Pose3d SpeakerPosition3D = new Pose3d(SpeakerPosition).transformBy(new Transform3d(0,0, Units.inchesToMeters(100.324), new Rotation3d()));
+  private static final Pose2d passingPosition = new Pose2d(0, ampCenter.getY(), new Rotation2d(0));
+
   public static double aprilTagWidth = Units.inchesToMeters(6.50);
   public static AprilTagFieldLayout aprilTags;
 
@@ -182,6 +184,10 @@ public class FieldConstants {
 
   public static Pose2d speakerPosition() {
     return AllianceFlipUtil.apply(SpeakerPosition);
+  }
+
+  public static Pose2d passingPosition() {
+    return AllianceFlipUtil.apply(passingPosition);
   }
 
   public static Pose3d speakerPosition3D() {
