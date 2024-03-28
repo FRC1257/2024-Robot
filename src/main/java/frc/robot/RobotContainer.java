@@ -4,10 +4,43 @@
 
 package frc.robot;
 
-import static frc.robot.util.drive.DriveControls.*;
+import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
+import static frc.robot.util.drive.DriveControls.DRIVE_FORWARD;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROBOT_RELATIVE;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROTATE;
+import static frc.robot.util.drive.DriveControls.DRIVE_SLOW;
+import static frc.robot.util.drive.DriveControls.DRIVE_STOP;
+import static frc.robot.util.drive.DriveControls.DRIVE_STRAFE;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_IN;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_OUT;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.INTAKE_IN;
+import static frc.robot.util.drive.DriveControls.INTAKE_OUT;
+import static frc.robot.util.drive.DriveControls.INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.INTAKE_SHIMMY;
+import static frc.robot.util.drive.DriveControls.INTAKE_UNTIL_INTAKED;
+import static frc.robot.util.drive.DriveControls.LOCK_BACK;
+import static frc.robot.util.drive.DriveControls.LOCK_ON_AMP;
+import static frc.robot.util.drive.DriveControls.LOCK_ON_SPEAKER_FULL;
+import static frc.robot.util.drive.DriveControls.LOCK_PICKUP;
+import static frc.robot.util.drive.DriveControls.PIVOT_AMP;
+import static frc.robot.util.drive.DriveControls.PIVOT_HOLD;
+import static frc.robot.util.drive.DriveControls.PIVOT_PODIUM;
+import static frc.robot.util.drive.DriveControls.PIVOT_ROTATE;
+import static frc.robot.util.drive.DriveControls.PIVOT_TO_SPEAKER;
+import static frc.robot.util.drive.DriveControls.PIVOT_ZERO;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND_INTAKE;
+import static frc.robot.util.drive.DriveControls.SHOOTER_SPEED;
+import static frc.robot.util.drive.DriveControls.SHOOTER_UNJAM;
+import static frc.robot.util.drive.DriveControls.SHOOT_ANYWHERE;
+import static frc.robot.util.drive.DriveControls.configureControls;
+import static frc.robot.util.drive.DriveControls.getRumbleDriver;
+import static frc.robot.util.drive.DriveControls.getRumbleOperator;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -31,18 +64,38 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.LED.BlinkinLEDController;
-import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.groundIntake.*;
-import frc.robot.subsystems.indexer.*;
-import frc.robot.subsystems.pivotArm.*;
-import frc.robot.subsystems.shooter.*;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOReal;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.groundIntake.GroundIntake;
+import frc.robot.subsystems.groundIntake.GroundIntakeConstants;
+import frc.robot.subsystems.groundIntake.GroundIntakeIO;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerConstants;
+import frc.robot.subsystems.indexer.IndexerIO;
+import frc.robot.subsystems.indexer.IndexerIOSim;
+import frc.robot.subsystems.indexer.IndexerIOSparkMax;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.subsystems.pivotArm.PivotArmIO;
+import frc.robot.subsystems.pivotArm.PivotArmIOSim;
+import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
@@ -76,6 +129,8 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
+  private LoggedDashboardNumber autoWait = new LoggedDashboardNumber("AutoWait", 0);
 
   // Field
   private final Field2d field;
@@ -414,7 +469,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     AutoChooser.setupChoosers();
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
-      return MakeAutos.makeAutoTrajectoryCommand(
+      return new WaitCommand(autoWait.get()).andThen(MakeAutos.makeAutoCommand(
           drive,
           //this::shootAnywhere,
           this::shootSpeaker,
@@ -427,9 +482,9 @@ public class RobotContainer {
           },
           this::zeroPositionWhileMoving,
           lockOnSpeakerFull()
-          );
+          ));
     }
-    return autoChooser.get();
+    return new WaitCommand(autoWait.get()).andThen(autoChooser.get());
   }
 
   /**
@@ -510,8 +565,9 @@ public class RobotContainer {
   }
 
   public Command rotateArmtoSpeakerForever() {
-     return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE - Units.degreesToRadians(1));
+     // return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE - Units.degreesToRadians(1));
         // return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
+      return pivot.PIDCommandForever(this::getAngle);
   }
 
   public Command rotateArmtoTrap() {
@@ -519,11 +575,11 @@ public class RobotContainer {
   }
 
   public Command rotateArmSpeaker() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).withTimeout(2);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)).withTimeout(2.5);
   }
 
   public Command rotateArmSpeakerSide() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltage(0)).withTimeout(2);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)).withTimeout(2.5);
   }
 
   public Command rotateArmAmp() {
@@ -555,9 +611,9 @@ public class RobotContainer {
   public Command shootNote() {
     return shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)
         .alongWith(
-            new WaitCommand(1)
+            new WaitCommand(0.25)
                 .andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)))
-        .withTimeout(2);
+        .withTimeout(1);
     // figure out why the shooter is so weaksauce
     // it's only shooting it out fast when I mash the button
     // probably has to do with the getRPM method

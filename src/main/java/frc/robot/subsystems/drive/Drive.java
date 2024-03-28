@@ -259,7 +259,6 @@ public class Drive extends SubsystemBase {
 
   public void resetYaw() {
     gyroIO.zeroAll();
-    resetPose(lastPose);
   }
 
   /**
