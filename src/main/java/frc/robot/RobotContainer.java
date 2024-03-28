@@ -168,18 +168,21 @@ public class RobotContainer {
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
       // Do whatever you want with the pose here
       field.setRobotPose(pose);
+      Logger.recordOutput("PathPlanner/RobotPose", pose);
     });
 
     // Logging callback for target robot pose
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
       // Do whatever you want with the pose here
       field.getObject("target pose").setPose(pose);
+      Logger.recordOutput("PathPlanner/TargetPose", pose);
     });
 
     // Logging callback for the active path, this is sent as a list of poses
     PathPlannerLogging.setLogActivePathCallback((poses) -> {
       // Do whatever you want with the poses here
       field.getObject("path").setPoses(poses);
+      Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
     });
 
 
@@ -191,8 +194,8 @@ public class RobotContainer {
 
     // shootSpeaker aims pivot, shoots; zeroPosition then zeros; run after reaching
     // position
-    NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
-    NamedCommands.registerCommand("ShootSide", shootSpeakerSide().andThen(zeroPosition()));
+    NamedCommands.registerCommand("Shoot", shootSpeaker());
+    NamedCommands.registerCommand("ShootSide", shootSpeakerSide());
     NamedCommands.registerCommand("ShootAnywhere", shootAnywhereAuto());
     NamedCommands.registerCommand("Intake",
         (indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5))).deadlineWith(shooter.runVoltage(0)));
@@ -220,10 +223,10 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up feedforward characterization
-    autoChooser.addOption(
+    /* autoChooser.addOption(
         "Drive FF Characterization",
         new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity)); */
     /* autoChooser.addOption("Drive Trajectory",
         drive.getAuto("Forward And Spin")); */
     autoChooser.addOption("driveOutShoot", DriveCommands.driveBackandShooter(drive, pivot, shooter, indexer));
@@ -451,14 +454,14 @@ public class RobotContainer {
         .deadlineWith(
             indexer.stop()
                 .alongWith(shooter.stop())
-                .alongWith(groundIntake.stop())).withTimeout(1);
+                .alongWith(groundIntake.stop()));
   }
 
   public Command zeroPositionWhileMoving() {
     return pivot.bringDownCommand()
         .deadlineWith(
             indexer.stop()
-                .alongWith(shooter.stop())).withTimeout(1.5);
+                .alongWith(shooter.stop()));
   }
 
   public Command shootAmpTrajectory() {
@@ -491,8 +494,7 @@ public class RobotContainer {
   }
 
   public Command shootAnywhereAuto() {
-    return (new WaitUntilCommand(pivot::atSetpoint).andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE).withTimeout(1)))
-              .deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+    return (new WaitUntilCommand(pivot::atSetpoint).andThen(new WaitUntilCommand(this::isPointedAtSpeaker)).andThen(shootNote()))
               .deadlineWith(DriveCommands.joystickSpeakerPoint(drive, () -> 0, () -> 0))
               .deadlineWith(rotateArmtoSpeakerForever());
   }
@@ -519,11 +521,11 @@ public class RobotContainer {
   }
 
   public Command rotateArmSpeaker() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_PREP_VOLTAGE));
   }
 
   public Command rotateArmSpeakerSide() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltage(0));
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_PREP_VOLTAGE));
   }
 
   public Command rotateArmAmp() {
@@ -555,9 +557,9 @@ public class RobotContainer {
   public Command shootNote() {
     return shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE)
         .alongWith(
-            new WaitCommand(1)
+            new WaitCommand(0.25)
                 .andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)))
-        .withTimeout(2);
+        .withTimeout(1);
     // figure out why the shooter is so weaksauce
     // it's only shooting it out fast when I mash the button
     // probably has to do with the getRPM method

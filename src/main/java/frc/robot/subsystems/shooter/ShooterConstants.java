@@ -7,6 +7,7 @@ public class ShooterConstants {
   public static final double SHOOTER_UNJAM_VOLTAGE = -0.5;
 
   public static final double SHOOTER_FULL_VOLTAGE = 11;
+  public static final double SHOOTER_PREP_VOLTAGE = 11;
 
   public static class ShooterSimConstants {
     public static final double RIGHT_MOTOR_MIN_SPEED = 0;
