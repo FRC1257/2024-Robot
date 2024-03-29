@@ -27,6 +27,9 @@ public class PivotArmConstants {
     public static final double PIVOT_TRAP_ANGLE = Units.degreesToRadians(30.0);
     public static final double PIVOT_ARM_INTAKE_ANGLE = Units.degreesToRadians(2.0);
 
+    public static final double RAMP_RATE = 0.5;
+    public static final double STEP_VOLTAGE = 3.0;
+
     public static class PivotArmSimConstants {
       public static final double[] kPivotSimPID = {15, 0, 0, 0};
 

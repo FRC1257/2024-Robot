@@ -1,5 +1,11 @@
 package frc.robot.subsystems.pivotArm;
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
+import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -8,14 +14,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-
-import java.util.function.DoubleSupplier;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class PivotArm extends SubsystemBase {
     private final PivotArmIOInputsAutoLogged inputs = new PivotArmIOInputsAutoLogged();
@@ -38,6 +43,8 @@ public class PivotArm extends SubsystemBase {
     // Create a Mechanism2d visualization of the arm
     private MechanismLigament2d armMechanism = getArmMechanism();
 
+    private SysIdRoutine SysId;
+
     public PivotArm(PivotArmIO io) {
         this.io = io;
        
@@ -52,6 +59,10 @@ public class PivotArm extends SubsystemBase {
         logkG = new LoggedDashboardNumber("PivotArm/kG", io.getkG());
         logkV = new LoggedDashboardNumber("PivotArm/kV", io.getkV());
         logkA = new LoggedDashboardNumber("PivotArm/kG", io.getkA());
+
+        SysId = new SysIdRoutine(
+            new SysIdRoutine.Config(Volts.per(Second).of(PivotArmConstants.RAMP_RATE), Volts.of(PivotArmConstants.STEP_VOLTAGE), Seconds.of(6)),
+            new SysIdRoutine.Mechanism(v -> io.setVoltage(v.in(Volts)), null, this));
         
     }
     
@@ -241,6 +252,20 @@ public class PivotArm extends SubsystemBase {
             }, 
             this);
     }
+
+    public Command quasistaticForward() {
+        return SysId
+            .quasistatic(Direction.kForward)
+            .until(() -> getAngle().getRadians() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE);
+      }
+    
+    public Command quasistaticBack() {
+        return SysId
+            .quasistatic(Direction.kReverse)
+            .until(() -> getAngle().getRadians() < PivotArmConstants.PIVOT_ARM_MIN_ANGLE);
+  }
+
+
 
 }
 
