@@ -191,7 +191,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Intake",
         (indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5))).deadlineWith(shooter.runVoltage(0)));
-    NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer));
+    NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked());
 
     NamedCommands.registerCommand("Zero", zeroPosition());
     NamedCommands.registerCommand("ZeroPivot", pivot.bringDownCommand());
@@ -311,7 +311,7 @@ public class RobotContainer {
     // Intake Commands
     INTAKE_IN.whileTrue(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE));
     INTAKE_OUT.whileTrue(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE));
-    INTAKE_UNTIL_INTAKED.onTrue(intakeUntilIntaked(groundIntake, indexer));
+    INTAKE_UNTIL_INTAKED.onTrue(intakeUntilIntaked());
 
     // Ground Intake Commands
     GROUND_INTAKE_IN.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
@@ -325,9 +325,9 @@ public class RobotContainer {
         (indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2)
             .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE))));
             
-
     new Trigger(() -> (int) Timer.getMatchTime() == 30.0).onTrue(getRumbleDriver());
     new Trigger(indexer::isIntaked).onTrue(getRumbleOperator());
+    new Trigger(this::isAimedAtSpeaker).onTrue(getRumbleDriver());
 
     if (Constants.tuningMode) {
       SmartDashboard.putData("Pivot Sysid", 
@@ -367,17 +367,14 @@ public class RobotContainer {
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
       return new WaitCommand(autoWait.get()).andThen(MakeAutos.makeAutoCommand(
           drive,
-          //this::shootAnywhere,
-          this::shootSpeaker,
+          this::shootAnywhere,
+          // this::shootSpeaker,
+          this::intakeUntilIntaked,
           () -> {
-            return groundIntake.manualCommand(() -> GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE).alongWith(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE));
-          },
-          () -> {
-            // use a vision command later
+            // TODO use a vision command later
             return new InstantCommand();
           },
-          this::zeroPositionWhileMoving,
-          lockOnSpeakerFull()
+          this::zeroPositionWhileMoving
         ));
     }
     return new WaitCommand(autoWait.get()).andThen(autoChooser.get());
@@ -501,14 +498,13 @@ public class RobotContainer {
   }
 
   public Command shootNote() {
-    return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)
+    return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get) // run shooter full speed
         .alongWith(
             new SequentialCommandGroup(
-              indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2).withTimeout(0.1),
-              new WaitCommand(0.25),
-              indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)
+              indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2).withTimeout(0.1), // run intake back for 0.1 seconds
+              indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE) // run intake in to shoot
             ))
-        .withTimeout(1).alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();}));
+        .withTimeout(1.5).alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();})); // run the visualizer
   }
 
   /* // Brings the note forward and back for 0.5 seconds each to center it
@@ -580,7 +576,7 @@ public class RobotContainer {
     field.setRobotPose(drive.getPose());
   }
 
-  public Command intakeUntilIntaked(GroundIntake groundIntake, Indexer indexer){
+  public Command intakeUntilIntaked(){
     return indexer.IntakeLoopCommand(IndexerConstants.INDEXER_IN_VOLTAGE_WEAK).deadlineWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE)).deadlineWith(shooter.runVoltage(0));
   }
   

@@ -30,7 +30,7 @@ public class MakeAutos {
                     .andThen(intakeWhile.get());
     } */
 
-    public static Command makeAutoCommand(Drive drive, Supplier<Command> shoot, Supplier<Command> intakeCommand, Supplier<Command> intakeWhile, Supplier<Command> zeroPivot, Command shooterPrep) {
+    public static Command makeAutoCommand(Drive drive, Supplier<Command> shoot, Supplier<Command> intakeCommand, Supplier<Command> intakeWhile, Supplier<Command> zeroPivot) {
         return new SequentialCommandGroup(
             //shoot.get(),
             new WaitCommand(0.2).andThen(shoot.get()),
