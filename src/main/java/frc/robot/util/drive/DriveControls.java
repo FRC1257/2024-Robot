@@ -24,89 +24,70 @@ public class DriveControls {
     public static DoubleSupplier DRIVE_ROTATE;
     public static Trigger DRIVE_SLOW;
     public static Trigger DRIVE_STOP;
+
+    // drive modes
     public static Trigger DRIVE_ROBOT_RELATIVE;
-    public static Trigger LOCK_ON_SPEAKER_FULL;
+    public static Trigger DRIVE_SPEAKER_AIM;
+
+    // Drive Angle Locks
     public static Trigger LOCK_BACK;
     public static Trigger LOCK_PICKUP;
-
     public static Trigger LOCK_PASS;
-
-    public static Trigger DRIVE_SPEAKER_AIM;
-    public static Trigger DRIVE_NOTE_GOTO; // TODO not needed for now
+    public static Trigger LOCK_ON_AMP;
 
     // Drive Trajectories
     public static Trigger DRIVE_AMP;
-    public static Trigger LOCK_ON_AMP;
-    public static Trigger DRIVE_SOURCE;
-
-    // Drive Turns
-    public static Trigger TURN_90;
-    public static Trigger TURN_180;
 
     // Pivot Controls
     public static DoubleSupplier PIVOT_ROTATE;
-    public static DoubleSupplier PIVOT_PID_ROTATE;
     public static Trigger PIVOT_AMP;
     public static Trigger PIVOT_ZERO;
     public static Trigger PIVOT_TO_SPEAKER;
     public static Trigger PIVOT_PODIUM;
-    public static Trigger PIVOT_HOLD;
-    public static Trigger INTAKE_UNTIL_INTAKED;
+    public static Trigger PIVOT_ANYWHERE;
 
     // Intake Controls
     public static Trigger INTAKE_IN;
     public static Trigger INTAKE_OUT;
     public static DoubleSupplier INTAKE_ROTATE;
-    public static Trigger INTAKE_SHIMMY;
 
     // Ground Intake
     public static Trigger GROUND_INTAKE_IN;
     public static Trigger GROUND_INTAKE_OUT;
     public static DoubleSupplier GROUND_INTAKE_ROTATE;
 
+    public static Trigger INTAKE_UNTIL_INTAKED;
+
     // Shooter Controls
     public static DoubleSupplier SHOOTER_SPEED;
     public static Trigger SHOOTER_FULL_SEND_INTAKE;
-    public static Trigger SHOOTER_FIRE_SPEAKER;
-    public static Trigger SHOOTER_SHOOT;
     public static Trigger SHOOTER_FULL_SEND;
     public static Trigger SHOOTER_UNJAM;
-    public static Trigger SHOOT_ANYWHERE;
-
-    // Rumble Controls
-    public static Trigger TIMED_RUMBLE;
-    public static Trigger INTAKE_RUMBLE;
-
-    // Potential Hail Marry Program [Suggested by Owen]
-    public static Trigger SHOOT_FROM_SOURCE; 
 
     // Setup the controls
     public static void configureControls() {
         switch (Constants.driver) {
             case MAUI:
+                // Driver controls
                 DRIVE_FORWARD = () -> (-driver.getLeftY());
                 DRIVE_STRAFE = ()->(-driver.getLeftX());
                 DRIVE_ROTATE = () -> (-driver.getRightX());
+                
+                // Driver Settings
                 DRIVE_SLOW = driver.start();
-
-                LOCK_BACK = EMPTY_TRIGGER;
-                LOCK_PICKUP = EMPTY_TRIGGER;
-                LOCK_PASS = driver.a();
                 DRIVE_STOP = driver.x();
+
+                // Driver Modes
                 DRIVE_ROBOT_RELATIVE = driver.y();
+                DRIVE_SPEAKER_AIM = driver.leftBumper(); // uses vision
 
-                //unused commands, implement if have time
-                DRIVE_SPEAKER_AIM = driver.b();
-                DRIVE_AMP = EMPTY_TRIGGER;
-                DRIVE_SOURCE = EMPTY_TRIGGER;
-                TURN_90 = EMPTY_TRIGGER;
-                TURN_180 = EMPTY_TRIGGER;
-                LOCK_ON_SPEAKER_FULL = driver.leftBumper();
+                // Driver Angle Locks
+                LOCK_BACK = driver.getDPad(DPad.DOWN);
+                LOCK_PICKUP = driver.getDPad(DPad.RIGHT);
                 LOCK_ON_AMP = driver.rightBumper();
+                LOCK_PASS = driver.getDPad(DPad.LEFT); // uses vision
 
-                DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
-
-                SHOOT_ANYWHERE = driver.back();
+                DRIVE_AMP = driver.b(); // uses vision
                 break;
             case PROGRAMMERS:
             default:
@@ -121,71 +102,51 @@ public class DriveControls {
                 LOCK_PASS = driver.a();
 
                 DRIVE_AMP = driver.leftBumper();
-                DRIVE_SOURCE = driver.a();
-                TURN_90 = driver.y();
-                TURN_180 = driver.start();
-
-                //unused commands
-                DRIVE_NOTE_GOTO = EMPTY_TRIGGER;
-                SHOOT_ANYWHERE = driver.back();
                 break;
         }
 
         switch (Constants.operator) {
             case ERICK:
-                // Operator controls
                 PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
-
                 
                 // Pivot things
                 PIVOT_AMP = operator.getDPad(DPad.RIGHT);
                 PIVOT_ZERO = operator.getDPad(DPad.DOWN);
                 PIVOT_TO_SPEAKER = operator.getDPad(DPad.LEFT);
-                PIVOT_HOLD = EMPTY_TRIGGER;
-                PIVOT_PODIUM = operator.getDPad(DPad.UP);
+                PIVOT_PODIUM = EMPTY_TRIGGER;
+                PIVOT_ANYWHERE = operator.getDPad(DPad.UP); // uses vision
                 
                 // intaking things
+                INTAKE_ROTATE = () -> operator.getLeftYD();
                 INTAKE_IN = operator.rightBumper();
                 INTAKE_OUT = operator.leftBumper();
-                INTAKE_ROTATE = () -> operator.getLeftYD();
-                INTAKE_SHIMMY = operator.start();
-
-                GROUND_INTAKE_IN = operator.rightBumper();
-                GROUND_INTAKE_OUT = operator.leftBumper();
-                GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
-
                 INTAKE_UNTIL_INTAKED = operator.getY();
 
+                // ground intake things
+                GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
+                GROUND_INTAKE_IN = operator.rightBumper();
+                GROUND_INTAKE_OUT = operator.leftBumper();
+
+                // Shooter things
                 SHOOTER_SPEED = () -> operator.getRightXD();
                 SHOOTER_FULL_SEND_INTAKE = operator.getX();
-
-               
                 SHOOTER_FULL_SEND = operator.getA();
                 SHOOTER_UNJAM = operator.getB();
-
-                //unused commands
-                SHOOTER_FIRE_SPEAKER = EMPTY_TRIGGER;
-                SHOOTER_SHOOT = EMPTY_TRIGGER;
-                SHOOT_FROM_SOURCE = EMPTY_TRIGGER;
-                PIVOT_PID_ROTATE = EMPTY_DOUBLE_SUPPLIER; //() -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
-                //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
                 break;
             case PROGRAMMERS:
             default:
                 // Operator controls
                 PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
-                PIVOT_PID_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+                
                 //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
                 PIVOT_AMP = operator.getB();
                 PIVOT_ZERO = operator.getA();
                 PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
-                PIVOT_HOLD = EMPTY_TRIGGER;
                 PIVOT_PODIUM = operator.getDPad(DPad.UP);
                 
                 INTAKE_IN = operator.rightBumper();
                 INTAKE_OUT = operator.leftBumper();
                 INTAKE_ROTATE = () -> operator.getLeftYD();
-                INTAKE_SHIMMY = operator.start();
 
                 GROUND_INTAKE_IN = operator.rightBumper();
                 GROUND_INTAKE_OUT = operator.leftBumper();
@@ -194,8 +155,6 @@ public class DriveControls {
                 SHOOTER_SPEED = operator::getRightXD;
 
                 SHOOTER_FULL_SEND_INTAKE = EMPTY_TRIGGER;
-                SHOOTER_FIRE_SPEAKER = operator.getY();// commented out for testing
-                SHOOTER_SHOOT = EMPTY_TRIGGER;
                 SHOOTER_FULL_SEND = EMPTY_TRIGGER;
                 SHOOTER_UNJAM = EMPTY_TRIGGER;
                 break;
