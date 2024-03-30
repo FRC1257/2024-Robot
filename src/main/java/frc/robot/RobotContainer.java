@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -193,29 +194,27 @@ public class RobotContainer {
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
       // Do whatever you want with the pose here
       field.setRobotPose(pose);
+      Logger.recordOutput("PathPlanner/RobotPose", pose);
     });
 
     // Logging callback for target robot pose
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
       // Do whatever you want with the pose here
       field.getObject("target pose").setPose(pose);
+      Logger.recordOutput("PathPlanner/TargetPose", pose);
     });
 
     // Logging callback for the active path, this is sent as a list of poses
     PathPlannerLogging.setLogActivePathCallback((poses) -> {
       // Do whatever you want with the poses here
       field.getObject("path").setPoses(poses);
+      Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
     });
 
 
     // Named Commands
     System.out.println("[Init] Setting up Named Commands");
-
-    // command calling drivng subystem is probably here
-    // NamedCommands.registerCommand("Shoot", shootAnywhere());
-
-    // shootSpeaker aims pivot, shoots; zeroPosition then zeros; run after reaching
-    // position
+    
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
     NamedCommands.registerCommand("ShootSide", shootSpeakerSide().andThen(zeroPosition()));
     NamedCommands.registerCommand("ShootAnywhere", shootAnywhereAuto());
@@ -233,14 +232,6 @@ public class RobotContainer {
     configureControls();
 
     // Set up auto routines
-    /*
-     * NamedCommands.registerCommand(
-     * "Run Flywheel",
-     * Commands.startEnd(
-     * () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop,
-     * flywheel)
-     * .withTimeout(5.0));
-     */
     System.out.println("[Init] Setting up Logged Auto Chooser");
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -351,16 +342,12 @@ public class RobotContainer {
 
     DRIVE_AMP.onTrue(shootAmpTrajectory());
 
-    // TURN_90.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(-90)));
-    // TURN_180.onTrue(new TurnAngleCommand(drive, Rotation2d.fromDegrees(180)));
-
-
     // Operator controls
     PIVOT_AMP.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_AMP_ANGLE));
     PIVOT_ZERO.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_ARM_INTAKE_ANGLE));
     PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
     PIVOT_PODIUM.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE));
-    PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
+    // PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
     LOCK_ON_SPEAKER_FULL.whileTrue(lockOnSpeakerFull());
     LOCK_ON_AMP.whileTrue(joystickAmpPoint());
     LOCK_PASS.whileTrue(DriveCommands.joystickPasserPoint(
@@ -369,7 +356,7 @@ public class RobotContainer {
             DRIVE_STRAFE));
 
     NoteVisualizer.setRobotPoseSupplier(drive::getPose, shooter::getLeftSpeedMetersPerSecond,
-        shooter::getRightSpeedMetersPerSecond, pivot::getAngle);
+        shooter::getRightSpeedMetersPerSecond, pivot::getAngle, drive::getFieldVelocity);
 
     INTAKE_IN.whileTrue(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE));
     INTAKE_OUT.whileTrue(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE));
@@ -390,37 +377,25 @@ public class RobotContainer {
     SHOOTER_UNJAM.whileTrue(
         (indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2)
             .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE))));
-
-    // NoteVisualizer.setRobotPoseSupplier(drive::getPose, () -> 10.0, () -> 10.0,
-    // pivot::getAngle);
+            
     SHOOT_ANYWHERE.onTrue(shootAnywhere());
     // SHOOTER_SHOOT.onTrue(shootNote());
-    // SHOOTER_PREP.whileTrue(shooter.runPIDSpeed(ShooterConstants.defaultShooterSpeedRPM));
 
     new Trigger(() -> (int) Timer.getMatchTime() == 30.0).onTrue(getRumbleDriver());
     new Trigger(indexer::isIntaked).onTrue(getRumbleOperator());
 
     INTAKE_SHIMMY.onTrue(intakeShimmyCommand());
 
-    // if (Constants.tuningMode) {
-    // SmartDashboard.putData("Sysid Dynamic Drive Forward",
-    // drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    // SmartDashboard.putData("Sysid Dynamic Drive Backward",
-    // drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    // SmartDashboard.putData("Sysid Dynamic Turn Forward",
-    // drive.turnDynamic(SysIdRoutine.Direction.kForward));
-    // SmartDashboard.putData("Sysid Dynamic Turn Backward",
-    // drive.turnDynamic(SysIdRoutine.Direction.kReverse));
-
-    // SmartDashboard.putData("Sysid Quasi Drive Forward",
-    // drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    // SmartDashboard.putData("Sysid Quasi Drive Backward",
-    // drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    // SmartDashboard.putData("Sysid Quasi Turn Forward",
-    // drive.turnQuasistatic(SysIdRoutine.Direction.kForward));
-    // SmartDashboard.putData("Sysid Quasi Turn Backward",
-    // drive.turnQuasistatic(SysIdRoutine.Direction.kReverse));
-    // }
+    if (Constants.tuningMode) {
+      SmartDashboard.putData("Pivot Sysid", 
+        new SequentialCommandGroup(
+          pivot.quasistaticForward(),
+          pivot.quasistaticBack(),
+          pivot.dynamicForward(),
+          pivot.dynamicBack()
+        )
+      );
+    }
 
   }
 
@@ -461,7 +436,7 @@ public class RobotContainer {
           },
           this::zeroPositionWhileMoving,
           lockOnSpeakerFull()
-          ));
+        ));
     }
     return new WaitCommand(autoWait.get()).andThen(autoChooser.get());
   }
@@ -519,13 +494,17 @@ public class RobotContainer {
     return DriveCommands.pointedAtSpeaker(drive);
   }
 
+  public boolean isAimedAtSpeaker() {
+    return DriveCommands.pointedAtSpeaker(drive) && pivot.atSetpoint();
+  }
+
   public Command shootAnywhere() {
     return (new WaitUntilCommand(this::isPointedAtSpeaker).andThen(shootNote()))
               .deadlineWith(lockOnSpeakerFull());
   }
 
   public Command shootAnywhereAuto() {
-    return (new WaitUntilCommand(pivot::atSetpoint).andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE).withTimeout(1)))
+    return (new WaitUntilCommand(this::isAimedAtSpeaker).andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE).withTimeout(1)))
               .deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get))
               .deadlineWith(DriveCommands.joystickSpeakerPoint(drive, () -> 0, () -> 0))
               .deadlineWith(rotateArmtoSpeakerForever());
@@ -534,18 +513,16 @@ public class RobotContainer {
   public Command shootSpeaker() {
     return (
       rotateArmSpeaker()
-        .andThen(shootNote().deadlineWith(rotateArmtoSpeakerForever())));
+        .andThen(shootNote().deadlineWith(rotateArmSpeaker().repeatedly())));
   }
 
   public Command shootSpeakerSide() {
     return (
       rotateArmSpeakerSide()
-        .andThen(shootNote().deadlineWith(rotateArmtoSpeakerForever())));
+        .andThen(shootNote().deadlineWith(rotateArmSpeakerSide().repeatedly())));
   }
 
   public Command rotateArmtoSpeakerForever() {
-     // return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE - Units.degreesToRadians(1));
-        // return pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE);
       return pivot.PIDCommandForever(this::getAngle);
   }
 
@@ -554,11 +531,11 @@ public class RobotContainer {
   }
 
   public Command rotateArmSpeaker() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)).withTimeout(2.5);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)).withTimeout(PivotArmConstants.PIVOT_MAX_PID_TIME);
   }
 
   public Command rotateArmSpeakerSide() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)).withTimeout(2.5);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)).withTimeout(PivotArmConstants.PIVOT_MAX_PID_TIME);
   }
 
   public Command rotateArmAmp() {
@@ -577,27 +554,12 @@ public class RobotContainer {
             DRIVE_STRAFE));
   }
 
-  public Command shootSubwoofer() {
-    return (shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get).withTimeout(4)
-        .alongWith(
-            new WaitCommand(ShooterConstants.SHOOTER_SPINUP_TIME)
-                .andThen(indexer.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(2)))
-        .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
-
-    );
-  }
-
   public Command shootNote() {
     return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)
         .alongWith(
             new WaitCommand(0.25)
                 .andThen(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)))
-        .withTimeout(1);
-    // figure out why the shooter is so weaksauce
-    // it's only shooting it out fast when I mash the button
-    // probably has to do with the getRPM method
-
-    // .alongWith(NoteVisualizer.shoot(drive)));//);
+        .withTimeout(1).alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();}));
   }
 
   // Brings the note forward and back for 0.5 seconds each to center it
@@ -631,33 +593,15 @@ public class RobotContainer {
 
   // Gets RPM based on distance from speaker, taking into account the actual
   // shooting position
-  private double getRPM() {
+  /* private double getRPM() {
     return Lookup.getRPM(getEstimatedDistance());
-    // return 100000;
-    // with a comically high speed it keeps running the point arm command but can't
-    // run the shooter command
-    // will have to look into this later
-  }
+  } */
 
   // Gets angle based on distance from speaker, taking into account the actual
   // shooting position
   private double getAngle() {
     double angle = Lookup.getAngle(getEstimatedDistance());
     Logger.recordOutput("ShootAnywhereAngle", angle);
-    // return getGeneralAngle(FieldConstants.speakerPosition3D());
-    return angle;
-    // return getGeneralAngle(FieldConstants.speakerPosition3D()) * 0.8;
-   //  return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
-  }
-
-  private double getGeneralAngle(Pose3d target) {
-    double armLength = PivotArmConstants.PivotArmSimConstants.kArmLength;
-    double height = Units.inchesToMeters(target.getZ());
-    Transform2d targetTransform = drive.getPose().minus(target.toPose2d());
-    double targetDistance = targetTransform.getTranslation().getNorm();
-    double angle = Math.PI - (Math.acos(armLength / Math.sqrt(Math.pow(targetDistance, 2) + Math.pow(height, 2)))
-        + Math.atan(height / targetDistance));
-    Logger.recordOutput("Calculated General Angle", angle);
     return angle;
   }
 

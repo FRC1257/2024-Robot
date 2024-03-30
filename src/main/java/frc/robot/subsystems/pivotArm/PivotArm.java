@@ -142,7 +142,7 @@ public class PivotArm extends SubsystemBase {
     }
 
     public boolean atSetpoint() {
-        return Math.abs(io.getAngle() - setpoint) < PivotArmConstants.PIVOT_ARM_PID_TOLERANCE;
+        return Math.abs(io.getAngle() - setpoint) < PivotArmConstants.PIVOT_ARM_PID_TOLERANCE && Math.abs(getVelocity()) < PivotArmConstants.PIVOT_ARM_PID_VELOCITY_TOLERANCE;
     }
 
     public void setMechanism(MechanismLigament2d mechanism) {
@@ -151,6 +151,10 @@ public class PivotArm extends SubsystemBase {
 
     public Rotation2d getAngle() {
         return new Rotation2d(inputs.angleRads);
+    }
+
+    public double getVelocity() {
+        return inputs.angVelocityRadsPerSec;
     }
 
     public Rotation2d getSetpoint() {
@@ -267,9 +271,19 @@ public class PivotArm extends SubsystemBase {
         return SysId
             .quasistatic(Direction.kReverse)
             .until(() -> getAngle().getRadians() < PivotArmConstants.PIVOT_ARM_MIN_ANGLE);
-  }
+    }
 
+    public Command dynamicForward() {
+        return SysId
+            .dynamic(Direction.kForward)
+            .until(() -> getAngle().getRadians() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE);
+    }
 
+    public Command dynamicBack() {
+        return SysId
+            .dynamic(Direction.kReverse)
+            .until(() -> getAngle().getRadians() < PivotArmConstants.PIVOT_ARM_MIN_ANGLE);
+    }
 
 }
 
