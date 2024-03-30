@@ -574,6 +574,8 @@ public class RobotContainer {
 
     setPivotPose3d();
     field.setRobotPose(drive.getPose());
+    Logger.recordOutput("DriveAimed", DriveCommands.pointedAtSpeaker(drive));
+    Logger.recordOutput("PivotAimed", pivot.atSetpoint());
   }
 
   public Command intakeUntilIntaked(){
