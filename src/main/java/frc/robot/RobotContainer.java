@@ -429,6 +429,11 @@ public class RobotContainer {
         new Pose3d(
             new Translation3d(0, 0, 0.28),
             new Rotation3d(0, -pivot.getAngle().getRadians(), 0)));
+
+    Logger.recordOutput("PivotPoseSetpoint",
+        new Pose3d(
+            new Translation3d(0, 0, 0.28),
+            new Rotation3d(0, -pivot.getSetpoint().getRadians(), 0)));
   }
 
   public void resetRobotPose(Pose2d pose) {
@@ -637,10 +642,10 @@ public class RobotContainer {
   // Gets angle based on distance from speaker, taking into account the actual
   // shooting position
   private double getAngle() {
-    // TODO tune tomorrow
-
+    double angle = Lookup.getAngle(getEstimatedDistance());
+    Logger.recordOutput("ShootAnywhereAngle", angle);
     // return getGeneralAngle(FieldConstants.speakerPosition3D());
-    return Lookup.getAngle(getEstimatedDistance());
+    return angle;
     // return getGeneralAngle(FieldConstants.speakerPosition3D()) * 0.8;
    //  return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
   }

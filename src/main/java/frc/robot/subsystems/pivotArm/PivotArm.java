@@ -153,6 +153,10 @@ public class PivotArm extends SubsystemBase {
         return new Rotation2d(inputs.angleRads);
     }
 
+    public Rotation2d getSetpoint() {
+        return new Rotation2d(setpoint);
+    }
+
     public MechanismLigament2d append(MechanismLigament2d mechanism) {
         return armMechanism.append(mechanism);
     }
