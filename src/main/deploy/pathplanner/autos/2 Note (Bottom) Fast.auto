@@ -1,0 +1,112 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.6924444618120023,
+      "y": 4.440124264863915
+    },
+    "rotation": -55.980650010173584
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootSide"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "s3-n3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWhile"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootAnywhere"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "s3-n8"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWhile"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "n8-s6"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepShootAnywhere"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootAnywhere"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ZeroPivot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

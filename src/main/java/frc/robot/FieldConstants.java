@@ -4,6 +4,8 @@ import static edu.wpi.first.apriltag.AprilTagFields.k2024Crescendo;
 
 import java.io.IOException;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -13,11 +15,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-
 import frc.robot.util.drive.AllianceFlipUtil;
-
-
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
@@ -37,15 +35,19 @@ public class FieldConstants {
   public static double podiumX = Units.inchesToMeters(126.75);
   public static double startingLineX = Units.inchesToMeters(74.111);
 
-  public static Translation2d ampCenter =
+  private static Translation2d ampCenter =
       new Translation2d(Units.inchesToMeters(72.455), Units.inchesToMeters(322.996));
 
-  public static Pose2d TrapPose = new Pose2d(0,0, new Rotation2d(0)); // NEEDS TO BE ADJUSTED
+      public static Pose2d TrapPose = new Pose2d(0,0, new Rotation2d(0)); // NEEDS TO BE ADJUSTED
 
-  public static Pose2d ampPose = new Pose2d(ampCenter, Rotation2d.fromDegrees(-90));
+  private static Pose2d ampPose = new Pose2d(ampCenter, Rotation2d.fromDegrees(-90));
 
-  public static Pose2d pickupPose = new Pose2d(15.331, 1, Rotation2d.fromDegrees(-60));
+  private static Pose2d pickupPose = new Pose2d(15.331, 1, Rotation2d.fromDegrees(-60));
 
+  public static final class RobotConstants {
+    public static double armLength = Units.inchesToMeters(20.5);
+    public static double robotHeight = Units.inchesToMeters(11);
+  }
   /** Staging locations for each note */
   public static final class StagingLocations {
     public static double centerlineX = Units.inchesToMeters(fieldLength / 2);
@@ -86,24 +88,26 @@ public class FieldConstants {
   }
 
   // corners (blue alliance origin)
-  public static Translation3d topRightSpeaker =
+  private static Translation3d topRightSpeaker =
       new Translation3d(
           Units.inchesToMeters(18.055),
           Units.inchesToMeters(238.815),
           Units.inchesToMeters(83.091));
 
-  public static Translation3d topLeftSpeaker =
+  private static Translation3d topLeftSpeaker =
       new Translation3d(
           Units.inchesToMeters(18.055),
           Units.inchesToMeters(197.765),
           Units.inchesToMeters(83.091));
 
-  public static Translation3d bottomRightSpeaker =
+  private static Translation3d bottomRightSpeaker =
       new Translation3d(0.0, Units.inchesToMeters(238.815), Units.inchesToMeters(78.324));
-  public static Translation3d bottomLeftSpeaker =
+  private static Translation3d bottomLeftSpeaker =
       new Translation3d(0.0, Units.inchesToMeters(197.765), Units.inchesToMeters(78.324));
-  public static final Pose2d SpeakerPosition = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
-  public static final Pose3d SpeakerPosition3D = new Pose3d(SpeakerPosition).transformBy(new Transform3d(0,0, Units.inchesToMeters(100.324), new Rotation3d()));
+  private static final Pose2d SpeakerPosition = new Pose2d(-0.2, (5 + 6.12)/2, new Rotation2d(0));
+  private static final Pose3d SpeakerPosition3D = new Pose3d(SpeakerPosition).transformBy(new Transform3d(0,0, Units.inchesToMeters(100.324), new Rotation3d()));
+  private static final Pose2d passingPosition = new Pose2d(0, ampCenter.getY(), new Rotation2d(0));
+
   public static double aprilTagWidth = Units.inchesToMeters(6.50);
   public static AprilTagFieldLayout aprilTags;
 
@@ -174,6 +178,14 @@ public class FieldConstants {
 
   public static Pose2d[] SCORE_POSITIONS() {
     return AllianceFlipUtil.apply(SCORE_POSITIONS);
+  }
+
+  public static Pose2d speakerPosition() {
+    return AllianceFlipUtil.apply(SpeakerPosition);
+  }
+
+  public static Pose2d passingPosition() {
+    return AllianceFlipUtil.apply(passingPosition);
   }
 
   public static Pose3d speakerPosition3D() {
