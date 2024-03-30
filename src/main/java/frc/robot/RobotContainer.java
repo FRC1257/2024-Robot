@@ -4,7 +4,39 @@
 
 package frc.robot;
 
-import static frc.robot.util.drive.DriveControls.*;
+import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
+import static frc.robot.util.drive.DriveControls.DRIVE_FORWARD;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROBOT_RELATIVE;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROTATE;
+import static frc.robot.util.drive.DriveControls.DRIVE_SLOW;
+import static frc.robot.util.drive.DriveControls.DRIVE_STOP;
+import static frc.robot.util.drive.DriveControls.DRIVE_STRAFE;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_IN;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_OUT;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.INTAKE_IN;
+import static frc.robot.util.drive.DriveControls.INTAKE_OUT;
+import static frc.robot.util.drive.DriveControls.INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.INTAKE_SHIMMY;
+import static frc.robot.util.drive.DriveControls.INTAKE_UNTIL_INTAKED;
+import static frc.robot.util.drive.DriveControls.LOCK_BACK;
+import static frc.robot.util.drive.DriveControls.LOCK_ON_AMP;
+import static frc.robot.util.drive.DriveControls.LOCK_ON_SPEAKER_FULL;
+import static frc.robot.util.drive.DriveControls.LOCK_PASS;
+import static frc.robot.util.drive.DriveControls.LOCK_PICKUP;
+import static frc.robot.util.drive.DriveControls.PIVOT_AMP;
+import static frc.robot.util.drive.DriveControls.PIVOT_PODIUM;
+import static frc.robot.util.drive.DriveControls.PIVOT_ROTATE;
+import static frc.robot.util.drive.DriveControls.PIVOT_TO_SPEAKER;
+import static frc.robot.util.drive.DriveControls.PIVOT_ZERO;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND_INTAKE;
+import static frc.robot.util.drive.DriveControls.SHOOTER_SPEED;
+import static frc.robot.util.drive.DriveControls.SHOOTER_UNJAM;
+import static frc.robot.util.drive.DriveControls.SHOOT_ANYWHERE;
+import static frc.robot.util.drive.DriveControls.configureControls;
+import static frc.robot.util.drive.DriveControls.getRumbleDriver;
+import static frc.robot.util.drive.DriveControls.getRumbleOperator;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -510,15 +542,19 @@ public class RobotContainer {
               .deadlineWith(rotateArmtoSpeakerForever());
   }
 
+  public Command prepShooter() {
+    return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get);
+  }
+
   public Command shootSpeaker() {
     return (
-      rotateArmSpeaker()
+      rotateArmSpeaker().deadlineWith(prepShooter())
         .andThen(shootNote().deadlineWith(rotateArmSpeaker().repeatedly())));
   }
 
   public Command shootSpeakerSide() {
     return (
-      rotateArmSpeakerSide()
+      rotateArmSpeakerSide().deadlineWith(prepShooter())
         .andThen(shootNote().deadlineWith(rotateArmSpeakerSide().repeatedly())));
   }
 
@@ -531,11 +567,11 @@ public class RobotContainer {
   }
 
   public Command rotateArmSpeaker() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)).withTimeout(PivotArmConstants.PIVOT_MAX_PID_TIME);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE).withTimeout(PivotArmConstants.PIVOT_MAX_PID_TIME);
   }
 
   public Command rotateArmSpeakerSide() {
-    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)).withTimeout(PivotArmConstants.PIVOT_MAX_PID_TIME);
+    return pivot.PIDCommand(PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE).withTimeout(PivotArmConstants.PIVOT_MAX_PID_TIME);
   }
 
   public Command rotateArmAmp() {
