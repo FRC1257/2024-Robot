@@ -199,6 +199,13 @@ public class RobotContainer {
     NamedCommands.registerCommand("PrepShot", rotateArmSpeaker());
     NamedCommands.registerCommand("PrepShootAnywhere", rotateArmtoSpeakerForever()
                                                               .alongWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)));
+    NamedCommands.registerCommand("PrepPass", shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE).alongWith(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)).withTimeout(0.1)
+                                                      .andThen(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+                                                      .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE)));
+    NamedCommands.registerCommand("Pass", indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)
+                                                        .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+                                                        .alongWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE))
+                                                        .withTimeout(0.5));
 
     System.out.println("[Init] Setting up Triggers");
     configureControls();
