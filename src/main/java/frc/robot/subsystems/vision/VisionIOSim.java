@@ -25,7 +25,6 @@ public class VisionIOSim implements VisionIO {
     private final PhotonCamera cam1;
     private final PhotonCamera cam2;
     private final PhotonCamera cam3;
-    private final PhotonCamera noteCamera;
 
     private final PhotonPoseEstimator cam1Estimator;
     private final PhotonPoseEstimator cam2Estimator;
@@ -35,7 +34,6 @@ public class VisionIOSim implements VisionIO {
     private PhotonCameraSim cam1Sim;
     private PhotonCameraSim cam2Sim;
     private PhotonCameraSim cam3Sim;
-    private PhotonCameraSim noteCameraSim;
 
     private VisionSystemSim visionSim;
 
@@ -45,7 +43,6 @@ public class VisionIOSim implements VisionIO {
         cam1 = new PhotonCamera(cam1Name);
         cam2 = new PhotonCamera(cam2Name);
         cam3 = new PhotonCamera(cam3Name);
-        noteCamera = new PhotonCamera(kNoteCameraName);
 
         cam1Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam1,
                 getSimVersion(cam1RobotToCam));
@@ -78,13 +75,11 @@ public class VisionIOSim implements VisionIO {
         cam1Sim = new PhotonCameraSim(cam1, cam1Prop);
         cam2Sim = new PhotonCameraSim(cam2, cam1Prop);
         cam3Sim = new PhotonCameraSim(cam3, cam1Prop);
-        noteCameraSim = new PhotonCameraSim(noteCamera, cam1Prop);
 
         // Add the simulated cam1 to view the targets on this simulated field.
         visionSim.addCamera(cam1Sim, getSimVersion(cam1RobotToCam));
         visionSim.addCamera(cam2Sim, getSimVersion(cam2RobotToCam));
         visionSim.addCamera(cam3Sim, getSimVersion(cam3RobotToCam));
-        visionSim.addCamera(noteCameraSim, getSimVersion(kNoteRobotToCam));
 
         cam1Sim.enableDrawWireframe(true);
     }
@@ -122,7 +117,6 @@ public class VisionIOSim implements VisionIO {
 
         Logger.recordOutput("Vision/OrangeConnected", cam1.isConnected());
         Logger.recordOutput("Vision/RaspberryConnected", cam2.isConnected());
-        Logger.recordOutput("Vision/NoteConnected", noteCamera.isConnected());
         Logger.recordOutput("Vision/Raspberry2Connected", cam3.isConnected());
         
     }

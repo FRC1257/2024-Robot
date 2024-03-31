@@ -181,7 +181,7 @@ public class Drive extends SubsystemBase {
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
         for (int i = 0; i < visionInputs.estimate.length; i++) {
-          poseEstimator.addVisionMeasurement(visionInputs.estimate[i], visionInputs.timestamp);
+          poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp());
         }
       }
     }
@@ -259,7 +259,6 @@ public class Drive extends SubsystemBase {
 
   public void resetYaw() {
     gyroIO.zeroAll();
-    resetPose(lastPose);
   }
 
   /**

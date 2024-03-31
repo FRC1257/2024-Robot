@@ -63,7 +63,7 @@ public final class DriveConstants {
       kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
 
   public static final double kSlowModeConstant = 0.5;
-  public static final double kTurnSpeakerP = 0.9;
+  public static final double kTurnSpeakerP = 1.3;
   public static final double kTurnSpeakerI = 0;
   public static final double kTurnSpeakerD = 0;
   public static final double kTurnSpeakerTolerance = 0.05;

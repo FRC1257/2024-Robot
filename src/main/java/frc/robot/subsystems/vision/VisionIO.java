@@ -144,7 +144,7 @@ public interface VisionIO {
   }
 
   public default boolean goodResult(PhotonPipelineResult result) {
-    return true;
+    return result.hasTargets();
   }
 
   public default Pose3d[] getTargetsPositions(PhotonPipelineResult[] results) {

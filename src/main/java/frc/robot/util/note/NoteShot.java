@@ -1,5 +1,9 @@
 package frc.robot.util.note;
 
+import static frc.robot.subsystems.pivotArm.PivotArmConstants.PivotArmSimConstants.kArmLength;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,11 +13,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.subsystems.drive.Drive;
-
-import static frc.robot.subsystems.pivotArm.PivotArmConstants.PivotArmSimConstants.kArmLength;
-
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Represents a note shot with its position and speed parameters.
@@ -22,13 +21,13 @@ public class NoteShot {
     private Pose3d shotPosition;
     private double shotStraightSpeed;
     private double shotTangentSpeed;
-    private Drive drive;
+    private ChassisSpeeds driveVelocity;
 
-    public NoteShot(Pose3d shotPosition, double shotStraightSpeed, double shotTangentSpeed, Drive drive) {
+    public NoteShot(Pose3d shotPosition, double shotStraightSpeed, double shotTangentSpeed, ChassisSpeeds driveVelocity) {
         this.shotPosition = shotPosition;
         this.shotStraightSpeed = shotStraightSpeed;
         this.shotTangentSpeed = shotTangentSpeed;
-        this.drive = drive;
+        this.driveVelocity = driveVelocity;
     }
 
     public Pose3d getShotPosition() {
@@ -55,7 +54,7 @@ public class NoteShot {
         this.shotTangentSpeed = shotTangentSpeed;
     }
 
-    public static NoteShot fromRobotInfo(Pose2d robotPose, Rotation2d pivotAngle, double shotLeftSpeed, double shotRightSpeed, Drive drive) {
+    public static NoteShot fromRobotInfo(Pose2d robotPose, Rotation2d pivotAngle, double shotLeftSpeed, double shotRightSpeed, ChassisSpeeds velocity) {
         // calculate the position of the arm in 2d
         Pose2d armPose = robotPose.plus(new Transform2d(new Translation2d(0.098, robotPose.getRotation().plus(Rotation2d.fromDegrees(180))), new Rotation2d()));
         
@@ -73,11 +72,11 @@ public class NoteShot {
         double straightSpeed = (shotLeftSpeed + shotRightSpeed) / 2;
         double tangentSpeed = (shotLeftSpeed - shotRightSpeed) / 2;
 
-        return new NoteShot(extendedPose, straightSpeed, tangentSpeed, drive);
+        return new NoteShot(extendedPose, straightSpeed, tangentSpeed, velocity);
     }
 
     public PathPoint getFirstPoint() {
-        ChassisSpeeds chassisSpeeds = drive.getFieldVelocity();
+        ChassisSpeeds chassisSpeeds = driveVelocity;
         
         // Make sure this code is correct
         double dx = shotStraightSpeed * Math.cos(shotPosition.getRotation().getZ() + Math.PI) * Math.cos(shotPosition.getRotation().getY())
@@ -89,7 +88,7 @@ public class NoteShot {
         //shoot doesn't work for some reason, fix at home
         //try and figure out why a trajectory isn't being generated
         
-        //fixed velocity sim here, just had to add driver speed y to correct location
+        //fixed velocity sim here, just had to add driveVelocityr speed y to correct location
         return new PathPoint(
             shotPosition, 
             dx,
