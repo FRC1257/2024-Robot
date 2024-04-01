@@ -372,7 +372,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     AutoChooser.setupChoosers();
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
-      return new WaitCommand(autoWait.get()).andThen(MakeAutos.makeAutoCommand(
+      Command custom = MakeAutos.makeAutoCommand(
           drive,
           this::shootAnywhere,
           // this::shootSpeaker,
@@ -382,9 +382,20 @@ public class RobotContainer {
             return new InstantCommand();
           },
           this::zeroPositionWhileMoving
-        ));
+      );
+
+      if (autoWait.get() > 0) {
+        return new WaitCommand(autoWait.get()).andThen(custom);
+      }
+
+      return custom;
     }
-    return new WaitCommand(autoWait.get()).andThen(autoChooser.get());
+
+    if (autoWait.get() > 0) {
+      return new WaitCommand(autoWait.get()).andThen(autoChooser.get());
+    }
+
+    return autoChooser.get();    
   }
 
   /**
@@ -511,7 +522,7 @@ public class RobotContainer {
               indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2).withTimeout(0.1), // run intake back for 0.1 seconds
               indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE) // run intake in to shoot
             ))
-        .withTimeout(1.5).alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();})); // run the visualizer
+        .withTimeout(1.5);//.alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();})); // run the visualizer
   }
 
   /* // Brings the note forward and back for 0.5 seconds each to center it

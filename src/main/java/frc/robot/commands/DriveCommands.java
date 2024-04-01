@@ -173,8 +173,8 @@ public class DriveCommands {
 
                     Logger.recordOutput("AimAngle", targetDirection);
 
-                    double omega = angleController.calculate(drive.getRotation().getRadians(),
-                            targetDirection.getRadians());
+                    double omega = angleController.calculate(MathUtil.angleModulus(drive.getRotation().getRadians()),
+                            MathUtil.angleModulus(targetDirection.getRadians()));
 
                     // Square values
                     linearMagnitude = linearMagnitude * linearMagnitude;
@@ -222,8 +222,8 @@ public class DriveCommands {
                     Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY()).plus(new Rotation2d(getIsFlipped() ? Math.PI : 0));;
                     // Rotation2d deltaDirection = drive.getRotation().minus(targetDirection);
 
-                    double omega = angleController.calculate(drive.getRotation().getRadians(),
-                            targetDirection.getRadians());
+                    double omega = angleController.calculate(MathUtil.angleModulus(drive.getRotation().getRadians()),
+                            MathUtil.angleModulus(targetDirection.getRadians()));
 
                     // Square values
                     linearMagnitude = linearMagnitude * linearMagnitude;
@@ -262,7 +262,7 @@ public class DriveCommands {
                     Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble() * slowMode,
                             ySupplier.getAsDouble() * slowMode);
 
-                    double omega = angleController.calculate(drive.getRotation().getRadians(),
+                    double omega = angleController.calculate(MathUtil.angleModulus(drive.getRotation().getRadians()),
                             targetDirection.get().getRadians());
 
                     // Square values
@@ -293,14 +293,14 @@ public class DriveCommands {
                 () -> {
                     Transform2d targetTransform = drive.getPose().minus(speakerPose);
                     Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY()).plus(new Rotation2d(getIsFlipped() ? Math.PI : 0));;
-                    angleController.setSetpoint(targetDirection.getRadians());
+                    angleController.setSetpoint(MathUtil.angleModulus(targetDirection.getRadians()));
                 },
                 () -> {
                     // defines distance from speaker
                     Transform2d targetTransform = drive.getPose().minus(speakerPose);
                     Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY()).plus(new Rotation2d(getIsFlipped() ? Math.PI : 0));;
-                    double omega = angleController.calculate(drive.getRotation().getRadians(),
-                            targetDirection.getRadians());
+                    double omega = angleController.calculate(MathUtil.angleModulus(drive.getRotation().getRadians()),
+                            MathUtil.angleModulus(targetDirection.getRadians()));
                     omega = Math.copySign(omega * omega, omega); // no idea why squared
                     // Convert to robot relative speeds and send command
                     drive.runVelocity(
