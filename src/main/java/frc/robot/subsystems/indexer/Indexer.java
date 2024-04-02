@@ -86,7 +86,11 @@ public class Indexer extends SubsystemBase {
     }
 
     public void setVoltage(double voltage) {
-        io.setVoltage(voltage);
+        if(SmartDashboard.getBoolean("Turbo Mode", false)){
+            io.setVoltage(0);
+        } else {
+            io.setVoltage(voltage);
+        }
     }
 
     public void setBrake(boolean brake) {

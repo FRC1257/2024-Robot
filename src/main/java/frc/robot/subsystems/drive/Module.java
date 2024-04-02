@@ -16,10 +16,12 @@ package frc.robot.subsystems.drive;
 import static frc.robot.subsystems.drive.ModuleConstants.kDrivingD;
 import static frc.robot.subsystems.drive.ModuleConstants.kDrivingFF;
 import static frc.robot.subsystems.drive.ModuleConstants.kDrivingI;
+import static frc.robot.subsystems.drive.ModuleConstants.kDrivingMotorCurrentLimit;
 import static frc.robot.subsystems.drive.ModuleConstants.kDrivingP;
 import static frc.robot.subsystems.drive.ModuleConstants.kTurningD;
 import static frc.robot.subsystems.drive.ModuleConstants.kTurningFF;
 import static frc.robot.subsystems.drive.ModuleConstants.kTurningI;
+import static frc.robot.subsystems.drive.ModuleConstants.kTurningMotorCurrentLimit;
 import static frc.robot.subsystems.drive.ModuleConstants.kTurningP;
 import static frc.robot.subsystems.drive.ModuleConstants.kWheelDiameterMeters;
 
@@ -28,7 +30,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Module {
@@ -216,5 +218,15 @@ public class Module {
 
   public void setTurnVoltage(double voltage) {
     setTurnVoltage(voltage);
+  }
+
+  public void setCurrentLimit(){
+    if(SmartDashboard.getBoolean("Turbo Mode", false)){
+      io.setDriveCurrentLimit(1257);
+      io.setTurningCurrentLimit(1257);
+    } else {
+      io.setDriveCurrentLimit(kDrivingMotorCurrentLimit);
+      io.setTurningCurrentLimit(kTurningMotorCurrentLimit);
+    }
   }
 }

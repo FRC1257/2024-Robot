@@ -113,8 +113,12 @@ public class PivotArm extends SubsystemBase {
         } else if (io.getAngle() < PivotArmConstants.PIVOT_ARM_MIN_ANGLE && motorVolts < 0) {
             motorVolts = 0;
         }
-        
-        io.setVoltage(motorVolts);
+
+        if(SmartDashboard.getBoolean("Turbo Mode", false)){
+            io.setVoltage(0);
+        } else {
+            io.setVoltage(motorVolts);
+        }
     }
 
     public void move(double speed) {

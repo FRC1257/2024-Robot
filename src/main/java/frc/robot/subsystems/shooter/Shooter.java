@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -171,7 +172,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setVoltage(double volts){
-    shooterIO.setVoltage(volts, volts);
+    if(SmartDashboard.getBoolean("Turbo Mode", false)){
+      shooterIO.setVoltage(0, 0);
+    } else {
+      shooterIO.setVoltage(volts, volts);
+    }
   }
 
  

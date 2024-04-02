@@ -182,6 +182,7 @@ public class RobotContainer {
       Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
     });
 
+    SmartDashboard.putBoolean("Turbo Mode", false);
 
     // Named Commands
     System.out.println("[Init] Setting up Named Commands");
@@ -230,9 +231,11 @@ public class RobotContainer {
     SmartDashboard.putBoolean("ShootSide", false); // TODO comp fix change later
   }
 
+
   public void reset() {
     drive.resetYaw();
   }
+  
 
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -330,7 +333,7 @@ public class RobotContainer {
     new Trigger(indexer::isIntaked).onTrue(getRumbleOperator());
     new Trigger(this::isAimedAtSpeaker).onTrue(getRumbleDriver());
 
-    TURBO_TOGGLE.whileTrue(indexer.stop().alongWith(groundIntake.stop()).alongWith(shooter.stop()).alongWith(pivot.stop()));
+    
 
     if (Constants.tuningMode) {
       SmartDashboard.putData("Pivot Sysid", 
@@ -342,6 +345,8 @@ public class RobotContainer {
         )
       );
     }
+
+    
   }
 
   public void setPivotPose3d() {

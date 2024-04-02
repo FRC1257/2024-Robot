@@ -190,6 +190,10 @@ public class Drive extends SubsystemBase {
       module.periodic();
     }
 
+    for (var module : modules) {
+      module.setCurrentLimit();
+    }
+
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
       for (var module : modules) {
