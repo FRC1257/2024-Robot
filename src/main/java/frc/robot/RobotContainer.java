@@ -219,9 +219,6 @@ public class RobotContainer {
         "Drive FF Characterization",
         new FeedForwardCharacterization(
             drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption("driveOutShoot", DriveCommands.driveBackandShooter(drive, pivot, shooter, indexer));
-    autoChooser.addOption("drive out", DriveCommands.driveBackAuto(drive));
-    autoChooser.addOption("shoot out", DriveCommands.justShooter(pivot, shooter, indexer));
 
     // this is defined later
     autoChooser.addOption("Custom", new InstantCommand());
