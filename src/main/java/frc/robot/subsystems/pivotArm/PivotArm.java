@@ -237,13 +237,15 @@ public class PivotArm extends SubsystemBase {
         );
     }
 
-    public void stop() {
-        // return new InstantCommand(
-        //     () -> move(0), 
-        //     this
-        // );
-        move(0);
-    }//not calling move
+    public Command stop() {
+        return new FunctionalCommand(
+            () -> {},
+            () -> io.setVoltage(0),
+            (stop) -> io.stop(),
+            () -> false,
+            this
+        );
+      }
     //no commmand yalee
 
     public Command bringDownCommand() {

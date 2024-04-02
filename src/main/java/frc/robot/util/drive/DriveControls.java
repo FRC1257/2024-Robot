@@ -64,6 +64,9 @@ public class DriveControls {
     public static Trigger SHOOTER_FULL_SEND;
     public static Trigger SHOOTER_UNJAM;
 
+    // Turbo Mode Toggle 
+    public static Trigger TURBO_TOGGLE;
+
     // Setup the controls
     public static void configureControls() {
         switch (Constants.driver) {
@@ -132,6 +135,7 @@ public class DriveControls {
                 SHOOTER_FULL_SEND_INTAKE = operator.getX();
                 SHOOTER_FULL_SEND = operator.getA();
                 SHOOTER_UNJAM = operator.getB();
+                TURBO_TOGGLE = EMPTY_TRIGGER;
                 break;
             case PROGRAMMERS:
             default:

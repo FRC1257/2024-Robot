@@ -2,6 +2,8 @@ package frc.robot.subsystems.pivotArm;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.wpilibj2.command.Command;
+
 public interface PivotArmIO {
     @AutoLog
     public static class PivotArmIOInputs {
@@ -26,6 +28,10 @@ public interface PivotArmIO {
     /** Returns the current distance measurement. */
     public default double getAngle() {
         return 0.0;
+    }
+
+    /** Sets the pivot arm voltage to 0 */
+    public default void stop(){
     }
 
     /** Go to Setpoint */
