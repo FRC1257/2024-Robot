@@ -55,6 +55,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
+import frc.robot.util.autonomous.DeadzoneChooser;
 import frc.robot.util.autonomous.LocalADStarAK;
 
 public class Drive extends SubsystemBase {
@@ -98,6 +99,8 @@ public class Drive extends SubsystemBase {
   private SysIdRoutine turnRoutine;
 
   private Rotation2d simRotation = new Rotation2d();
+
+  private DeadzoneChooser deadzoneChooser = new DeadzoneChooser("Deadzone");
 
   public Drive(
       GyroIO gyroIO,
@@ -204,6 +207,12 @@ public class Drive extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
+    }
+
+    if (DriverStation.isAutonomousEnabled()) {
+      Pathfinding.setDynamicObstacles(deadzoneChooser.getDeadzone(), getPose().getTranslation());
+    } else {
+      Pathfinding.setDynamicObstacles(List.of(), null);
     }
 
     SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
@@ -341,6 +350,10 @@ public class Drive extends SubsystemBase {
     // return new Rotation2d(gyroIO.getYawAngle());
     return getPose().getRotation();
     // return new Rotation2d(); // use if nothing works
+  }
+
+  public void updateDeadzoneChooser() {
+    deadzoneChooser.init();
   }
 
   /** Resets the current odometry pose. */

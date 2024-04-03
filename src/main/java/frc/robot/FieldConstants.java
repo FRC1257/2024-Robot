@@ -36,7 +36,7 @@ public class FieldConstants {
   public static double startingLineX = Units.inchesToMeters(74.111);
 
   private static Translation2d ampCenter =
-      new Translation2d(Units.inchesToMeters(72.455), Units.inchesToMeters(322.996));
+      new Translation2d(Units.inchesToMeters(72.455), Units.inchesToMeters(322.996 - 5));
 
       public static Pose2d TrapPose = new Pose2d(0,0, new Rotation2d(0)); // NEEDS TO BE ADJUSTED
 

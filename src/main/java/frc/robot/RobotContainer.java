@@ -4,8 +4,40 @@
 
 package frc.robot;
 
-import static frc.robot.util.drive.DriveControls.*;
+import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
+import static frc.robot.util.drive.DriveControls.DRIVE_FORWARD;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROBOT_RELATIVE;
+import static frc.robot.util.drive.DriveControls.DRIVE_ROTATE;
+import static frc.robot.util.drive.DriveControls.DRIVE_SLOW;
+import static frc.robot.util.drive.DriveControls.DRIVE_SPEAKER_AIM;
+import static frc.robot.util.drive.DriveControls.DRIVE_STOP;
+import static frc.robot.util.drive.DriveControls.DRIVE_STRAFE;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_IN;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_OUT;
+import static frc.robot.util.drive.DriveControls.GROUND_INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.INTAKE_IN;
+import static frc.robot.util.drive.DriveControls.INTAKE_OUT;
+import static frc.robot.util.drive.DriveControls.INTAKE_ROTATE;
+import static frc.robot.util.drive.DriveControls.INTAKE_UNTIL_INTAKED;
+import static frc.robot.util.drive.DriveControls.LOCK_BACK;
+import static frc.robot.util.drive.DriveControls.LOCK_ON_AMP;
+import static frc.robot.util.drive.DriveControls.LOCK_PASS;
+import static frc.robot.util.drive.DriveControls.LOCK_PICKUP;
+import static frc.robot.util.drive.DriveControls.PIVOT_AMP;
+import static frc.robot.util.drive.DriveControls.PIVOT_ANYWHERE;
+import static frc.robot.util.drive.DriveControls.PIVOT_PODIUM;
+import static frc.robot.util.drive.DriveControls.PIVOT_ROTATE;
+import static frc.robot.util.drive.DriveControls.PIVOT_TO_SPEAKER;
+import static frc.robot.util.drive.DriveControls.PIVOT_ZERO;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND;
+import static frc.robot.util.drive.DriveControls.SHOOTER_FULL_SEND_INTAKE;
+import static frc.robot.util.drive.DriveControls.SHOOTER_SPEED;
+import static frc.robot.util.drive.DriveControls.SHOOTER_UNJAM;
+import static frc.robot.util.drive.DriveControls.configureControls;
+import static frc.robot.util.drive.DriveControls.getRumbleDriver;
+import static frc.robot.util.drive.DriveControls.getRumbleOperator;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -32,20 +64,41 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.LED.BlinkinLEDController;
-import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.groundIntake.*;
-import frc.robot.subsystems.indexer.*;
-import frc.robot.subsystems.pivotArm.*;
-import frc.robot.subsystems.shooter.*;
-import frc.robot.subsystems.vision.*;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOReal;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.groundIntake.GroundIntake;
+import frc.robot.subsystems.groundIntake.GroundIntakeConstants;
+import frc.robot.subsystems.groundIntake.GroundIntakeIO;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSim;
+import frc.robot.subsystems.groundIntake.GroundIntakeIOSparkMax;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerConstants;
+import frc.robot.subsystems.indexer.IndexerIO;
+import frc.robot.subsystems.indexer.IndexerIOSim;
+import frc.robot.subsystems.indexer.IndexerIOSparkMax;
+import frc.robot.subsystems.pivotArm.PivotArm;
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.subsystems.pivotArm.PivotArmIO;
+import frc.robot.subsystems.pivotArm.PivotArmIOSim;
+import frc.robot.subsystems.pivotArm.PivotArmIOSparkMax;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhoton;
+import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.util.autonomous.AutoChooser;
 import frc.robot.util.autonomous.MakeAutos;
 import frc.robot.util.drive.AllianceFlipUtil;
@@ -145,6 +198,7 @@ public class RobotContainer {
 
     System.out.println("[Init] Setting up Choosers");
     AutoChooser.setupChoosers();
+    drive.updateDeadzoneChooser();
 
     System.out.println("[Init] Setting up Mechanisms");
     
@@ -376,17 +430,16 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     AutoChooser.setupChoosers();
+    drive.updateDeadzoneChooser();
+
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
       Command custom = MakeAutos.makeAutoCommand(
-          drive,
-          this::shootAnywhere,
-          // this::shootSpeaker,
-          this::intakeUntilIntaked,
-          () -> {
-            // TODO use a vision command later
-            return new InstantCommand();
-          },
-          this::zeroPositionWhileMoving
+        drive,
+        this::shootAnywhere,
+        this::justShootAuto,
+        this::intakeUntilIntaked,
+        pivot::bringDownCommand,
+        indexer::isIntaked
       );
 
       if (autoWait.get() > 0) {
@@ -557,10 +610,9 @@ public class RobotContainer {
 
   // Returns the distance between the robot's next estimated position and the
   // speaker position
+  @AutoLogOutput(key = "DistanceAway")
   private double getEstimatedDistance() {
     Transform2d targetTransform = getEstimatedPosition().minus(FieldConstants.speakerPosition());
-    Logger.recordOutput("DistanceAway", targetTransform.getTranslation().getNorm());
-
     return targetTransform.getTranslation().getNorm();
   }
 
@@ -596,6 +648,7 @@ public class RobotContainer {
 
     if (SmartDashboard.getBoolean("Set Start Position", false)) {
       AutoChooser.setupChoosers();
+      drive.updateDeadzoneChooser();
       resetRobotPose(AutoChooser.getStartPose());
       SmartDashboard.putBoolean("Set Start Position", false);
     }

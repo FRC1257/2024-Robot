@@ -21,6 +21,7 @@
       "/SmartDashboard/Arm Mechanism": "Mechanism2d",
       "/SmartDashboard/Auto Choices": "String Chooser",
       "/SmartDashboard/Claw": "Subsystem",
+      "/SmartDashboard/Deadzone": "String Chooser",
       "/SmartDashboard/Drive": "Subsystem",
       "/SmartDashboard/Elevator": "Subsystem",
       "/SmartDashboard/Field": "Field2d",
