@@ -19,12 +19,19 @@ public class DeadzoneChooser {
 
     private final List<Pair<Translation2d, Translation2d>> threadTheNeedle = List.of( // blue alliance
         new Pair<>(
-            new Translation2d(2.686, 8.171), 
-            new Translation2d(4.585, 6.679)
+            new Translation2d(2, 8.171), 
+            new Translation2d(3.8, 6.7)
         ),
         new Pair<>(
-            new Translation2d(3.034, 5.563), 
-            new Translation2d(4.585, 0))
+            new Translation2d(2, 5.8), 
+            new Translation2d(3.8, 0))
+    );
+
+    private final List<Pair<Translation2d, Translation2d>> threadTheNeedleGoTop = List.of( // blue alliance
+        new Pair<>(
+            new Translation2d(2, 7.42), 
+            new Translation2d(3.8, 0)
+        )
     );
 
     // Tune this
@@ -53,7 +60,8 @@ public class DeadzoneChooser {
     }
 
     public void init() {
-        deadzone.addOption("Thread the Needle", getBothAlliances(threadTheNeedle));
+        deadzone.addOption("Thread the Needle Between", getBothAlliances(threadTheNeedle));
+        deadzone.addOption("Thread the Needle Top", getBothAlliances(threadTheNeedleGoTop));
         deadzone.addOption("Block Top", getBothAlliances(blockTop));
         deadzone.addOption("Block Bottom", getBothAlliances(blockBottom));
         deadzone.addOption("Block Stage", getBothAlliances(blockStage));

@@ -92,7 +92,7 @@ public class IndexerIOSim implements IndexerIO {
 
     @Override
     public boolean isIntaked() {
-        return false; // change to try autos
+        return true; // change to try autos
     }
 
 }
