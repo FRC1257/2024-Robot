@@ -341,11 +341,11 @@ public class DriveCommands {
         }
     }
 
-    public static double getPivotSideAngle() {
+    public static boolean getPivotSideAngle() {
         if (SmartDashboard.getBoolean("ShootSide", false)) {
-            return PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE;
+            return false;
         }
-        return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
+        return true;
     }
 
 }

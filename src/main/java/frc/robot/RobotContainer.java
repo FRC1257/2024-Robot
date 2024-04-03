@@ -216,9 +216,9 @@ public class RobotContainer {
 
     // Set up feedforward characterization
     autoChooser.addOption(
-        "Drive FF Characterization",
-        new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+        "Just Shoot",
+        justShootAuto()
+    );
 
     // this is defined later
     autoChooser.addOption("Custom", new InstantCommand());
@@ -462,6 +462,11 @@ public class RobotContainer {
               .deadlineWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get))
               .deadlineWith(DriveCommands.joystickSpeakerPoint(drive, () -> 0, () -> 0))
               .deadlineWith(rotateArmtoSpeakerForever());
+  }
+
+  public Command justShootAuto() {
+    return shootSpeaker().onlyIf(DriveCommands::getPivotSideAngle)
+            .andThen(shootSpeakerSide().onlyIf(() -> !DriveCommands.getPivotSideAngle()));
   }
 
   public Command prepShooter() {
