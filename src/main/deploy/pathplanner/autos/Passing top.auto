@@ -1,0 +1,181 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.73,
+      "y": 6.71
+    },
+    "rotation": 60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootSide"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "s1-n4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWhile"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "n4-p4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepPass"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Pass"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "p4-n5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWhile"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "n5-p5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepPass"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Pass"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "p5-n6"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeWhile"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ZeroPivot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "n6-p5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepPass"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Pass"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ZeroPivot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -3,6 +3,9 @@ package frc.robot.subsystems.pivotArm;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.DoubleSupplier;
 
@@ -12,12 +15,18 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -34,6 +43,13 @@ public class PivotArm extends SubsystemBase {
     private LoggedDashboardNumber logkG;
     private LoggedDashboardNumber logkV;
     private LoggedDashboardNumber logkA;
+
+    // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+    private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+    // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+    private final MutableMeasure<Angle> m_angle = mutable(Rotations.of(0));
+    // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+    private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
 
 
     private double setpoint = 0;
@@ -61,8 +77,18 @@ public class PivotArm extends SubsystemBase {
         logkA = new LoggedDashboardNumber("PivotArm/kG", io.getkA());
 
         SysId = new SysIdRoutine(
-            new SysIdRoutine.Config(Volts.per(Second).of(PivotArmConstants.RAMP_RATE), Volts.of(PivotArmConstants.STEP_VOLTAGE), Seconds.of(6)),
-            new SysIdRoutine.Mechanism(v -> io.setVoltage(v.in(Volts)), null, this));
+            new SysIdRoutine.Config(Volts.per(Second).of(PivotArmConstants.RAMP_RATE), Volts.of(PivotArmConstants.STEP_VOLTAGE), null),
+            new SysIdRoutine.Mechanism(v -> io.setVoltage(v.in(Volts)), 
+                (sysidLog) -> {
+                    sysidLog.motor("pivot")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(inputs.appliedVolts, Volts))
+                    .angularPosition(m_angle.mut_replace(inputs.angleRads, Rotations))
+                    .angularVelocity(
+                        m_velocity.mut_replace(inputs.angVelocityRadsPerSec, RotationsPerSecond));
+                        
+                }, 
+                this));
         
     }
     
@@ -257,12 +283,13 @@ public class PivotArm extends SubsystemBase {
             () -> {}, 
             () -> {
                 move(-1);
+                setpoint = 0;
             }, 
             (interrupted) -> {
                 move(0);
             }, 
             () -> {
-                return io.getAngle() < 0.15;
+                return io.getAngle() < 0.1;
             }, 
             this);
     }
@@ -270,25 +297,29 @@ public class PivotArm extends SubsystemBase {
     public Command quasistaticForward() {
         return SysId
             .quasistatic(Direction.kForward)
-            .until(() -> getAngle().getRadians() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE);
+            .until(() -> getAngle().getRadians() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE)
+                .alongWith(new InstantCommand(() -> Logger.recordOutput("PivotArm/sysid-test-state-", "quasistatic-forward")));
       }
     
     public Command quasistaticBack() {
         return SysId
             .quasistatic(Direction.kReverse)
-            .until(() -> getAngle().getRadians() < PivotArmConstants.PIVOT_ARM_MIN_ANGLE);
+            .until(() -> getAngle().getRadians() < PivotArmConstants.PIVOT_ARM_MIN_ANGLE)
+                .alongWith(new InstantCommand(() -> Logger.recordOutput("PivotArm/sysid-test-state-", "quasistatic-reverse")));
     }
 
     public Command dynamicForward() {
         return SysId
             .dynamic(Direction.kForward)
-            .until(() -> getAngle().getRadians() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE);
+            .until(() -> getAngle().getRadians() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE)
+                .alongWith(new InstantCommand(() -> Logger.recordOutput("PivotArm/sysid-test-state-", "dynamic-forward")));
     }
 
     public Command dynamicBack() {
         return SysId
             .dynamic(Direction.kReverse)
-            .until(() -> getAngle().getRadians() < PivotArmConstants.PIVOT_ARM_MIN_ANGLE);
+            .until(() -> getAngle().getRadians() < PivotArmConstants.PIVOT_ARM_MIN_ANGLE)
+                .alongWith(new InstantCommand(() -> Logger.recordOutput("PivotArm/sysid-test-state-", "dynamic-reverse")));
     }
 
 }

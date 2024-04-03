@@ -201,6 +201,13 @@ public class RobotContainer {
     NamedCommands.registerCommand("PrepShot", rotateArmSpeaker());
     NamedCommands.registerCommand("PrepShootAnywhere", rotateArmtoSpeakerForever()
                                                               .alongWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)));
+    NamedCommands.registerCommand("PrepPass", shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE).alongWith(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)).withTimeout(0.1)
+                                                      .andThen(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+                                                      .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE)));
+    NamedCommands.registerCommand("Pass", indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)
+                                                        .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+                                                        .alongWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE))
+                                                        .withTimeout(0.5));
 
     System.out.println("[Init] Setting up Triggers");
     configureControls();
@@ -211,12 +218,9 @@ public class RobotContainer {
 
     // Set up feedforward characterization
     autoChooser.addOption(
-        "Drive FF Characterization",
-        new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption("driveOutShoot", DriveCommands.driveBackandShooter(drive, pivot, shooter, indexer));
-    autoChooser.addOption("drive out", DriveCommands.driveBackAuto(drive));
-    autoChooser.addOption("shoot out", DriveCommands.justShooter(pivot, shooter, indexer));
+        "Just Shoot",
+        justShootAuto()
+    );
 
     // this is defined later
     autoChooser.addOption("Custom", new InstantCommand());
@@ -373,7 +377,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     AutoChooser.setupChoosers();
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
-      return new WaitCommand(autoWait.get()).andThen(MakeAutos.makeAutoCommand(
+      Command custom = MakeAutos.makeAutoCommand(
           drive,
           this::shootAnywhere,
           // this::shootSpeaker,
@@ -383,9 +387,20 @@ public class RobotContainer {
             return new InstantCommand();
           },
           this::zeroPositionWhileMoving
-        ));
+      );
+
+      if (autoWait.get() > 0) {
+        return new WaitCommand(autoWait.get()).andThen(custom);
+      }
+
+      return custom;
     }
-    return new WaitCommand(autoWait.get()).andThen(autoChooser.get());
+
+    if (autoWait.get() > 0) {
+      return new WaitCommand(autoWait.get()).andThen(autoChooser.get());
+    }
+
+    return autoChooser.get();    
   }
 
   /**
@@ -457,6 +472,11 @@ public class RobotContainer {
               .deadlineWith(rotateArmtoSpeakerForever());
   }
 
+  public Command justShootAuto() {
+    return shootSpeaker().onlyIf(DriveCommands::getPivotSideAngle)
+            .andThen(shootSpeakerSide().onlyIf(() -> !DriveCommands.getPivotSideAngle()));
+  }
+
   public Command prepShooter() {
     return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get);
   }
@@ -512,7 +532,7 @@ public class RobotContainer {
               indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2).withTimeout(0.1), // run intake back for 0.1 seconds
               indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE) // run intake in to shoot
             ))
-        .withTimeout(1.5).alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();})); // run the visualizer
+        .withTimeout(1.5);//.alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();})); // run the visualizer
   }
 
   /* // Brings the note forward and back for 0.5 seconds each to center it
@@ -582,6 +602,8 @@ public class RobotContainer {
 
     setPivotPose3d();
     field.setRobotPose(drive.getPose());
+    Logger.recordOutput("DriveAimed", DriveCommands.pointedAtSpeaker(drive));
+    Logger.recordOutput("PivotAimed", pivot.atSetpoint());
   }
 
   public Command intakeUntilIntaked(){

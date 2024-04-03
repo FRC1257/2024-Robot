@@ -91,18 +91,26 @@ public class DriveControls {
                 break;
             case PROGRAMMERS:
             default:
-                DRIVE_FORWARD = () -> -driver.getLeftY();
-                DRIVE_STRAFE = () -> -driver.getLeftX();
-                DRIVE_ROTATE = driver::getRightX;
-                DRIVE_SLOW = driver.x();
-                DRIVE_SPEAKER_AIM = driver.b();
-
-                DRIVE_STOP = driver.rightBumper();
+                // Driver controls
+                DRIVE_FORWARD = () -> (-driver.getLeftY());
+                DRIVE_STRAFE = ()->(-driver.getLeftX());
+                DRIVE_ROTATE = () -> (-driver.getRightX());
                 
-                LOCK_PASS = driver.a();
+                // Driver Settings
+                DRIVE_SLOW = driver.start();
+                DRIVE_STOP = driver.x();
 
-                DRIVE_AMP = driver.leftBumper();
-                break;
+                // Driver Modes
+                DRIVE_ROBOT_RELATIVE = driver.y();
+                DRIVE_SPEAKER_AIM = driver.b(); // uses vision
+
+                // Driver Angle Locks
+                LOCK_BACK = driver.getDPad(DPad.DOWN);
+                LOCK_PICKUP = driver.getDPad(DPad.RIGHT);
+                LOCK_ON_AMP = driver.rightBumper();
+                LOCK_PASS = driver.getDPad(DPad.LEFT); // uses vision
+
+                DRIVE_AMP = EMPTY_TRIGGER; // uses vision
         }
 
         switch (Constants.operator) {

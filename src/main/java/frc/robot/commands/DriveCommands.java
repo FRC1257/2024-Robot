@@ -85,8 +85,7 @@ public class DriveCommands {
                             .getTranslation();
 
                     // Convert to field relative speeds & send command
-                    boolean isFlipped = DriverStation.getAlliance().isPresent()
-                            && DriverStation.getAlliance().get() == Alliance.Red;
+                    boolean isFlipped = getIsFlipped();
                     drive.runVelocity(
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
@@ -138,6 +137,11 @@ public class DriveCommands {
                 drive);
     }
 
+    private static boolean getIsFlipped() {
+        return DriverStation.getAlliance().isPresent()
+                        && DriverStation.getAlliance().get() == Alliance.Red;
+    }
+
     /**
      * Drive robot while pointing at a specific point on the field.
      */
@@ -153,6 +157,8 @@ public class DriveCommands {
                                                                                               // should use field
                                                                                               // constants
 
+
+
                         
                     // Apply deadband
                     double linearMagnitude = MathUtil.applyDeadband(
@@ -161,11 +167,14 @@ public class DriveCommands {
                     Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble() * slowMode,
                             ySupplier.getAsDouble() * slowMode);
                     Transform2d targetTransform = drive.getPose().minus(speakerPose);
-                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY())
+                        .plus(new Rotation2d(getIsFlipped() ? Math.PI : 0));
                     // Rotation2d deltaDirection = drive.getRotation().minus(targetDirection);
 
-                    double omega = angleController.calculate(drive.getRotation().getRadians(),
-                            targetDirection.getRadians());
+                    Logger.recordOutput("AimAngle", targetDirection);
+
+                    double omega = angleController.calculate(MathUtil.angleModulus(drive.getRotation().getRadians()),
+                            MathUtil.angleModulus(targetDirection.getRadians()));
 
                     // Square values
                     linearMagnitude = linearMagnitude * linearMagnitude;
@@ -210,11 +219,11 @@ public class DriveCommands {
                     Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble() * slowMode,
                             ySupplier.getAsDouble() * slowMode);
                     Transform2d targetTransform = drive.getPose().minus(passerPosition);
-                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY()).plus(new Rotation2d(getIsFlipped() ? Math.PI : 0));;
                     // Rotation2d deltaDirection = drive.getRotation().minus(targetDirection);
 
-                    double omega = angleController.calculate(drive.getRotation().getRadians(),
-                            targetDirection.getRadians());
+                    double omega = angleController.calculate(MathUtil.angleModulus(drive.getRotation().getRadians()),
+                            MathUtil.angleModulus(targetDirection.getRadians()));
 
                     // Square values
                     linearMagnitude = linearMagnitude * linearMagnitude;
@@ -253,7 +262,7 @@ public class DriveCommands {
                     Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble() * slowMode,
                             ySupplier.getAsDouble() * slowMode);
 
-                    double omega = angleController.calculate(drive.getRotation().getRadians(),
+                    double omega = angleController.calculate(MathUtil.angleModulus(drive.getRotation().getRadians()),
                             targetDirection.get().getRadians());
 
                     // Square values
@@ -283,15 +292,15 @@ public class DriveCommands {
         return new FunctionalCommand(
                 () -> {
                     Transform2d targetTransform = drive.getPose().minus(speakerPose);
-                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
-                    angleController.setSetpoint(targetDirection.getRadians());
+                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY()).plus(new Rotation2d(getIsFlipped() ? Math.PI : 0));;
+                    angleController.setSetpoint(MathUtil.angleModulus(targetDirection.getRadians()));
                 },
                 () -> {
                     // defines distance from speaker
                     Transform2d targetTransform = drive.getPose().minus(speakerPose);
-                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
-                    double omega = angleController.calculate(drive.getRotation().getRadians(),
-                            targetDirection.getRadians());
+                    Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY()).plus(new Rotation2d(getIsFlipped() ? Math.PI : 0));;
+                    double omega = angleController.calculate(MathUtil.angleModulus(drive.getRotation().getRadians()),
+                            MathUtil.angleModulus(targetDirection.getRadians()));
                     omega = Math.copySign(omega * omega, omega); // no idea why squared
                     // Convert to robot relative speeds and send command
                     drive.runVelocity(
@@ -322,7 +331,7 @@ public class DriveCommands {
     public static boolean pointedAtSpeaker(Drive drive) {
         Pose2d speakerPose = FieldConstants.speakerPosition();
         Transform2d targetTransform = drive.getPose().minus(speakerPose);
-        Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY());
+        Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY()).plus(new Rotation2d(getIsFlipped() ? Math.PI : 0));;
 
         // Convert to robot relative speeds and send command
         if (Math.abs(drive.getRotation().getDegrees() - targetDirection.getDegrees()) < 1) {
@@ -332,52 +341,11 @@ public class DriveCommands {
         }
     }
 
-    public static Command driveBackAuto(Drive drive) {
-        return joystickDrive(drive, () -> 0.6, () -> 0, () -> 0).withTimeout(1.5);
-    }
-
-    public static double getPivotSideAngle() {
+    public static boolean getPivotSideAngle() {
         if (SmartDashboard.getBoolean("ShootSide", false)) {
-            return PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE;
+            return false;
         }
-        return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
-    }
-
-    public static Command driveBackandShooter(Drive drive, PivotArm pivot, Shooter shooter, Indexer intake) {
-        return (pivot.PIDCommand(DriveCommands::getPivotSideAngle)
-                .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
-                .andThen(
-                        (shooter.runVoltage(11).withTimeout(2)
-                                .alongWith(
-                                        new WaitCommand(0.5)
-                                                .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
-                                                        .withTimeout(0.5))))
-                                .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
-                                .withTimeout(2)
-
-                ).andThen(new WaitCommand(3).alongWith(shooter.runVoltage((0)).withTimeout(3)))
-                .andThen(
-
-                        driveBack(drive).alongWith(shooter.runVoltage((0)).withTimeout(5)));// );
-    }
-
-    public static Command driveBack(Drive drive) {
-        return joystickDrive(drive, () -> 0.6, () -> 0, () -> 0).withTimeout(1.5);// );
-    }
-
-    public static Command justShooter(PivotArm pivot, Shooter shooter, Indexer intake) {
-        return (pivot.PIDCommand(DriveCommands::getPivotSideAngle)
-                .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
-                .andThen(
-                        (shooter.runVoltage(11).withTimeout(3)
-                                .alongWith(
-                                        new WaitCommand(0.5)
-                                                .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
-                                                        .withTimeout(1))))
-                                .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
-                                .withTimeout(3)
-
-                );
+        return true;
     }
 
 }
