@@ -52,7 +52,7 @@ public final class DriveConstants {
   public static final int kRearRightTurningCanId = 6;
 
   //public static final boolean kGyroReversed = false;
-  public static final double kMaxSpeedMetersPerSecond = 4;
+  public static final double kMaxSpeedMetersPerSecond = 5;
   public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
   public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI * 1.5;
   public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI * 2;

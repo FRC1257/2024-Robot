@@ -47,6 +47,8 @@ public class Module {
   private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
+  private boolean turboMode = false;
+
   public Module(ModuleIO io, int index) {
     this.io = io;
     this.index = index;
@@ -221,12 +223,15 @@ public class Module {
   }
 
   public void setCurrentLimit(){
-    if(SmartDashboard.getBoolean("Turbo Mode", false)){
-      io.setDriveCurrentLimit(1257);
-      io.setTurningCurrentLimit(1257);
-    } else {
-      io.setDriveCurrentLimit(kDrivingMotorCurrentLimit);
-      io.setTurningCurrentLimit(kTurningMotorCurrentLimit);
+    if(turboMode != SmartDashboard.getBoolean("Turbo Mode", false)){
+      if(SmartDashboard.getBoolean("Turbo Mode", false)){
+        io.setDriveCurrentLimit(1257);
+        io.setTurningCurrentLimit(1257);
+      } else {
+        io.setDriveCurrentLimit(kDrivingMotorCurrentLimit);
+        io.setTurningCurrentLimit(kTurningMotorCurrentLimit);
+      }
+      turboMode = SmartDashboard.getBoolean("Turbo Mode", false);
     }
   }
 }
