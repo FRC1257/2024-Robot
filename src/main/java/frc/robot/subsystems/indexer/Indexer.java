@@ -103,7 +103,8 @@ public class Indexer extends SubsystemBase {
 
     // Sets motor speed based on where the note is in the intake
     public void runIntakeLoop() {
-        switch(noteState) {
+        setVoltage(currentVoltage);
+        /* switch(noteState) {
             case NOT_ENOUGH:
                 setVoltage(currentVoltage);
                 break;
@@ -113,7 +114,7 @@ public class Indexer extends SubsystemBase {
             case MIDDLE: case OVERSHOOT:
                 setVoltage(-currentVoltage);
                 break;
-        }
+        } */
     }
 
     // Checks if note has been in the intake for 0.5 seconds

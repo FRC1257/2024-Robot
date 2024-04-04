@@ -529,6 +529,7 @@ public class RobotContainer {
         .alongWith(
             new SequentialCommandGroup(
               indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2).withTimeout(0.1), // run intake back for 0.1 seconds
+              new WaitUntilCommand(0.2),
               indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE) // run intake in to shoot
             ))
         .withTimeout(1.5);//.alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();})); // run the visualizer

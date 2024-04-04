@@ -168,15 +168,16 @@ public class Shooter extends SubsystemBase {
   public void setVoltage(DoubleSupplier leftVoltage, DoubleSupplier rightVoltage){
     leftMotorVoltage = leftVoltage.getAsDouble() * 10;
     rightMotorVoltage = rightVoltage.getAsDouble() * 10;
-    shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
+
+    if(SmartDashboard.getBoolean("Turbo Mode", false)){
+        shooterIO.setVoltage(0, 0);
+    } else {
+        shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
+    }
   }
 
   public void setVoltage(double volts){
-    if(SmartDashboard.getBoolean("Turbo Mode", false)){
-      shooterIO.setVoltage(0, 0);
-    } else {
-      shooterIO.setVoltage(volts, volts);
-    }
+    setVoltage(() -> volts, () -> volts);
   }
 
  

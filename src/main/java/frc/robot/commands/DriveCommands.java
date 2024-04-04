@@ -13,6 +13,16 @@
 
 package frc.robot.commands;
 
+import static frc.robot.subsystems.drive.DriveConstants.kSlowModeConstant;
+import static frc.robot.subsystems.drive.DriveConstants.kTurnSpeakerD;
+import static frc.robot.subsystems.drive.DriveConstants.kTurnSpeakerI;
+import static frc.robot.subsystems.drive.DriveConstants.kTurnSpeakerP;
+
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,24 +36,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.subsystems.indexer.Indexer;
-import frc.robot.subsystems.indexer.IndexerConstants;
-import frc.robot.subsystems.pivotArm.PivotArm;
-import frc.robot.subsystems.pivotArm.PivotArmConstants;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.pivotArm.PivotArm;
-import frc.robot.subsystems.pivotArm.PivotArmConstants;
-import frc.robot.subsystems.shooter.*;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.Logger;
-
-import static frc.robot.subsystems.drive.DriveConstants.*;
-import static frc.robot.util.drive.DriveControls.DRIVE_AMP;
+import frc.robot.subsystems.drive.DriveConstants;
 
 public class DriveCommands {
     private static final double DEADBAND = 0.1;
@@ -92,8 +87,9 @@ public class DriveCommands {
                                     linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                                     omega * drive.getMaxAngularSpeedRadPerSec(),
                                     isFlipped
-                                            ? drive.getRotation()/* .plus(new Rotation2d(Math.PI)) */
-                                            : drive.getRotation()));
+                                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                                            : drive.getRotation()
+                                ));
                 },
                 drive);
     }
@@ -132,7 +128,7 @@ public class DriveCommands {
                                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                                     linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                                     omega * drive.getMaxAngularSpeedRadPerSec(),
-                                    drive.getRotation()));
+                                    new Rotation2d()));
                 },
                 drive);
     }
@@ -191,7 +187,10 @@ public class DriveCommands {
                                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                                     linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                                     omega * drive.getMaxAngularSpeedRadPerSec(),
-                                    drive.getRotation()));
+                                    getIsFlipped()
+                                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                                            : drive.getRotation()
+                                    ));
                 },
                 drive);
     }
@@ -240,7 +239,10 @@ public class DriveCommands {
                                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                                     linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                                     omega * drive.getMaxAngularSpeedRadPerSec(),
-                                    drive.getRotation()));
+                                    getIsFlipped()
+                                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                                            : drive.getRotation()
+                                    ));
                 },
                 drive);
     }
@@ -280,7 +282,10 @@ public class DriveCommands {
                                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                                     linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                                     omega * drive.getMaxAngularSpeedRadPerSec(),
-                                    drive.getRotation()));
+                                    getIsFlipped()
+                                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                                            : drive.getRotation()
+                                ));
                 },
                 drive);
     }
@@ -334,7 +339,7 @@ public class DriveCommands {
         Rotation2d targetDirection = new Rotation2d(targetTransform.getX(), targetTransform.getY()).plus(new Rotation2d(getIsFlipped() ? Math.PI : 0));;
 
         // Convert to robot relative speeds and send command
-        if (Math.abs(drive.getRotation().getDegrees() - targetDirection.getDegrees()) < 1) {
+        if (Math.abs(drive.getRotation().getDegrees() - targetDirection.getDegrees()) < DriveConstants.angleThreshold) {
             return true;
         } else {
             return false;
