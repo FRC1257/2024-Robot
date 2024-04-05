@@ -208,4 +208,9 @@ public class Shooter extends SubsystemBase {
   public double getRightSpeedMetersPerSecond() {
     return shooterInputs.rightFlywheelVelocityRPM * wheelRadiusM * 2 * Math.PI / 60;
   }
+
+  @AutoLogOutput(key = "Shooter/ReadyToShoot")
+  public boolean readyToShoot() {
+    return shooterInputs.rightFlywheelVelocityRPM > 5_000 && shooterInputs.leftFlywheelVelocityRPM > 5_000;
+  }
 }

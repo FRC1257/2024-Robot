@@ -8,8 +8,11 @@ import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.common.dataflow.structures.Packet;
+import org.photonvision.proto.Photon.ProtobufPhotonPipelineResult;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.photonvision.targeting.proto.PhotonPipelineResultProto;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -35,14 +38,7 @@ public interface VisionIO {
 
     public boolean hasEstimate = false;
 
-    // note detection
-    public int notes = 0;
-    public double noteTimestamp = 0;
-    public double[] noteConfidence = new double[0];
-    public double[] notePitch = new double[0];
-    public double[] noteYaw = new double[0];
-    public double[] noteSkew = new double[0];
-    public double[] noteArea = new double[0];
+    public byte[] results;
   }
 
   /** Updates the set of loggable inputs. */
