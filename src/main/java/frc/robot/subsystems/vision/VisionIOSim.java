@@ -1,25 +1,38 @@
 package frc.robot.subsystems.vision;
 
 
-import edu.wpi.first.math.geometry.Pose2d;
+import static frc.robot.subsystems.vision.VisionConstants.AMBIGUITY_THRESHOLD;
+import static frc.robot.subsystems.vision.VisionConstants.MAX_DISTANCE;
+import static frc.robot.subsystems.vision.VisionConstants.cam1Name;
+import static frc.robot.subsystems.vision.VisionConstants.cam1RobotToCam;
+import static frc.robot.subsystems.vision.VisionConstants.cam2Name;
+import static frc.robot.subsystems.vision.VisionConstants.cam2RobotToCam;
+import static frc.robot.subsystems.vision.VisionConstants.cam3Name;
+import static frc.robot.subsystems.vision.VisionConstants.cam3RobotToCam;
+import static frc.robot.subsystems.vision.VisionConstants.getSimVersion;
+import static frc.robot.subsystems.vision.VisionConstants.kMultiTagStdDevs;
+import static frc.robot.subsystems.vision.VisionConstants.kSingleTagStdDevs;
+import static frc.robot.subsystems.vision.VisionConstants.kTagLayout;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.PhotonUtils;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 public class VisionIOSim implements VisionIO {
     private final PhotonCamera cam1;
@@ -106,10 +119,17 @@ public class VisionIOSim implements VisionIO {
 
         if (hasEstimate(results)) {
             inputs.estimate = getEstimatesArray(results, photonEstimators);
-            inputs.targets3d = getTargetsPositions(results);
-            inputs.targets = Pose3dToPose2d(inputs.targets3d);
-            inputs.tagCount = tagCounts(results);
             inputs.hasEstimate = true;
+            
+            int[][] cameraTargets = getCameraTargets(results);
+            inputs.camera1Targets = cameraTargets[0];
+            inputs.camera2Targets = cameraTargets[1];
+            inputs.camera3Targets = cameraTargets[2];
+
+            Pose3d[] tags = getTargetsPositions(results);
+            Logger.recordOutput("Vision/Targets3D", tags);
+            Logger.recordOutput("Vision/Targets", Pose3dToPose2d(tags));
+            Logger.recordOutput("Vision/TagCounts", tagCounts(results));
         } else {
             inputs.timestamp = inputs.timestamp;
             inputs.hasEstimate = false;
@@ -131,23 +151,6 @@ public class VisionIOSim implements VisionIO {
         return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD
                 && kTagLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d().getTranslation()
                         .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE;
-    }
-
-    public PhotonPipelineResult[] getResults() {
-        PhotonPipelineResult front_result = getLatestResult(cam1);
-        PhotonPipelineResult back_result = getLatestResult(cam2);
-        PhotonPipelineResult front_result2 = getLatestResult(cam3);
-        
-        PhotonPipelineResult[] results = { front_result, back_result, front_result2 };
-        return results;
-      }
-    
-    public PhotonPoseEstimator[] getEstimators() {
-        return new PhotonPoseEstimator[] { cam1Estimator, cam2Estimator, cam3Estimator };
-    }
-
-    public PhotonCamera[] getCameras() {
-        return new PhotonCamera[] { cam1, cam2, cam3 };
     }
  
 }

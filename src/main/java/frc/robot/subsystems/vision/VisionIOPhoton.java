@@ -17,6 +17,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.net.PortForwarder;
 
 public class VisionIOPhoton implements VisionIO {
@@ -69,10 +70,17 @@ public class VisionIOPhoton implements VisionIO {
         if (hasEstimate(results)) {
             //inputs.results = results;
             inputs.estimate = getEstimatesArray(results, photonEstimators);
-            inputs.targets3d = getTargetsPositions(results);
-            inputs.targets = Pose3dToPose2d(inputs.targets3d);
-            inputs.tagCount = tagCounts(results);
             inputs.hasEstimate = true;
+            
+            int[][] cameraTargets = getCameraTargets(results);
+            inputs.camera1Targets = cameraTargets[0];
+            inputs.camera2Targets = cameraTargets[1];
+            inputs.camera3Targets = cameraTargets[2];
+
+            Pose3d[] tags = getTargetsPositions(results);
+            Logger.recordOutput("Vision/Targets3D", tags);
+            Logger.recordOutput("Vision/Targets", Pose3dToPose2d(tags));
+            Logger.recordOutput("Vision/TagCounts", tagCounts(results));
         } else {
             inputs.timestamp = inputs.timestamp;
             inputs.hasEstimate = false;
@@ -130,17 +138,5 @@ public class VisionIOPhoton implements VisionIO {
                                                                                                       * getTranslation()
                                                                                                       * ) < MAX_DISTANCE
                                                                                                       */;
-    }
-
-    public PhotonPipelineResult[] getResults() {
-        return getAprilTagResults();
-      }
-    
-    public PhotonPoseEstimator[] getEstimators() {
-        return new PhotonPoseEstimator[] { camera1Estimator, camera2Estimator, camera3Estimator };
-    }
-
-    public PhotonCamera[] getCameras() {
-        return new PhotonCamera[] { camera1, camera2, camera3 };
     }
 }

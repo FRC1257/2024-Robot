@@ -190,7 +190,7 @@ public class Drive extends SubsystemBase {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
-        List<Matrix<N3, N1>> stdDeviations = visionIO.getStdArray(getPose());
+        List<Matrix<N3, N1>> stdDeviations = visionIO.getStdArray(visionInputs, getPose());
 
         for (int i = 0; i < visionInputs.estimate.length; i++) {
           if (stdDeviations.size() <= i) {
