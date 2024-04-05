@@ -122,15 +122,15 @@ public class DriveControls {
                 PIVOT_AMP = operator.getB();
                 PIVOT_ZERO = operator.getA();
                 PIVOT_TO_SPEAKER = operator.getX();
-                PIVOT_PODIUM = EMPTY_TRIGGER;
-                PIVOT_ANYWHERE = operator.getY(); // uses vision
-                PIVOT_HOLD = operator.rightTrigger();
+                PIVOT_PODIUM = operator.getDPad(DPad.UP);
+                PIVOT_ANYWHERE = operator.start(); // uses vision
+                PIVOT_HOLD = operator.getY();
                 
                 // intaking things
                 INTAKE_ROTATE = () -> operator.getLeftYD();
                 INTAKE_IN = operator.rightBumper();
                 INTAKE_OUT = operator.leftBumper();
-                INTAKE_UNTIL_INTAKED = operator.getDPad(DPad.UP);
+                INTAKE_UNTIL_INTAKED = EMPTY_TRIGGER;
 
                 // ground intake things
                 GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
