@@ -195,8 +195,10 @@ public class Drive extends SubsystemBase {
         for (int i = 0; i < visionInputs.estimate.length; i++) {
           if (stdDeviations.size() <= i) {
             poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp(), VisionConstants.kSingleTagStdDevs);
+            // System.out.println("Ignoring");
           } else {
             poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp(), stdDeviations.get(i));
+            // System.out.println(stdDeviations.get(i));
           }
           
         }

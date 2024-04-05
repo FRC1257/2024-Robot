@@ -141,4 +141,15 @@ public final class Constants {
     {4.258293028	,0,   57},
     {5	          ,0,   60}
   };
+
+
+  /* public static final double[][] LookupTable = {
+    {0, 0, 38},
+    {1.22, 0, 42},
+    {1.45, 0, 38}, 
+    {3.49, 0, 53}
+    {6, 0, 55}
+  }; */
+
+
 }

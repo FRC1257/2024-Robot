@@ -156,7 +156,7 @@ public class PivotArm extends SubsystemBase {
     }
 
     public void holdPID() {
-        io.holdSetpoint(setpoint);
+        io.goToSetpoint(setpoint);
     }
 
     public void setPID(double setpoint) {
