@@ -132,5 +132,22 @@ public class VisionIOSim implements VisionIO {
                 && kTagLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d().getTranslation()
                         .getDistance(lastEstimate.getTranslation()) < MAX_DISTANCE;
     }
+
+    public PhotonPipelineResult[] getResults() {
+        PhotonPipelineResult front_result = getLatestResult(cam1);
+        PhotonPipelineResult back_result = getLatestResult(cam2);
+        PhotonPipelineResult front_result2 = getLatestResult(cam3);
+        
+        PhotonPipelineResult[] results = { front_result, back_result, front_result2 };
+        return results;
+      }
+    
+    public PhotonPoseEstimator[] getEstimators() {
+        return new PhotonPoseEstimator[] { cam1Estimator, cam2Estimator, cam3Estimator };
+    }
+
+    public PhotonCamera[] getCameras() {
+        return new PhotonCamera[] { cam1, cam2, cam3 };
+    }
  
 }

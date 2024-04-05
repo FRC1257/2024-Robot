@@ -131,4 +131,15 @@ public class VisionIOPhoton implements VisionIO {
                                                                                                       */;
     }
 
+    public PhotonPipelineResult[] getResults() {
+        return getAprilTagResults();
+      }
+    
+    public PhotonPoseEstimator[] getEstimators() {
+        return new PhotonPoseEstimator[] { camera1Estimator, camera2Estimator, camera3Estimator };
+    }
+
+    public PhotonCamera[] getCameras() {
+        return new PhotonCamera[] { camera1, camera2, camera3 };
+    }
 }

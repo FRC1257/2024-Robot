@@ -118,17 +118,17 @@ public class DriveControls {
                 PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
                 
                 // Pivot things
-                PIVOT_AMP = operator.getDPad(DPad.RIGHT);
-                PIVOT_ZERO = operator.getDPad(DPad.DOWN);
-                PIVOT_TO_SPEAKER = operator.getDPad(DPad.LEFT);
+                PIVOT_AMP = operator.getB();
+                PIVOT_ZERO = operator.getA();
+                PIVOT_TO_SPEAKER = operator.getX();
                 PIVOT_PODIUM = EMPTY_TRIGGER;
-                PIVOT_ANYWHERE = operator.getDPad(DPad.UP); // uses vision
+                PIVOT_ANYWHERE = operator.getY(); // uses vision
                 
                 // intaking things
                 INTAKE_ROTATE = () -> operator.getLeftYD();
                 INTAKE_IN = operator.rightBumper();
                 INTAKE_OUT = operator.leftBumper();
-                INTAKE_UNTIL_INTAKED = operator.getY();
+                INTAKE_UNTIL_INTAKED = operator.getDPad(DPad.UP);
 
                 // ground intake things
                 GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
@@ -137,9 +137,9 @@ public class DriveControls {
 
                 // Shooter things
                 SHOOTER_SPEED = () -> operator.getRightXD();
-                SHOOTER_FULL_SEND_INTAKE = operator.getX();
-                SHOOTER_FULL_SEND = operator.getA();
-                SHOOTER_UNJAM = operator.getB();
+                SHOOTER_FULL_SEND_INTAKE = operator.getDPad(DPad.LEFT);
+                SHOOTER_FULL_SEND = operator.getDPad(DPad.DOWN);
+                SHOOTER_UNJAM = operator.getDPad(DPad.RIGHT);
                 break;
             case PROGRAMMERS:
             default:

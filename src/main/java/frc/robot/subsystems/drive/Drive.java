@@ -37,6 +37,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,6 +47,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -54,6 +57,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.autonomous.DeadzoneChooser;
@@ -186,8 +190,15 @@ public class Drive extends SubsystemBase {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
+        List<Matrix<N3, N1>> stdDeviations = visionIO.getStdArray(getPose());
+
         for (int i = 0; i < visionInputs.estimate.length; i++) {
-          poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp());
+          if (stdDeviations.size() <= i) {
+            poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp(), VisionConstants.kSingleTagStdDevs);
+          } else {
+            poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp(), stdDeviations.get(i));
+          }
+          
         }
       }
     }

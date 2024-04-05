@@ -482,7 +482,7 @@ public class RobotContainer {
 
   public Command shootSpeaker() {
     return (
-      rotateArmSpeaker().deadlineWith(prepShooter())
+      rotateArmSpeaker().deadlineWith(shooter.runVoltage(0))
         .andThen(shootNote().deadlineWith(rotateArmSpeaker().repeatedly())));
   }
 
@@ -529,10 +529,10 @@ public class RobotContainer {
     .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE))).withTimeout(0.1).andThen(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get) // run shooter full speed
         .alongWith(
             new SequentialCommandGroup(
-              indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 10).withTimeout(0.6), // run intake back for 0.1 seconds
-              indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE) // run intake in to shoot
+              indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 100).withTimeout(1), // run intake back for 0.1 seconds
+              /*new WaitCommand(0.8).andThen */(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)) // run intake in to shoot
             ))
-        .withTimeout(1.5));//.alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();})); // run the visualizer
+        .withTimeout(1.9));//.alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();})); // run the visualizer
   }
 
   /* // Brings the note forward and back for 0.5 seconds each to center it

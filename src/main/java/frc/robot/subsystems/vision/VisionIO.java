@@ -133,6 +133,35 @@ public interface VisionIO {
     return finalEstimates;
   }
 
+  public default List<Matrix<N3, N1>> getStdArray(Pose2d currentPose) {
+    PhotonPipelineResult[] results = getResults();
+    PhotonPoseEstimator[] photonEstimator = getEstimators();
+    PhotonCamera[] cams = getCameras();
+
+    List<Matrix<N3, N1>> stdsArray = new ArrayList<Matrix<N3, N1>>();
+    Optional<Pose2d>[] estimates = getEstimates(results, photonEstimator);
+
+    for (int i = 0; i < estimates.length; i++) {
+      if (estimates[i].isPresent() && estimates[i].get() != null) {
+        stdsArray.add(getEstimationStdDevs(currentPose, cams[i], photonEstimator[i]));
+      }
+    }
+
+    return stdsArray;
+  }
+
+  public default PhotonPipelineResult[] getResults() {
+    return null;
+  }
+
+  public default PhotonPoseEstimator[] getEstimators() {
+    return null;
+  }
+
+  public default PhotonCamera[] getCameras() {
+    return null;
+  }
+
   public default double estimateLatestTimestamp(PhotonPipelineResult[] results) {
     double latestTimestamp = 0;
     int count = 0;
@@ -214,6 +243,37 @@ public interface VisionIO {
     } else {
       estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
     }
+
+    return estStdDevs;
+  }
+
+  /**
+   * The standard deviations of the estimated pose from {@link #getEstimatedGlobalPose()}, for use
+   * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}.
+   * This should only be used when there are targets visible.
+   *
+   * @param estimatedPose The estimated pose to guess standard deviations for.
+   */
+  public default Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose, PhotonCamera camera, PhotonPoseEstimator orangeEstimator) {
+    var estStdDevs = kSingleTagStdDevs;
+    var targets = getLatestResult(camera).getTargets();
+    int numTags = 0;
+    double avgDist = 0;
+    for (var tgt : targets) {
+        var tagPose = orangeEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+        if (tagPose.isEmpty()) continue;
+        numTags++;
+        avgDist +=
+                tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+    }
+    if (numTags == 0) return estStdDevs;
+    avgDist /= numTags;
+    // Decrease std devs if multiple targets are visible
+    if (numTags > 1) estStdDevs = kMultiTagStdDevs;
+    // Increase std devs based on (average) distance
+    if (numTags == 1 && avgDist > 4)
+        estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+    else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
 
     return estStdDevs;
   }
