@@ -35,6 +35,7 @@ public interface VisionIO {
     public double[] timestampArray = new double[0];
     public Pose2d[] targets = new Pose2d[0];
     public Pose3d[] targets3d = new Pose3d[0];
+    //public PhotonPipelineResult[] results = new PhotonPipelineResult[0];
 
     public boolean hasEstimate = false;
 
@@ -101,6 +102,7 @@ public interface VisionIO {
     return estimatesArray;
   }
 
+ 
   public default Pose2d[] getEstimatesArray(PhotonPipelineResult[] results, PhotonPoseEstimator[] photonEstimator) {
     Optional<Pose2d>[] estimates = getEstimates(results, photonEstimator);
     Pose2d[] estimatesArray = new Pose2d[estimates.length];

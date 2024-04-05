@@ -67,6 +67,7 @@ public class VisionIOPhoton implements VisionIO {
         inputs.timestamp = estimateLatestTimestamp(results);
 
         if (hasEstimate(results)) {
+            //inputs.results = results;
             inputs.estimate = getEstimatesArray(results, photonEstimators);
             inputs.targets3d = getTargetsPositions(results);
             inputs.targets = Pose3dToPose2d(inputs.targets3d);
