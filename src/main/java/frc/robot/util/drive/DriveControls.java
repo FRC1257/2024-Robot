@@ -127,19 +127,19 @@ public class DriveControls {
                 PIVOT_HOLD = operator.start();
                 
                 // intaking things
-                INTAKE_ROTATE = () -> operator.getLeftYD();
+                INTAKE_ROTATE = EMPTY_DOUBLE_SUPPLIER;
                 INTAKE_IN = operator.rightBumper();
                 INTAKE_OUT = operator.leftBumper();
                 INTAKE_UNTIL_INTAKED = EMPTY_TRIGGER;
 
                 // ground intake things
-                GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
+                GROUND_INTAKE_ROTATE = EMPTY_DOUBLE_SUPPLIER;
                 GROUND_INTAKE_IN = operator.rightBumper();
                 GROUND_INTAKE_OUT = operator.leftBumper();
 
                 // Shooter things
                 SHOOTER_SPEED = () -> operator.getRightXD();
-                SHOOTER_FULL_SEND_INTAKE = operator.getDPad(DPad.LEFT);
+                SHOOTER_FULL_SEND_INTAKE = operator.getLefJoystucikPress();
                 SHOOTER_FULL_SEND = operator.getDPad(DPad.DOWN);
                 SHOOTER_UNJAM = operator.getDPad(DPad.RIGHT);
                 break;
