@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
 
-  public static final Mode mode = Mode.SIM;
+  public static final Mode mode = Mode.REAL;
   public static final Drivers driver = Drivers.MAUI;
   public static final Operators operator = Operators.ERICK;
 
