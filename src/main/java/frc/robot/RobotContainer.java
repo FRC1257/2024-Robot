@@ -315,6 +315,7 @@ public class RobotContainer {
     PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
     PIVOT_PODIUM.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE));
     PIVOT_ANYWHERE.whileTrue(pivot.PIDCommandForever(this::getAngle));
+    PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
 
     // Intake Commands
     INTAKE_IN.whileTrue(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE));

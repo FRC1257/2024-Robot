@@ -45,6 +45,7 @@ public class DriveControls {
     public static Trigger PIVOT_TO_SPEAKER;
     public static Trigger PIVOT_PODIUM;
     public static Trigger PIVOT_ANYWHERE;
+    public static Trigger PIVOT_HOLD;
 
     // Intake Controls
     public static Trigger INTAKE_IN;
@@ -123,6 +124,7 @@ public class DriveControls {
                 PIVOT_TO_SPEAKER = operator.getX();
                 PIVOT_PODIUM = EMPTY_TRIGGER;
                 PIVOT_ANYWHERE = operator.getY(); // uses vision
+                PIVOT_HOLD = operator.rightTrigger();
                 
                 // intaking things
                 INTAKE_ROTATE = () -> operator.getLeftYD();
