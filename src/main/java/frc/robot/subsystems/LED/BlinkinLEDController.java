@@ -254,10 +254,10 @@ public class BlinkinLEDController {
 
   // Runs periodically and updates LEDs based on state
   public void periodic() {
-    if(isEndgame) {
+    /* if(isEndgame) {
       setAllianceColorShot();
     }
-    else if(shooting) {
+    else */ if(shooting) {
       setPattern(BlinkinPattern.VIOLET);
     }
     else if(noteInIntake) {
@@ -267,10 +267,10 @@ public class BlinkinLEDController {
       setPattern(BlinkinPattern.GREEN);
     }
     else if(isEnabled) {
-      setAllianceColorSolid();
+      setPattern(BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
     }
     else {
-      setPattern(BlinkinPattern.CP1_2_SPARKLE_1_ON_2);
+      setPattern(BlinkinPattern.LIGHT_CHASE_RED);
     }
   }
 }

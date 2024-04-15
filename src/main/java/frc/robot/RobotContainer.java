@@ -486,7 +486,7 @@ public class RobotContainer {
     return shootSpeakerSide();
   }
 
-  public Command `prepShooter() {
+  public Command prepShooter() {
     return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get);
   }
 
