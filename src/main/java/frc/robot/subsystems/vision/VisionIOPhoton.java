@@ -19,6 +19,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionIOPhoton implements VisionIO {
 
@@ -53,6 +54,8 @@ public class VisionIOPhoton implements VisionIO {
         camera3Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera3,
                 cam3RobotToCam);
         camera3Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+        SmartDashboard.putBoolean("KillSideCams", false);
     }
 
     @Override
@@ -68,14 +71,20 @@ public class VisionIOPhoton implements VisionIO {
         inputs.timestamp = estimateLatestTimestamp(results);
 
         if (hasEstimate(results)) {
-            //inputs.results = results;
+            // inputs.results = results;
             inputs.estimate = getEstimatesArray(results, photonEstimators);
             inputs.hasEstimate = true;
-            
+
             int[][] cameraTargets = getCameraTargets(results);
             inputs.camera1Targets = cameraTargets[0];
-            inputs.camera2Targets = cameraTargets[1];
-            inputs.camera3Targets = cameraTargets[2];
+
+            if (SmartDashboard.getBoolean("KillSideCams", false)) {
+                inputs.camera2Targets = new int[0];
+                inputs.camera3Targets = new int[0];
+            } else {
+                inputs.camera2Targets = cameraTargets[1];
+                inputs.camera3Targets = cameraTargets[2];
+            }
 
             Pose3d[] tags = getTargetsPositions(results);
             Logger.recordOutput("Vision/Targets3D", tags);
@@ -93,6 +102,14 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     private PhotonPipelineResult[] getAprilTagResults() {
+        if (SmartDashboard.getBoolean("KillSideCams", false)) {
+            PhotonPipelineResult cam1_result = getLatestResult(camera1);
+
+            printStuff("cam1", cam1_result);
+
+            return new PhotonPipelineResult[] { cam1_result };
+        }
+
         PhotonPipelineResult cam1_result = getLatestResult(camera1);
         PhotonPipelineResult cam2_result = getLatestResult(camera2);
         PhotonPipelineResult cam3_result = getLatestResult(camera3);
@@ -115,6 +132,12 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
+        if (SmartDashboard.getBoolean("KillSideCams", false)) {
+            camera1Estimator.setReferencePose(currentEstimate);
+
+            return new PhotonPoseEstimator[] { camera1Estimator };
+        }
+
         camera1Estimator.setReferencePose(currentEstimate);
         camera2Estimator.setReferencePose(currentEstimate);
         camera3Estimator.setReferencePose(currentEstimate);

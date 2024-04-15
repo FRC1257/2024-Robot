@@ -274,6 +274,10 @@ public class RobotContainer {
       drive.resetYaw();
     }, drive));
 
+        DRIVE_HOLD_STOP.onTrue(new InstantCommand(() -> {
+      drive.stopWithX();
+    }, drive));
+
     // Drive Modes
     DRIVE_ROBOT_RELATIVE.whileTrue(DriveCommands.joystickDrive(
         drive,
@@ -333,6 +337,10 @@ public class RobotContainer {
     SHOOTER_UNJAM.whileTrue(
         (indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2)
             .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE))));
+    SHOOTER_PREPARE_THEN_SHOOT.whileTrue(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE));
+    SHOOTER_PREPARE_THEN_SHOOT.onFalse(new WaitCommand(1)
+                                        .deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+                                        .deadlineWith(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)));
             
     new Trigger(() -> (int) Timer.getMatchTime() == 30.0).onTrue(getRumbleDriver());
     new Trigger(indexer::isIntaked).onTrue(getRumbleOperator());
@@ -473,11 +481,10 @@ public class RobotContainer {
   }
 
   public Command justShootAuto() {
-    return shootSpeaker().onlyIf(DriveCommands::getPivotSideAngle)
-            .andThen(shootSpeakerSide().onlyIf(() -> !DriveCommands.getPivotSideAngle()));
+    return shootSpeakerSide();
   }
 
-  public Command prepShooter() {
+  public Command `prepShooter() {
     return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get);
   }
 

@@ -24,6 +24,7 @@ public class DriveControls {
     public static DoubleSupplier DRIVE_ROTATE;
     public static Trigger DRIVE_SLOW;
     public static Trigger DRIVE_STOP;
+    public static Trigger DRIVE_HOLD_STOP;
 
     // drive modes
     public static Trigger DRIVE_ROBOT_RELATIVE;
@@ -64,6 +65,7 @@ public class DriveControls {
     public static Trigger SHOOTER_FULL_SEND_INTAKE;
     public static Trigger SHOOTER_FULL_SEND;
     public static Trigger SHOOTER_UNJAM;
+    public static Trigger SHOOTER_PREPARE_THEN_SHOOT;
 
     // Setup the controls
     public static void configureControls() {
@@ -77,6 +79,7 @@ public class DriveControls {
                 // Driver Settings
                 DRIVE_SLOW = driver.start();
                 DRIVE_STOP = driver.x();
+                DRIVE_HOLD_STOP = driver.a();
 
                 // Driver Modes
                 DRIVE_ROBOT_RELATIVE = driver.y();
@@ -100,6 +103,7 @@ public class DriveControls {
                 // Driver Settings
                 DRIVE_SLOW = driver.start();
                 DRIVE_STOP = driver.x();
+                DRIVE_HOLD_STOP = EMPTY_TRIGGER;
 
                 // Driver Modes
                 DRIVE_ROBOT_RELATIVE = driver.y();
@@ -142,6 +146,7 @@ public class DriveControls {
                 SHOOTER_FULL_SEND_INTAKE = operator.getLefJoystucikPress();
                 SHOOTER_FULL_SEND = operator.getDPad(DPad.DOWN);
                 SHOOTER_UNJAM = operator.getDPad(DPad.RIGHT);
+                SHOOTER_PREPARE_THEN_SHOOT = operator.back();
                 break;
             case PROGRAMMERS:
             default:
@@ -167,6 +172,7 @@ public class DriveControls {
                 SHOOTER_FULL_SEND_INTAKE = EMPTY_TRIGGER;
                 SHOOTER_FULL_SEND = EMPTY_TRIGGER;
                 SHOOTER_UNJAM = EMPTY_TRIGGER;
+                SHOOTER_PREPARE_THEN_SHOOT = EMPTY_TRIGGER;
                 break;
 
                 //bottom right Left joystick to intake 

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.indexer.IndexerIOInputsAutoLogged;
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
 
 import java.util.function.DoubleSupplier;
 
@@ -72,6 +73,8 @@ public class Indexer extends SubsystemBase {
             } else {
                 noteState = NoteState.MIDDLE;
             }
+            
+        
         }
 
         // Updates the amount of time that the note has been in the intake for
@@ -81,8 +84,9 @@ public class Indexer extends SubsystemBase {
         else {
             timeInIntake = 0;
         }
-
+        Logger.processInputs("Indexer", inputs);
         Logger.recordOutput("Indexer/State", noteState.name());
+        Logger.recordOutput("Indexer/IndexerMotorConnected", inputs.velocityRadsPerSec != 0);
     }
 
     public void setVoltage(double voltage) {

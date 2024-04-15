@@ -27,6 +27,7 @@ public class GroundIntake extends SubsystemBase {
         logP = new LoggedDashboardNumber("GroundIntake/P", io.getP());
         logI = new LoggedDashboardNumber("GroundIntake/I", io.getI());
         logD = new LoggedDashboardNumber("GroundIntake/D", io.getD());
+
     }
 
     public void periodic() {
@@ -42,6 +43,9 @@ public class GroundIntake extends SubsystemBase {
             io.setD(logD.get());
         }
         Logger.processInputs("GroundIntake", inputs);
+  
+
+        Logger.recordOutput("GroundIntake/GIntakeMotorConnected", inputs.velocityRadsPerSec != 0);
     }
 
     public void setVoltage(double voltage) {

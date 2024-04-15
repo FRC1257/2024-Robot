@@ -126,6 +126,8 @@ public class PivotArm extends SubsystemBase {
         
         // Log Inputs
         Logger.processInputs("PivotArm", inputs);
+
+        Logger.recordOutput("PivotArm/PivotAbsoluteEncoderConnected", inputs.angleRads != PivotArmConstants.PIVOT_ARM_OFFSET);
     }
 
     public void setBrake(boolean brake) {
