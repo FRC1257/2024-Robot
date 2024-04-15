@@ -134,6 +134,15 @@ public class PivotArm extends SubsystemBase {
         io.setBrake(brake);
     }
 
+         //Check if the actual voltage is close to the desired voltage
+    public boolean isVoltageClose(double setVoltage, double tolerance) {
+        // Calculate the absolute difference between the desired and applied voltages
+        double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
+        
+        // Check if the absolute difference is within the tolerance
+        return voltageDifference <= tolerance;
+    }
+
     public void setVoltage(double motorVolts) {
         // limit the arm if its past the limit
         if (io.getAngle() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE && motorVolts > 0) {
@@ -147,6 +156,7 @@ public class PivotArm extends SubsystemBase {
         } else {
             io.setVoltage(motorVolts);
         }
+        Logger.recordOutput('PivotArm/Close', isVoltageClose(voltage, 1));
     }
 
     public void move(double speed) {
@@ -325,4 +335,3 @@ public class PivotArm extends SubsystemBase {
     }
 
 }
-

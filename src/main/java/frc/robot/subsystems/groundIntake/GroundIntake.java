@@ -27,8 +27,8 @@ public class GroundIntake extends SubsystemBase {
         logP = new LoggedDashboardNumber("GroundIntake/P", io.getP());
         logI = new LoggedDashboardNumber("GroundIntake/I", io.getI());
         logD = new LoggedDashboardNumber("GroundIntake/D", io.getD());
-
     }
+
 
     public void periodic() {
         io.updateInputs(inputs);
@@ -48,12 +48,23 @@ public class GroundIntake extends SubsystemBase {
         Logger.recordOutput("GroundIntake/GIntakeMotorConnected", inputs.velocityRadsPerSec != 0);
     }
 
+     //Check if the actual voltage is close to the desired voltage
+    public boolean isVoltageClose(double setVoltage, double tolerance) {
+        // Calculate the absolute difference between the desired and applied voltages
+        double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
+        
+        // Check if the absolute difference is within the tolerance
+        return voltageDifference <= tolerance;
+    }
+
     public void setVoltage(double voltage) {
         if (SmartDashboard.getBoolean("Turbo Mode", false)){
             io.setVoltage(0);
         } else {
             io.setVoltage(voltage);
         }
+
+        Logger.recordOutput('GroundIntake/Close', isVoltageClose(voltage, 1));
     }
     
     public void setBrake(boolean brake) {

@@ -60,6 +60,15 @@ public class Shooter extends SubsystemBase {
     shooterIO.setRightPID(rightkP.get(), rightkI.get(), rightkD.get());
   }
 
+         //Check if the actual voltage is close to the desired voltage
+    public boolean isVoltageClose(double setVoltage, double tolerance) {
+        // Calculate the absolute difference between the desired and applied voltages
+        double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
+        
+        // Check if the absolute difference is within the tolerance
+        return voltageDifference <= tolerance;
+  
+
   @Override
   public void periodic() {
     // check controllers
@@ -174,6 +183,8 @@ public class Shooter extends SubsystemBase {
     } else {
         shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
     }
+  }
+        Logger.recordOutput('Shooter/Close', isVoltageClose(voltage, 1));
   }
 
   public void setVoltage(double volts){

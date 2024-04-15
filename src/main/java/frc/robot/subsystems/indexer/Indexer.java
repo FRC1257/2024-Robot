@@ -43,10 +43,20 @@ public class Indexer extends SubsystemBase {
         logD = new LoggedDashboardNumber("Intake/D", io.getD());
     }
 
+         //Check if the actual voltage is close to the desired voltage
+    public boolean isVoltageClose(double setVoltage, double tolerance) {
+        // Calculate the absolute difference between the desired and applied voltages
+        double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
+        
+        // Check if the absolute difference is within the tolerance
+        return voltageDifference <= tolerance;
+    }
+
     public void periodic() {
         io.updateInputs(inputs);
         // Update PID constants to ensure they are up to date
         Logger.processInputs("Intake", inputs);
+
 
         // Updates state of where the note is in the intake
         if(noteState == NoteState.NOT_ENOUGH && inputs.breakBeam) { // Note just entered the right spot
@@ -95,6 +105,7 @@ public class Indexer extends SubsystemBase {
         } else {
             io.setVoltage(voltage);
         }
+         Logger.recordOutput('Indexer/Close', isVoltageClose(voltage, 1));
     }
 
     public void setBrake(boolean brake) {
