@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -79,7 +80,10 @@ public class RobotContainer {
   private LoggedDashboardNumber autoWait = new LoggedDashboardNumber("AutoWait", 0);
   private LoggedDashboardNumber rightShooterVolts = new LoggedDashboardNumber("RightShooter", ShooterConstants.SHOOTER_FULL_VOLTAGE);
   private LoggedDashboardNumber leftShooterVolts = new LoggedDashboardNumber("LeftShooter", ShooterConstants.SHOOTER_FULL_VOLTAGE);
-
+  private LoggedDashboardBoolean TurboMode = new LoggedDashboardBoolean("Turbo Mode",false);
+  private LoggedDashboardBoolean BrakeMode = new LoggedDashboardBoolean("Brake Mode", true);
+  private LoggedDashboardBoolean SetStartPosition = new LoggedDashboardBoolean("Set Start Position", false);
+  private LoggedDashboardBoolean ShootSide = new LoggedDashboardBoolean("ShootSide", false);
   // Field
   private final Field2d field;
 
@@ -182,7 +186,7 @@ public class RobotContainer {
       Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
     });
 
-    SmartDashboard.putBoolean("Turbo Mode", false);
+    
 
     // Named Commands
     System.out.println("[Init] Setting up Named Commands");
@@ -230,9 +234,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     LookupTuner.setupTuner();
-    SmartDashboard.putBoolean("Brake Mode", true);
-    SmartDashboard.putBoolean("Set Start Position", false);
-    SmartDashboard.putBoolean("ShootSide", false); // TODO comp fix change later
+
   }
 
 
@@ -596,16 +598,16 @@ public class RobotContainer {
 
   public void disabledPeriodic() {
     LEDPeriodic();
-    if (SmartDashboard.getBoolean("Brake Mode", true) != brakeMode) {
+    if (BrakeMode.get() != brakeMode) {
       brakeMode = !brakeMode;
       pivot.setBrake(brakeMode);
     }
 
-    if (SmartDashboard.getBoolean("Set Start Position", false)) {
+    if (SetStartPosition.get()) {
       AutoChooser.setupChoosers();
       drive.updateDeadzoneChooser();
       resetRobotPose(AutoChooser.getStartPose());
-      SmartDashboard.putBoolean("Set Start Position", false);
+      SetStartPosition.set(false);
     }
 
     setPivotPose3d();
