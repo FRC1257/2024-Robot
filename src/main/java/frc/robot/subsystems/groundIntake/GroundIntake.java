@@ -1,6 +1,7 @@
 package frc.robot.subsystems.groundIntake;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 
@@ -48,13 +49,10 @@ public class GroundIntake extends SubsystemBase {
         Logger.recordOutput("GroundIntake/GIntakeMotorConnected", inputs.velocityRadsPerSec != 0);
     }
 
-     //Check if the actual voltage is close to the desired voltage
-    public boolean isVoltageClose(double setVoltage, double tolerance) {
-        // Calculate the absolute difference between the desired and applied voltages
+    @AutoLogOutput(key = "GroundIntake/Close")
+    public boolean isVoltageClose(double setVoltage) {
         double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
-        
-        // Check if the absolute difference is within the tolerance
-        return voltageDifference <= tolerance;
+        return voltageDifference <= GroundIntakeConstants.GROUND_INTAKE_TOLERANCE;
     }
 
     public void setVoltage(double voltage) {
@@ -63,8 +61,7 @@ public class GroundIntake extends SubsystemBase {
         } else {
             io.setVoltage(voltage);
         }
-
-        Logger.recordOutput('GroundIntake/Close', isVoltageClose(voltage, 1));
+        isVoltageClose(voltage);
     }
     
     public void setBrake(boolean brake) {

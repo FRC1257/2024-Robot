@@ -1,6 +1,7 @@
 package frc.robot.subsystems.indexer;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 
@@ -43,13 +44,10 @@ public class Indexer extends SubsystemBase {
         logD = new LoggedDashboardNumber("Intake/D", io.getD());
     }
 
-         //Check if the actual voltage is close to the desired voltage
-    public boolean isVoltageClose(double setVoltage, double tolerance) {
-        // Calculate the absolute difference between the desired and applied voltages
+    @AutoLogOutput(key = "Indexer/Close")
+    public boolean isVoltageClose(double setVoltage) {
         double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
-        
-        // Check if the absolute difference is within the tolerance
-        return voltageDifference <= tolerance;
+        return voltageDifference <= IndexerConstants.INDEXER_TOLERANCE;
     }
 
     public void periodic() {
@@ -105,7 +103,7 @@ public class Indexer extends SubsystemBase {
         } else {
             io.setVoltage(voltage);
         }
-         Logger.recordOutput('Indexer/Close', isVoltageClose(voltage, 1));
+        isVoltageClose(voltage);
     }
 
     public void setBrake(boolean brake) {

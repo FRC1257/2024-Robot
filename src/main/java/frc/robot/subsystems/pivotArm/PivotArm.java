@@ -1,5 +1,7 @@
 package frc.robot.subsystems.pivotArm;
 
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
+
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -9,6 +11,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -134,13 +137,10 @@ public class PivotArm extends SubsystemBase {
         io.setBrake(brake);
     }
 
-         //Check if the actual voltage is close to the desired voltage
-    public boolean isVoltageClose(double setVoltage, double tolerance) {
-        // Calculate the absolute difference between the desired and applied voltages
-        double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
-        
-        // Check if the absolute difference is within the tolerance
-        return voltageDifference <= tolerance;
+    @AutoLogOutput(key = "PivotArm/Close")
+    public boolean isVoltageClose(double setVoltage) {
+        double voltageDifference = Math.abs(setVoltage - inputs.appliedVolts);
+        return voltageDifference <= PivotArmConstants.PIVOT_ARM_TOLERANCE;
     }
 
     public void setVoltage(double motorVolts) {
@@ -156,7 +156,7 @@ public class PivotArm extends SubsystemBase {
         } else {
             io.setVoltage(motorVolts);
         }
-        Logger.recordOutput('PivotArm/Close', isVoltageClose(voltage, 1));
+        isVoltageClose(motorVolts);
     }
 
     public void move(double speed) {
