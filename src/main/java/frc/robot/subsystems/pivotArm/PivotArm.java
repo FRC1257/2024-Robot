@@ -1,10 +1,14 @@
 package frc.robot.subsystems.pivotArm;
 
 import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.subsystems.pivotArm.PivotArmConstants.*;
+import frc.robot.util.misc.LoggedTunableNumber;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.subsystems.pivotArm.PivotArmConstants.PIVOT_ARM_PID;
+import static frc.robot.subsystems.pivotArm.PivotArmConstants.PIVOT_ARM_FEED_FORWARD;
 import static edu.wpi.first.units.MutableMeasure.mutable;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -37,15 +41,16 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 public class PivotArm extends SubsystemBase {
     private final PivotArmIOInputsAutoLogged inputs = new PivotArmIOInputsAutoLogged();
 
-    private LoggedDashboardNumber logP;
-    private LoggedDashboardNumber logI;
-    private LoggedDashboardNumber logD;
-    private LoggedDashboardNumber logFF;
+    private static final LoggedTunableNumber logP = new LoggedTunableNumber("PivotArm/P", PIVOT_ARM_PID.kP());
+    private static final LoggedTunableNumber logI = new LoggedTunableNumber("PivotArm/I", PIVOT_ARM_PID.kI());
+    private static final LoggedTunableNumber logD = new LoggedTunableNumber("PivotArm/D", PIVOT_ARM_PID.kD());
+    private static final LoggedTunableNumber logFF = new LoggedTunableNumber("PivotArm/FF", PIVOT_ARM_PID.kFF());
 
-    private LoggedDashboardNumber logkS;
-    private LoggedDashboardNumber logkG;
-    private LoggedDashboardNumber logkV;
-    private LoggedDashboardNumber logkA;
+    private static final LoggedTunableNumber logkS = new LoggedTunableNumber("PivotArm/kS", PIVOT_ARM_FEED_FORWARD.kS());
+    private static final LoggedTunableNumber logkG = new LoggedTunableNumber("PivotArm/kG", PIVOT_ARM_FEED_FORWARD.kG());
+    private static final LoggedTunableNumber logkV = new LoggedTunableNumber("PivotArm/kV", PIVOT_ARM_FEED_FORWARD.kV());
+    private static final LoggedTunableNumber logkA = new LoggedTunableNumber("PivotArm/kA", PIVOT_ARM_FEED_FORWARD.kA());
+    
 
     // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -69,16 +74,6 @@ public class PivotArm extends SubsystemBase {
        
         SmartDashboard.putData(getName(), this);
     
-        logP = new LoggedDashboardNumber("PivotArm/P", io.getP());
-        logI = new LoggedDashboardNumber("PivotArm/I", io.getI());
-        logD = new LoggedDashboardNumber("PivotArm/D", io.getD());
-        logFF = new LoggedDashboardNumber("PivotArm/FF", io.getFF());
-
-        logkS = new LoggedDashboardNumber("PivotArm/kS", io.getkS());
-        logkG = new LoggedDashboardNumber("PivotArm/kG", io.getkG());
-        logkV = new LoggedDashboardNumber("PivotArm/kV", io.getkV());
-        logkA = new LoggedDashboardNumber("PivotArm/kG", io.getkA());
-
         SysId = new SysIdRoutine(
             new SysIdRoutine.Config(Volts.per(Second).of(PivotArmConstants.RAMP_RATE), Volts.of(PivotArmConstants.STEP_VOLTAGE), null),
             new SysIdRoutine.Mechanism(v -> io.setVoltage(v.in(Volts)), 
@@ -103,29 +98,8 @@ public class PivotArm extends SubsystemBase {
         armMechanism.setAngle(Units.radiansToDegrees(inputs.angleRads));
 
         // Update the PID constants if they have changed
-        if (logP.get() != io.getP()) 
-            io.setP(logP.get());
-        
-        if (logI.get() != io.getI())
-            io.setI(logI.get());
-        
-        if (logD.get() != io.getD())
-            io.setD(logD.get());
-        
-        if (logFF.get() != io.getFF())
-            io.setFF(logFF.get()); 
-
-        if (logkS.get() != io.getkS())
-            io.setkS(logkS.get());
-
-        if (logkG.get() != io.getkG())
-            io.setkG(logkG.get());   
-
-        if (logkV.get() != io.getkV())
-            io.setkV(logkV.get());
-
-        if (logkA.get() != io.getkA())
-            io.setkG(logkA.get());   
+        LoggedTunableNumber.ifChanged(
+            hashCode(),  () -> io.setPID(logP.get(), logI.get(), logD.get()), logP, logI, logD);
         
         // Log Inputs
         Logger.processInputs("PivotArm", inputs);

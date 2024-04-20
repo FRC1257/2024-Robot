@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.*;
 import frc.robot.util.misc.LoggedTunableNumber;
+import lombok.Setter;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -48,7 +49,7 @@ public class Shooter extends SubsystemBase {
   private final ShooterIO shooterIO;
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
 
-  private boolean characterizing = false;
+  @Setter private boolean characterizing = false;
  
   private double leftSetpointRPM, rightSetpointRPM = 0;
   private double leftMotorVoltage, rightMotorVoltage = 0;
@@ -127,10 +128,6 @@ public class Shooter extends SubsystemBase {
 
   public double getLeftCharacterizationVelocity() {
     return shooterInputs.leftFlywheelVelocityRPM;
-  }
-
-  public void setCharacterizing(boolean characterizing) {
-    this.characterizing = characterizing;
   }
 
   public double getRightCharacterizationVelocity() {

@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.indexer.IndexerIOInputsAutoLogged;
 import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.function.DoubleSupplier;
 

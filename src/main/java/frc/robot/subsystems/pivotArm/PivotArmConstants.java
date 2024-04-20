@@ -1,16 +1,34 @@
 package frc.robot.subsystems.pivotArm;
 
-import java.util.function.DoubleSupplier;
+import static frc.robot.Constants.getRobotMode;
 
+import java.util.function.DoubleSupplier;
+import frc.robot.Constants.Mode;
+import frc.robot.Constants;
 import edu.wpi.first.math.util.Units;
 
 public class PivotArmConstants {
 
   public static final double POSITION_CONVERSION_FACTOR = 21.0 / 35.0;
   public static final double PIVOT_ARM_ROTATION_DIAM_M = 1;
+  
+  public static final PIDGains PIVOT_ARM_PID =  
+  switch(getRobotMode()){
+    case REAL -> new PIDGains(3.6, 0, 0, 0.01);
+    case SIM -> new PIDGains(15,0,0,0);
+    case REPLAY -> throw new UnsupportedOperationException("Unimplemented case: " + getRobotMode().toString());
+    case TEST -> throw new UnsupportedOperationException("Unimplemented case: " + getRobotMode().toString());
+    default -> throw new IllegalArgumentException("Unexpected value: " + getRobotMode().toString());
+  };
 
-  public static final double[] PIVOT_ARM_PID_REAL = { 3.6, 0, 0, 0.01 };
-  public static final double[] PIVOT_ARM_FEEDFORWARD_REAL = { 0, 0.45, 0, 0 };
+  public static final FeedForwardGains PIVOT_ARM_FEED_FORWARD = 
+  switch(getRobotMode()) {
+    case REAL -> new FeedForwardGains(0, 0.45, 0, 0 );
+    case SIM -> new FeedForwardGains(0,0,0,0);
+    case REPLAY -> throw new UnsupportedOperationException("Unimplemented case: " + getRobotMode().toString());
+    case TEST -> throw new UnsupportedOperationException("Unimplemented case: " + getRobotMode().toString());
+    default -> throw new IllegalArgumentException("Unexpected value: " + getRobotMode().toString());
+  };
 
   public static final double PIVOT_ARM_PID_TOLERANCE = Units.degreesToRadians(1);
   public static final double PIVOT_ARM_PID_VELOCITY_TOLERANCE = 0.5;
@@ -33,6 +51,12 @@ public class PivotArmConstants {
   public static final double STEP_VOLTAGE = 3.0;
   public static final double PIVOT_ARM_TOLERANCE = 1.0;
 
+  public record PIDGains(
+    double kP, double kI, double kD, double kFF) {}
+
+  public record FeedForwardGains(
+    double kS, double kV, double kG, double kA) {}
+
   public static class PivotArmSimConstants {
     public static final double[] kPivotSimPID = { 15, 0, 0, 0 };
 
@@ -52,5 +76,6 @@ public class PivotArmConstants {
     public static final double kArmLength = Units.inchesToMeters(20);
     public static final double kMinAngleRads = Units.degreesToRadians(0);
     public static final double kMaxAngleRads = Units.degreesToRadians(180);
+
   }
 }
