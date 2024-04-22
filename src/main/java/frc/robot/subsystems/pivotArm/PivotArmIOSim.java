@@ -83,6 +83,13 @@ public class PivotArmIOSim implements PivotArmIO {
     }
 
     @Override
+    public void setPID(double p, double i, double d){
+        setP(p);
+        setI(i);
+        setD(d);
+    }
+
+    @Override
     public void setP(double p) {
         m_controller.setP(p);
     }

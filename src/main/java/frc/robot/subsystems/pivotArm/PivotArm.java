@@ -96,11 +96,12 @@ public class PivotArm extends SubsystemBase {
         Logger.processInputs("PivotArm", inputs);
 
         armMechanism.setAngle(Units.radiansToDegrees(inputs.angleRads));
-
+        
         // Update the PID constants if they have changed
         LoggedTunableNumber.ifChanged(
             hashCode(),  () -> io.setPID(logP.get(), logI.get(), logD.get()), logP, logI, logD);
-        
+        LoggedTunableNumber.ifChanged(
+            hashCode(), () -> io.setFeed(logkS.get(), logkV.get(), logkG.get(), logkA.get()), logkS, logkV, logkG, logkA);        
         // Log Inputs
         Logger.processInputs("PivotArm", inputs);
 

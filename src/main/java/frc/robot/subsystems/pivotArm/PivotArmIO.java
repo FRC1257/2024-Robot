@@ -49,6 +49,10 @@ public interface PivotArmIO {
         return false;
     }
 
+    public default void setPID(double kP, double kI, double kD) {}
+
+    public default void setFeed(double kS, double kV, double kG, double kA) {}
+
     public default void setP(double p) {}
     
     public default void setI(double i) {}
