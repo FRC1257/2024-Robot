@@ -38,32 +38,6 @@ public class DriveControls {
     // Drive Trajectories
     public static Trigger DRIVE_AMP;
 
-    // Pivot Controls
-    public static DoubleSupplier PIVOT_ROTATE;
-    public static Trigger PIVOT_AMP;
-    public static Trigger PIVOT_ZERO;
-    public static Trigger PIVOT_TO_SPEAKER;
-    public static Trigger PIVOT_PODIUM;
-    public static Trigger PIVOT_ANYWHERE;
-
-    // Intake Controls
-    public static Trigger INTAKE_IN;
-    public static Trigger INTAKE_OUT;
-    public static DoubleSupplier INTAKE_ROTATE;
-
-    // Ground Intake
-    public static Trigger GROUND_INTAKE_IN;
-    public static Trigger GROUND_INTAKE_OUT;
-    public static DoubleSupplier GROUND_INTAKE_ROTATE;
-
-    public static Trigger INTAKE_UNTIL_INTAKED;
-
-    // Shooter Controls
-    public static DoubleSupplier SHOOTER_SPEED;
-    public static Trigger SHOOTER_FULL_SEND_INTAKE;
-    public static Trigger SHOOTER_FULL_SEND;
-    public static Trigger SHOOTER_UNJAM;
-
     // Setup the controls
     public static void configureControls() {
         switch (Constants.driver) {
@@ -107,56 +81,9 @@ public class DriveControls {
 
         switch (Constants.operator) {
             case ERICK:
-                PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
-                
-                // Pivot things
-                PIVOT_AMP = operator.getDPad(DPad.RIGHT);
-                PIVOT_ZERO = operator.getDPad(DPad.DOWN);
-                PIVOT_TO_SPEAKER = operator.getDPad(DPad.LEFT);
-                PIVOT_PODIUM = EMPTY_TRIGGER;
-                PIVOT_ANYWHERE = operator.getDPad(DPad.UP); // uses vision
-                
-                // intaking things
-                INTAKE_ROTATE = () -> operator.getLeftYD();
-                INTAKE_IN = operator.rightBumper();
-                INTAKE_OUT = operator.leftBumper();
-                INTAKE_UNTIL_INTAKED = operator.getY();
-
-                // ground intake things
-                GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
-                GROUND_INTAKE_IN = operator.rightBumper();
-                GROUND_INTAKE_OUT = operator.leftBumper();
-
-                // Shooter things
-                SHOOTER_SPEED = () -> operator.getRightXD();
-                SHOOTER_FULL_SEND_INTAKE = operator.getX();
-                SHOOTER_FULL_SEND = operator.getA();
-                SHOOTER_UNJAM = operator.getB();
                 break;
             case PROGRAMMERS:
             default:
-                // Operator controls
-                PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
-                
-                //isn't reading operator.getLeftTriggerAxis, must be an issue with the encoder
-                PIVOT_AMP = operator.getB();
-                PIVOT_ZERO = operator.getA();
-                PIVOT_TO_SPEAKER = EMPTY_TRIGGER;
-                PIVOT_PODIUM = operator.getDPad(DPad.UP);
-                
-                INTAKE_IN = operator.rightBumper();
-                INTAKE_OUT = operator.leftBumper();
-                INTAKE_ROTATE = () -> operator.getLeftYD();
-
-                GROUND_INTAKE_IN = operator.rightBumper();
-                GROUND_INTAKE_OUT = operator.leftBumper();
-                GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
-
-                SHOOTER_SPEED = operator::getRightXD;
-
-                SHOOTER_FULL_SEND_INTAKE = EMPTY_TRIGGER;
-                SHOOTER_FULL_SEND = EMPTY_TRIGGER;
-                SHOOTER_UNJAM = EMPTY_TRIGGER;
                 break;
 
                 //bottom right Left joystick to intake 
