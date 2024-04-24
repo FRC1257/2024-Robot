@@ -415,36 +415,4 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.pathfindThenFollowPath(path, kPathConstraints);
   }
 
-  public Command goToThaPose(Pose2d endPose) {
-    List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-      getPose(),
-      endPose
-    );
-
-    // Create the path using the bezier points created above
-    PathPlannerPath path = new PathPlannerPath(
-      bezierPoints,
-      kPathConstraints, // The constraints for this path. If using a differential drivetrain, the angular constraints have no effect.
-      new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
-    );
-    return AutoBuilder.followPath(path);
-  }
-  
-  public Translation2d FindMidPose(Pose2d start, Pose2d end){
-    return new Translation2d((start.getX()+end.getX())/2, (start.getY()+end.getY())/2);
-  }
-
-  public Command driveFromPoseToPose(Pose2d start, Pose2d end) {
-    return AutoBuilder.followPath(
-      PathPlannerPath.fromPathPoints(
-        List.of(
-          new PathPoint(start.getTranslation(), new RotationTarget(0, start.getRotation(), true)),
-          new PathPoint(FindMidPose(start, end), new RotationTarget(0, start.getRotation(), true)),
-          new PathPoint(FindMidPose(new Pose2d(FindMidPose(start, end), new Rotation2d()), end), new RotationTarget(0, start.getRotation(), true)),
-          new PathPoint(end.getTranslation(), new RotationTarget(0, end.getRotation(), true))
-        ), 
-        kPathConstraints, 
-        new GoalEndState(0, end.getRotation())));
-  }
-
 }

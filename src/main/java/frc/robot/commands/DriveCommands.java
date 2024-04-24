@@ -28,15 +28,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.subsystems.indexer.Indexer;
-import frc.robot.subsystems.indexer.IndexerConstants;
-import frc.robot.subsystems.pivotArm.PivotArm;
-import frc.robot.subsystems.pivotArm.PivotArmConstants;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.pivotArm.PivotArm;
-import frc.robot.subsystems.pivotArm.PivotArmConstants;
-import frc.robot.subsystems.shooter.*;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -336,48 +329,8 @@ public class DriveCommands {
         return joystickDrive(drive, () -> 0.6, () -> 0, () -> 0).withTimeout(1.5);
     }
 
-    public static double getPivotSideAngle() {
-        if (SmartDashboard.getBoolean("ShootSide", false)) {
-            return PivotArmConstants.PIVOT_SUBWOOFER_SIDE_ANGLE;
-        }
-        return PivotArmConstants.PIVOT_SUBWOOFER_ANGLE;
-    }
-
-    public static Command driveBackandShooter(Drive drive, PivotArm pivot, Shooter shooter, Indexer intake) {
-        return (pivot.PIDCommand(DriveCommands::getPivotSideAngle)
-                .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
-                .andThen(
-                        (shooter.runVoltage(11).withTimeout(2)
-                                .alongWith(
-                                        new WaitCommand(0.5)
-                                                .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
-                                                        .withTimeout(0.5))))
-                                .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
-                                .withTimeout(2)
-
-                ).andThen(new WaitCommand(3).alongWith(shooter.runVoltage((0)).withTimeout(3)))
-                .andThen(
-
-                        driveBack(drive).alongWith(shooter.runVoltage((0)).withTimeout(5)));// );
-    }
-
     public static Command driveBack(Drive drive) {
         return joystickDrive(drive, () -> 0.6, () -> 0, () -> 0).withTimeout(1.5);// );
-    }
-
-    public static Command justShooter(PivotArm pivot, Shooter shooter, Indexer intake) {
-        return (pivot.PIDCommand(DriveCommands::getPivotSideAngle)
-                .alongWith(shooter.runVoltage((0)).withTimeout(0.8)))
-                .andThen(
-                        (shooter.runVoltage(11).withTimeout(3)
-                                .alongWith(
-                                        new WaitCommand(0.5)
-                                                .andThen(intake.manualCommand(-IndexerConstants.INDEXER_OUT_VOLTAGE)
-                                                        .withTimeout(1))))
-                                .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE + 0.005))
-                                .withTimeout(3)
-
-                );
     }
 
 }

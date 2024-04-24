@@ -12,13 +12,6 @@ public final class DriveConstants {
 
   // public static final double periodicTime = 0.02;
   public static final double kMaxSpeedMetersPerSecond = 6;
-  // public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
-
-  //public static final double kDirectionSlewRate = 1.2; // radians per second
-  //public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
-  //public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
-
-  // Chassis configuration
 
   public static final double kTrackWidthX = Units.inchesToMeters(26.5);
   public static final double kTrackWidthY = Units.inchesToMeters(26.5);
@@ -33,24 +26,24 @@ public final class DriveConstants {
 
   // Angular offsets of the modules relative to the chassis in radians
   // Subject to change depending on what robot side is the front
-  public static final double kFrontLeftChassisAngularOffset = Math.PI;
+  public static final double kFrontLeftChassisAngularOffset = 0;
   public static final double kFrontRightChassisAngularOffset = 0;
-  public static final double kBackLeftChassisAngularOffset = Math.PI;
+  public static final double kBackLeftChassisAngularOffset = 0;
   public static final double kBackRightChassisAngularOffset = 0;
 
   // SPARK MAX CAN IDs
   // Subject to change depending on what robot side is the front
-  public static final int kFrontLeftDrivingCanId = 3;
-  public static final int kRearLeftDrivingCanId = 7;
+  // TODO: do this
+  public static final int kFrontLeftDrivingCanId = 1;
+  public static final int kRearLeftDrivingCanId = 1;
   public static final int kFrontRightDrivingCanId = 1;
-  public static final int kRearRightDrivingCanId = 5;
+  public static final int kRearRightDrivingCanId = 1;
 
-  //drive motors are timing out for some reason in the logs
-
-  public static final int kFrontLeftTurningCanId = 4;
-  public static final int kRearLeftTurningCanId = 8;
+  // 
+  public static final int kFrontLeftTurningCanId = 2;
+  public static final int kRearLeftTurningCanId = 2;
   public static final int kFrontRightTurningCanId = 2;
-  public static final int kRearRightTurningCanId = 6;
+  public static final int kRearRightTurningCanId = 2;
 
   //public static final boolean kGyroReversed = false;
 

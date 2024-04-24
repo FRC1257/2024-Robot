@@ -76,15 +76,6 @@ public final class Constants {
     return Mode.REAL;
   }
 
-  public static class BuildConstants {
-    public static int DIRTY = 1;
-    public static String MAVEN_NAME = "Snail";
-    public static String BUILD_DATE = "12/57";
-    public static String GIT_SHA = "Snail";
-    public static String GIT_DATE = "Snail";
-    public static String GIT_BRANCH = "PivotArm";
-  }
-
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
