@@ -26,12 +26,14 @@ import static frc.robot.subsystems.drive.ModuleConstants.kTurningP;
 import static frc.robot.subsystems.drive.ModuleConstants.kWheelDiameterMeters;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.util.drive.DashboardValues;
 
 public class Module {
   private static final double WHEEL_RADIUS = kWheelDiameterMeters / 2;
@@ -223,15 +225,15 @@ public class Module {
   }
 
   public void setCurrentLimit(){
-    if(turboMode != SmartDashboard.getBoolean("Turbo Mode", false)){
-      if(SmartDashboard.getBoolean("Turbo Mode", false)){
+    if(turboMode != DashboardValues.turboMode.get()){
+      if (DashboardValues.turboMode.get()) {
         io.setDriveCurrentLimit(1257);
         io.setTurningCurrentLimit(1257);
       } else {
         io.setDriveCurrentLimit(kDrivingMotorCurrentLimit);
         io.setTurningCurrentLimit(kTurningMotorCurrentLimit);
       }
-      turboMode = SmartDashboard.getBoolean("Turbo Mode", false);
+      turboMode = DashboardValues.turboMode.get();
     }
   }
 }

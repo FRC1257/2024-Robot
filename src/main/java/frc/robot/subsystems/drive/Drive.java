@@ -26,6 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -51,7 +52,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -106,6 +106,8 @@ public class Drive extends SubsystemBase {
   private Rotation2d simRotation = new Rotation2d();
 
   private DeadzoneChooser deadzoneChooser = new DeadzoneChooser("Deadzone");
+
+  private LoggedDashboardBoolean useVisionDashboard = new LoggedDashboardBoolean("UseVision", true);
 
   public Drive(
       GyroIO gyroIO,
@@ -174,7 +176,7 @@ public class Drive extends SubsystemBase {
             
             }, null, this));
 
-    SmartDashboard.putBoolean("UseVision", useVision);
+    useVisionDashboard.set(useVision);
   }
 
   public void periodic() {
@@ -186,7 +188,7 @@ public class Drive extends SubsystemBase {
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
 
-    if (SmartDashboard.getBoolean("UseVision", useVision)) {
+    if (useVisionDashboard.get()) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
@@ -446,38 +448,6 @@ public class Drive extends SubsystemBase {
 
   public Command pathfindToTrajectory(PathPlannerPath path) {
     return AutoBuilder.pathfindThenFollowPath(path, kPathConstraints);
-  }
-
-  public Command goToThaPose(Pose2d endPose) {
-    List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-      getPose(),
-      endPose
-    );
-
-    // Create the path using the bezier points created above
-    PathPlannerPath path = new PathPlannerPath(
-      bezierPoints,
-      kPathConstraints, // The constraints for this path. If using a differential drivetrain, the angular constraints have no effect.
-      new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
-    );
-    return AutoBuilder.followPath(path);
-  }
-  
-  public Translation2d FindMidPose(Pose2d start, Pose2d end){
-    return new Translation2d((start.getX()+end.getX())/2, (start.getY()+end.getY())/2);
-  }
-
-  public Command driveFromPoseToPose(Pose2d start, Pose2d end) {
-    return AutoBuilder.followPath(
-      PathPlannerPath.fromPathPoints(
-        List.of(
-          new PathPoint(start.getTranslation(), new RotationTarget(0, start.getRotation(), true)),
-          new PathPoint(FindMidPose(start, end), new RotationTarget(0, start.getRotation(), true)),
-          new PathPoint(FindMidPose(new Pose2d(FindMidPose(start, end), new Rotation2d()), end), new RotationTarget(0, start.getRotation(), true)),
-          new PathPoint(end.getTranslation(), new RotationTarget(0, end.getRotation(), true))
-        ), 
-        kPathConstraints, 
-        new GoalEndState(0, end.getRotation())));
   }
 
 }

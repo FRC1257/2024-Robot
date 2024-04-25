@@ -12,6 +12,7 @@ import frc.robot.util.drive.AllianceFlipUtil;
 public class DeadzoneChooser {
     private LoggedDashboardChooser<List<Pair<Translation2d, Translation2d>>> deadzone;
 
+    // rectangles that represent the deadzones 
     private Pair<Translation2d, Translation2d> otherAllianceDeadzone = new Pair<>(
         new Translation2d(9, 8.160), 
         new Translation2d(9, 0)
@@ -60,6 +61,7 @@ public class DeadzoneChooser {
     }
 
     public void init() {
+        // add deadzone options
         deadzone.addOption("Thread the Needle Between", getBothAlliances(threadTheNeedle));
         deadzone.addOption("Thread the Needle Top", getBothAlliances(threadTheNeedleGoTop));
         deadzone.addOption("Block Top", getBothAlliances(blockTop));

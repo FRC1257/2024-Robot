@@ -40,14 +40,14 @@ public class NoteChooser {
     }
 
     public Pose2d getSelected(){
-        Pose2d thing = position.get();
+        Pose2d selected_position = position.get();
 
-        if (thing == null){
+        if (selected_position == null){
             System.out.println("Null value for some reason");
-            thing = FieldConstants.NOTE_POSITIONS()[0];
+            selected_position = FieldConstants.NOTE_POSITIONS()[0];
         }
 
-        return thing;
+        return selected_position;
     }
 
     

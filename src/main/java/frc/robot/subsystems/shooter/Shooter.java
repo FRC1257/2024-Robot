@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.*;
+
+import frc.robot.util.drive.DashboardValues;
 import frc.robot.util.misc.LoggedTunableNumber;
 
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -183,11 +185,12 @@ public class Shooter extends SubsystemBase {
     leftMotorVoltage = leftVoltage.getAsDouble() * 10;
     rightMotorVoltage = rightVoltage.getAsDouble() * 10;
 
-    if(SmartDashboard.getBoolean("Turbo Mode", false)){
+    if (DashboardValues.turboMode.get()) {
         shooterIO.setVoltage(0, 0);
     } else {
         shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
     }
+    
     isVoltageLeftClose(leftVoltage.getAsDouble());
     isVoltageRightClose(rightVoltage.getAsDouble());
   }

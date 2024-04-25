@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.indexer.IndexerIOInputsAutoLogged;
 import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.util.drive.DashboardValues;
 
 import java.util.function.DoubleSupplier;
 
@@ -55,50 +56,13 @@ public class Indexer extends SubsystemBase {
         // Update PID constants to ensure they are up to date
         Logger.processInputs("Intake", inputs);
 
-
-        // Updates state of where the note is in the intake
-        if(noteState == NoteState.NOT_ENOUGH && inputs.breakBeam) { // Note just entered the right spot
-            noteState = NoteState.GOLDILOCKS;
-        }
-        else if(noteState == NoteState.GOLDILOCKS && !inputs.breakBeam) { // Note just left the right spot
-            if(io.getSpeed() > 0) {
-                noteState = NoteState.MIDDLE;
-            } else {
-                noteState = NoteState.NOT_ENOUGH;
-            }
-            currentVoltage = Math.max(currentVoltage - 2, 0); // Intake gets progressively slower every time you overshoot
-        }
-        else if(noteState == NoteState.MIDDLE && inputs.breakBeam) { // Note either overshot or got to the right spot from middle
-            if(io.getSpeed() > 0) {
-                noteState = NoteState.OVERSHOOT;
-            } else {
-                noteState = NoteState.GOLDILOCKS;
-            }
-        }
-        else if(noteState == NoteState.OVERSHOOT && !inputs.breakBeam) { // Note is either shot out or goes to the middle
-            if(io.getSpeed() > 0) {
-                noteState = NoteState.NOT_ENOUGH;
-            } else {
-                noteState = NoteState.MIDDLE;
-            }
-            
-        
-        }
-
-        // Updates the amount of time that the note has been in the intake for
-        if(noteState == NoteState.GOLDILOCKS) {
-            timeInIntake += 0.02;
-        }
-        else {
-            timeInIntake = 0;
-        }
         Logger.processInputs("Indexer", inputs);
         Logger.recordOutput("Indexer/State", noteState.name());
         Logger.recordOutput("Indexer/IndexerMotorConnected", inputs.velocityRadsPerSec != 0);
     }
 
     public void setVoltage(double voltage) {
-        if(SmartDashboard.getBoolean("Turbo Mode", false)){
+        if (DashboardValues.turboMode.get()) {
             io.setVoltage(0);
         } else {
             io.setVoltage(voltage);
@@ -117,17 +81,6 @@ public class Indexer extends SubsystemBase {
     // Sets motor speed based on where the note is in the intake
     public void runIntakeLoop() {
         setVoltage(currentVoltage);
-        /* switch(noteState) {
-            case NOT_ENOUGH:
-                setVoltage(currentVoltage);
-                break;
-            case GOLDILOCKS:
-                setVoltage(0);
-                break;
-            case MIDDLE: case OVERSHOOT:
-                setVoltage(-currentVoltage);
-                break;
-        } */
     }
 
     // Checks if note has been in the intake for 0.5 seconds

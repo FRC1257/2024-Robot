@@ -10,6 +10,7 @@ import static frc.robot.subsystems.vision.VisionConstants.cam3RobotToCam;
 import static frc.robot.subsystems.vision.VisionConstants.kTagLayout;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -33,6 +34,8 @@ public class VisionIOPhoton implements VisionIO {
     private final PhotonPoseEstimator camera3Estimator;
 
     private Pose2d lastEstimate = new Pose2d();
+
+    LoggedDashboardBoolean killSideCams = new LoggedDashboardBoolean("Vision/KillSideCams", false);
 
     public VisionIOPhoton() {
         PortForwarder.add(5800, "photonvision.local", 5800);
@@ -78,7 +81,7 @@ public class VisionIOPhoton implements VisionIO {
             int[][] cameraTargets = getCameraTargets(results);
             inputs.camera1Targets = cameraTargets[0];
 
-            if (SmartDashboard.getBoolean("KillSideCams", false)) {
+            if (killSideCams.get()) {
                 inputs.camera2Targets = new int[0];
                 inputs.camera3Targets = new int[0];
             } else {
@@ -102,7 +105,7 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     private PhotonPipelineResult[] getAprilTagResults() {
-        if (SmartDashboard.getBoolean("KillSideCams", false)) {
+        if (killSideCams.get()) {
             PhotonPipelineResult cam1_result = getLatestResult(camera1);
 
             printStuff("cam1", cam1_result);
@@ -132,7 +135,7 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
-        if (SmartDashboard.getBoolean("KillSideCams", false)) {
+        if (killSideCams.get()) {
             camera1Estimator.setReferencePose(currentEstimate);
 
             return new PhotonPoseEstimator[] { camera1Estimator };
@@ -147,19 +150,20 @@ public class VisionIOPhoton implements VisionIO {
 
     @Override
     public boolean goodResult(PhotonPipelineResult result) {
-        return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD/*
-                                                                                                      * && kTagLayout.
-                                                                                                      * getTagPose(
-                                                                                                      * result.
-                                                                                                      * getBestTarget().
-                                                                                                      * getFiducialId())
-                                                                                                      * .get().toPose2d(
-                                                                                                      * ).getTranslation
-                                                                                                      * ()
-                                                                                                      * .getDistance(
-                                                                                                      * lastEstimate.
-                                                                                                      * getTranslation()
-                                                                                                      * ) < MAX_DISTANCE
-                                                                                                      */;
+        return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD
+        /*
+         * && kTagLayout.
+         * getTagPose(
+         * result.
+         * getBestTarget().
+         * getFiducialId())
+         * .get().toPose2d(
+         * ).getTranslation
+         * ()
+         * .getDistance(
+         * lastEstimate.
+         * getTranslation()
+         * ) < MAX_DISTANCE
+         */;
     }
 }

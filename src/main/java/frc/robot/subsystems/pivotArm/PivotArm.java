@@ -1,6 +1,7 @@
 package frc.robot.subsystems.pivotArm;
 
 import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.util.drive.DashboardValues;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -151,11 +152,12 @@ public class PivotArm extends SubsystemBase {
             motorVolts = 0;
         }
 
-        if(SmartDashboard.getBoolean("Turbo Mode", false)){
+        if(DashboardValues.turboMode.get()) {
             io.setVoltage(0);
         } else {
             io.setVoltage(motorVolts);
         }
+        
         isVoltageClose(motorVolts);
     }
 

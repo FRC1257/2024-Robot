@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.groundIntake.GroundIntakeConstants.*;
+import frc.robot.util.drive.DashboardValues;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -56,7 +58,7 @@ public class GroundIntake extends SubsystemBase {
     }
 
     public void setVoltage(double voltage) {
-        if (SmartDashboard.getBoolean("Turbo Mode", false)){
+        if (DashboardValues.turboMode.get()) {
             io.setVoltage(0);
         } else {
             io.setVoltage(voltage);

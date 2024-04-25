@@ -22,6 +22,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -45,12 +46,10 @@ public class DriveCommands {
     private static double slowMode = 1;
     // kSlowModeConstant;
 
-    private static PIDController angleController = new PIDController(kTurnSpeakerP,
-            kTurnSpeakerI, kTurnSpeakerD);
+    private static PIDController angleController = new PIDController(kTurnSpeakerP, kTurnSpeakerI, kTurnSpeakerD);
+    private static LoggedDashboardBoolean shootSide = new LoggedDashboardBoolean("ShootSide", false);
 
-    private DriveCommands() {
-    }
-
+    
     /**
      * Field relative drive command using two joysticks (controlling linear and
      * angular velocities).
@@ -347,7 +346,7 @@ public class DriveCommands {
     }
 
     public static boolean getPivotSideAngle() {
-        if (SmartDashboard.getBoolean("ShootSide", false)) {
+        if (shootSide.get()) {
             return false;
         }
         return true;
