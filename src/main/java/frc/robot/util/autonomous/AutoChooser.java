@@ -6,8 +6,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 
 
 public class AutoChooser {
-    public static LoggedDashboardBoolean shootOnStart = new LoggedDashboardBoolean("ShootOnStart", true);
-
     // Get the start position
     public static NoteChooser startChooser = new NoteChooser("Start");
 

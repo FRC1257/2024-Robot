@@ -24,6 +24,7 @@ public class DriveControls {
     public static DoubleSupplier DRIVE_ROTATE;
     public static Trigger DRIVE_SLOW;
     public static Trigger DRIVE_STOP;
+    public static Trigger DRIVE_HOLD_STOP;
 
     // drive modes
     public static Trigger DRIVE_ROBOT_RELATIVE;
@@ -45,6 +46,7 @@ public class DriveControls {
     public static Trigger PIVOT_TO_SPEAKER;
     public static Trigger PIVOT_PODIUM;
     public static Trigger PIVOT_ANYWHERE;
+    public static Trigger PIVOT_HOLD;
 
     // Intake Controls
     public static Trigger INTAKE_IN;
@@ -63,6 +65,7 @@ public class DriveControls {
     public static Trigger SHOOTER_FULL_SEND_INTAKE;
     public static Trigger SHOOTER_FULL_SEND;
     public static Trigger SHOOTER_UNJAM;
+    public static Trigger SHOOTER_PREPARE_THEN_SHOOT;
 
     // Setup the controls
     public static void configureControls() {
@@ -76,6 +79,7 @@ public class DriveControls {
                 // Driver Settings
                 DRIVE_SLOW = driver.start();
                 DRIVE_STOP = driver.x();
+                DRIVE_HOLD_STOP = driver.a();
 
                 // Driver Modes
                 DRIVE_ROBOT_RELATIVE = driver.y();
@@ -91,18 +95,27 @@ public class DriveControls {
                 break;
             case PROGRAMMERS:
             default:
-                DRIVE_FORWARD = () -> -driver.getLeftY();
-                DRIVE_STRAFE = () -> -driver.getLeftX();
-                DRIVE_ROTATE = driver::getRightX;
-                DRIVE_SLOW = driver.x();
-                DRIVE_SPEAKER_AIM = driver.b();
-
-                DRIVE_STOP = driver.rightBumper();
+                // Driver controls
+                DRIVE_FORWARD = () -> (-driver.getLeftY());
+                DRIVE_STRAFE = ()->(-driver.getLeftX());
+                DRIVE_ROTATE = () -> (-driver.getRightX());
                 
-                LOCK_PASS = driver.a();
+                // Driver Settings
+                DRIVE_SLOW = driver.start();
+                DRIVE_STOP = driver.x();
+                DRIVE_HOLD_STOP = EMPTY_TRIGGER;
 
-                DRIVE_AMP = driver.leftBumper();
-                break;
+                // Driver Modes
+                DRIVE_ROBOT_RELATIVE = driver.y();
+                DRIVE_SPEAKER_AIM = driver.b(); // uses vision
+
+                // Driver Angle Locks
+                LOCK_BACK = driver.getDPad(DPad.DOWN);
+                LOCK_PICKUP = driver.getDPad(DPad.RIGHT);
+                LOCK_ON_AMP = driver.rightBumper();
+                LOCK_PASS = driver.getDPad(DPad.LEFT); // uses vision
+
+                DRIVE_AMP = EMPTY_TRIGGER; // uses vision
         }
 
         switch (Constants.operator) {
@@ -110,28 +123,30 @@ public class DriveControls {
                 PIVOT_ROTATE = () -> (operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
                 
                 // Pivot things
-                PIVOT_AMP = operator.getDPad(DPad.RIGHT);
-                PIVOT_ZERO = operator.getDPad(DPad.DOWN);
-                PIVOT_TO_SPEAKER = operator.getDPad(DPad.LEFT);
-                PIVOT_PODIUM = EMPTY_TRIGGER;
+                PIVOT_AMP = operator.getB();
+                PIVOT_ZERO = operator.getA();
+                PIVOT_TO_SPEAKER = operator.getX();
+                PIVOT_PODIUM = operator.getY();
                 PIVOT_ANYWHERE = operator.getDPad(DPad.UP); // uses vision
+                PIVOT_HOLD = operator.start();
                 
                 // intaking things
-                INTAKE_ROTATE = () -> operator.getLeftYD();
+                INTAKE_ROTATE = EMPTY_DOUBLE_SUPPLIER;
                 INTAKE_IN = operator.rightBumper();
                 INTAKE_OUT = operator.leftBumper();
-                INTAKE_UNTIL_INTAKED = operator.getY();
+                INTAKE_UNTIL_INTAKED = EMPTY_TRIGGER;
 
                 // ground intake things
-                GROUND_INTAKE_ROTATE = () -> -2*operator.getLeftXD();
+                GROUND_INTAKE_ROTATE = EMPTY_DOUBLE_SUPPLIER;
                 GROUND_INTAKE_IN = operator.rightBumper();
                 GROUND_INTAKE_OUT = operator.leftBumper();
 
                 // Shooter things
                 SHOOTER_SPEED = () -> operator.getRightXD();
-                SHOOTER_FULL_SEND_INTAKE = operator.getX();
-                SHOOTER_FULL_SEND = operator.getA();
-                SHOOTER_UNJAM = operator.getB();
+                SHOOTER_FULL_SEND_INTAKE = operator.getLefJoystucikPress();
+                SHOOTER_FULL_SEND = operator.getDPad(DPad.DOWN);
+                SHOOTER_UNJAM = operator.getDPad(DPad.RIGHT);
+                SHOOTER_PREPARE_THEN_SHOOT = operator.back();
                 break;
             case PROGRAMMERS:
             default:
@@ -157,6 +172,7 @@ public class DriveControls {
                 SHOOTER_FULL_SEND_INTAKE = EMPTY_TRIGGER;
                 SHOOTER_FULL_SEND = EMPTY_TRIGGER;
                 SHOOTER_UNJAM = EMPTY_TRIGGER;
+                SHOOTER_PREPARE_THEN_SHOOT = EMPTY_TRIGGER;
                 break;
 
                 //bottom right Left joystick to intake 

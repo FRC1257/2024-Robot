@@ -274,4 +274,15 @@ public class ModuleIOSparkMax implements ModuleIO {
   public double getAbsoluteEncoderOffset() {
     return absoluteEncoderOffset;
   }
+
+  @Override 
+  public void setDriveCurrentLimit(int limit) {
+    driveSparkMax.setSmartCurrentLimit(limit);
+  }
+
+  @Override 
+  public void setTurningCurrentLimit(int limit) {
+    driveSparkMax.setSmartCurrentLimit(limit);
+  }
+  
 }

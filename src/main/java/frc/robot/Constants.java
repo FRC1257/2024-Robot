@@ -76,15 +76,6 @@ public final class Constants {
     return Mode.REAL;
   }
 
-  public static class BuildConstants {
-    public static int DIRTY = 1;
-    public static String MAVEN_NAME = "Snail";
-    public static String BUILD_DATE = "12/57";
-    public static String GIT_SHA = "Snail";
-    public static String GIT_DATE = "Snail";
-    public static String GIT_BRANCH = "PivotArm";
-  }
-
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
@@ -129,11 +120,12 @@ public final class Constants {
   //{distance, rpm, angle} The distance column must go from lowest to highest, top to bottom
   //manually insert velocity!!!!!
   public static final double[][] LookupTable = {
-    {0	          ,0,   13.26773004},
-    {0.1151611524	,0, 16.15608368},
-    {0.3522449123	,0, 21.93279096},
-    {0.8765935905	,0, 33.48620553},
-    {1.351392365	,0,   42.15126645},
+    {0	          ,0,   38},
+    {0.1151611524	,0, 38},
+    {0.3522449123	,0, 38},
+    {0.8765935905	,0, 38},
+    {1.46, 0, 42},
+    {1.7, 0, 38},
     {1.959336833	,0,   50.81632738},
     {2.823481946	,0,   55},
     {3.211524819	,0,   56},

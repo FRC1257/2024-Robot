@@ -152,12 +152,7 @@ public class PivotArmIOSparkMax implements PivotArmIO {
 
     @Override
     public void holdSetpoint(double setpoint) {
-        pidController.setGoal(setpoint);
-        // With the setpoint value we run PID control like normal
-        double pidOutput = MathUtil.clamp(pidController.calculate(getAngle()), -3, 3);
-        Logger.recordOutput("PivotArm/PIDOutput", pidOutput);
-
-        setVoltage(MathUtil.clamp(pidOutput, -4, 4));
+        goToSetpoint(setpoint);
     }
 
     @Override

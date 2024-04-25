@@ -35,25 +35,20 @@ public class NoteChooser {
         position.addDefaultOption("Top", SCORE_POSITIONS[0]);
         position.addOption("Center", SCORE_POSITIONS[1]);
         position.addOption("Bottom", SCORE_POSITIONS[2]);
-        position.addOption("Really Bottom", SCORE_POSITIONS[3]);
-        position.addOption("Really Really Bottom", SCORE_POSITIONS[3]);
+        position.addOption("Near Line Top", SCORE_POSITIONS[3]);
+        position.addOption("Near Line Bottom", SCORE_POSITIONS[3]);
     }
 
     public Pose2d getSelected(){
-        Pose2d thing = position.get();
+        Pose2d selected_position = position.get();
 
-        if (thing == null){
+        if (selected_position == null){
             System.out.println("Null value for some reason");
-            thing = FieldConstants.NOTE_POSITIONS()[0];
+            selected_position = FieldConstants.NOTE_POSITIONS()[0];
         }
 
-        return thing;
+        return selected_position;
     }
 
     
 }
-//     // Add commadns to the list
-//commands.add(drive.goPose(AutoChooser.NoteOneChooser.getSelected()).alongWith(intake)); // add intake stuff here too 
-// commmands.add(intakeWhile); // use vision to detect the note 
-//commands.add(drive.goPose(AutoChooser.NoteOneShotChooser.getSelected()));
-//commands.add(shoot);

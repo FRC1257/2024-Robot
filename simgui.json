@@ -21,6 +21,7 @@
       "/SmartDashboard/Arm Mechanism": "Mechanism2d",
       "/SmartDashboard/Auto Choices": "String Chooser",
       "/SmartDashboard/Claw": "Subsystem",
+      "/SmartDashboard/Deadzone": "String Chooser",
       "/SmartDashboard/Drive": "Subsystem",
       "/SmartDashboard/Elevator": "Subsystem",
       "/SmartDashboard/Field": "Field2d",
@@ -36,6 +37,7 @@
       "/SmartDashboard/NoteTwo": "String Chooser",
       "/SmartDashboard/NoteTwoShot": "String Chooser",
       "/SmartDashboard/Pathfind to Pickup Pos": "Command",
+      "/SmartDashboard/Pivot Sysid": "Command",
       "/SmartDashboard/PivotArm": "Subsystem",
       "/SmartDashboard/Start": "String Chooser",
       "/SmartDashboard/Sysid Dynamic Drive Backward": "Command",
@@ -75,6 +77,11 @@
         }
       },
       "/SmartDashboard/Pathfind to Pickup Pos": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Pivot Sysid": {
         "window": {
           "visible": true
         }

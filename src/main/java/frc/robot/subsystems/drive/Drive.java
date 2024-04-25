@@ -26,6 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -37,6 +38,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,6 +48,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -53,8 +57,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
+import frc.robot.util.autonomous.DeadzoneChooser;
 import frc.robot.util.autonomous.LocalADStarAK;
 
 public class Drive extends SubsystemBase {
@@ -98,6 +104,10 @@ public class Drive extends SubsystemBase {
   private SysIdRoutine turnRoutine;
 
   private Rotation2d simRotation = new Rotation2d();
+
+  private DeadzoneChooser deadzoneChooser = new DeadzoneChooser("Deadzone");
+
+  private LoggedDashboardBoolean useVisionDashboard = new LoggedDashboardBoolean("UseVision", true);
 
   public Drive(
       GyroIO gyroIO,
@@ -165,6 +175,8 @@ public class Drive extends SubsystemBase {
               }
             
             }, null, this));
+
+    useVisionDashboard.set(useVision);
   }
 
   public void periodic() {
@@ -176,18 +188,31 @@ public class Drive extends SubsystemBase {
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
 
-    if (useVision) {
+    if (useVisionDashboard.get()) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
       if (visionInputs.hasEstimate) {
+        List<Matrix<N3, N1>> stdDeviations = visionIO.getStdArray(visionInputs, getPose());
+
         for (int i = 0; i < visionInputs.estimate.length; i++) {
-          poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp());
+          if (stdDeviations.size() <= i) {
+            poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp(), VisionConstants.kSingleTagStdDevs);
+            // System.out.println("Ignoring");
+          } else {
+            poseEstimator.addVisionMeasurement(visionInputs.estimate[i], Timer.getFPGATimestamp(), stdDeviations.get(i));
+            // System.out.println(stdDeviations.get(i));
+          }
+          
         }
       }
     }
 
     for (var module : modules) {
       module.periodic();
+    }
+
+    for (var module : modules) {
+      module.setCurrentLimit();
     }
 
     // Stop moving when disabled
@@ -200,6 +225,12 @@ public class Drive extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
+    }
+
+    if (DriverStation.isAutonomousEnabled()) {
+      Pathfinding.setDynamicObstacles(deadzoneChooser.getDeadzone(), getPose().getTranslation());
+    } else {
+      Pathfinding.setDynamicObstacles(List.of(), null);
     }
 
     SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
@@ -339,6 +370,10 @@ public class Drive extends SubsystemBase {
     // return new Rotation2d(); // use if nothing works
   }
 
+  public void updateDeadzoneChooser() {
+    deadzoneChooser.init();
+  }
+
   /** Resets the current odometry pose. */
   public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
@@ -413,38 +448,6 @@ public class Drive extends SubsystemBase {
 
   public Command pathfindToTrajectory(PathPlannerPath path) {
     return AutoBuilder.pathfindThenFollowPath(path, kPathConstraints);
-  }
-
-  public Command goToThaPose(Pose2d endPose) {
-    List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-      getPose(),
-      endPose
-    );
-
-    // Create the path using the bezier points created above
-    PathPlannerPath path = new PathPlannerPath(
-      bezierPoints,
-      kPathConstraints, // The constraints for this path. If using a differential drivetrain, the angular constraints have no effect.
-      new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
-    );
-    return AutoBuilder.followPath(path);
-  }
-  
-  public Translation2d FindMidPose(Pose2d start, Pose2d end){
-    return new Translation2d((start.getX()+end.getX())/2, (start.getY()+end.getY())/2);
-  }
-
-  public Command driveFromPoseToPose(Pose2d start, Pose2d end) {
-    return AutoBuilder.followPath(
-      PathPlannerPath.fromPathPoints(
-        List.of(
-          new PathPoint(start.getTranslation(), new RotationTarget(0, start.getRotation(), true)),
-          new PathPoint(FindMidPose(start, end), new RotationTarget(0, start.getRotation(), true)),
-          new PathPoint(FindMidPose(new Pose2d(FindMidPose(start, end), new Rotation2d()), end), new RotationTarget(0, start.getRotation(), true)),
-          new PathPoint(end.getTranslation(), new RotationTarget(0, end.getRotation(), true))
-        ), 
-        kPathConstraints, 
-        new GoalEndState(0, end.getRotation())));
   }
 
 }

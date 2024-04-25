@@ -15,7 +15,7 @@ public class PivotArmConstants {
   public static final double PIVOT_ARM_PID_TOLERANCE = Units.degreesToRadians(1);
   public static final double PIVOT_ARM_PID_VELOCITY_TOLERANCE = 0.5;
 
-  public static final double PIVOT_ARM_OFFSET = 1.1;// 1.14;
+  public static final double PIVOT_ARM_OFFSET = 1.5;// 1.14;
 
   public static final double PIVOT_MAX_PID_TIME = 3;
 
@@ -31,6 +31,7 @@ public class PivotArmConstants {
 
   public static final double RAMP_RATE = 0.5;
   public static final double STEP_VOLTAGE = 3.0;
+  public static final double PIVOT_ARM_TOLERANCE = 1.0;
 
   public static class PivotArmSimConstants {
     public static final double[] kPivotSimPID = { 15, 0, 0, 0 };

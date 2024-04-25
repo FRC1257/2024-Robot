@@ -1,6 +1,7 @@
 package frc.robot.subsystems.groundIntake;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 
@@ -9,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.groundIntake.GroundIntakeConstants.*;
+import frc.robot.util.drive.DashboardValues;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -29,6 +32,7 @@ public class GroundIntake extends SubsystemBase {
         logD = new LoggedDashboardNumber("GroundIntake/D", io.getD());
     }
 
+
     public void periodic() {
         io.updateInputs(inputs);
         // Update PID constants to ensure they are up to date
@@ -42,10 +46,24 @@ public class GroundIntake extends SubsystemBase {
             io.setD(logD.get());
         }
         Logger.processInputs("GroundIntake", inputs);
+  
+
+        Logger.recordOutput("GroundIntake/GIntakeMotorConnected", inputs.velocityRadsPerSec != 0);
+    }
+
+    @AutoLogOutput(key = "GroundIntake/Close")
+    public boolean isVoltageClose(double setVoltage) {
+        double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
+        return voltageDifference <= GroundIntakeConstants.GROUND_INTAKE_TOLERANCE;
     }
 
     public void setVoltage(double voltage) {
-        io.setVoltage(voltage);
+        if (DashboardValues.turboMode.get()) {
+            io.setVoltage(0);
+        } else {
+            io.setVoltage(voltage);
+        }
+        isVoltageClose(voltage);
     }
     
     public void setBrake(boolean brake) {

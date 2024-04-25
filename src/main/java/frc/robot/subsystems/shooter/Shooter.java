@@ -1,15 +1,19 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.subsystems.shooter.ShooterConstants.ShooterSimConstants.*;
+
+import frc.robot.util.drive.DashboardValues;
 import frc.robot.util.misc.LoggedTunableNumber;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
@@ -58,6 +62,19 @@ public class Shooter extends SubsystemBase {
     shooterIO.setRightFF(rightkS.get(), rightkV.get(), rightkA.get());
     shooterIO.setRightPID(rightkP.get(), rightkI.get(), rightkD.get());
   }
+
+  @AutoLogOutput(key = "Shooter/CloseRight")
+  public boolean isVoltageRightClose(double setVoltage) {
+    double voltageDifference = Math.abs(setVoltage - shooterInputs.rightFlywheelAppliedVolts);
+    return voltageDifference <= SHOOTER_TOLERANCE;
+  }
+
+  @AutoLogOutput(key = "Shooter/CloseLeft")
+  public boolean isVoltageLeftClose(double setVoltage) {
+    double voltageDifference = Math.abs(setVoltage - shooterInputs.leftFlywheelAppliedVolts);
+    return voltageDifference <= SHOOTER_TOLERANCE;
+  }
+  
 
   @Override
   public void periodic() {
@@ -167,11 +184,19 @@ public class Shooter extends SubsystemBase {
   public void setVoltage(DoubleSupplier leftVoltage, DoubleSupplier rightVoltage){
     leftMotorVoltage = leftVoltage.getAsDouble() * 10;
     rightMotorVoltage = rightVoltage.getAsDouble() * 10;
-    shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
+
+    if (DashboardValues.turboMode.get()) {
+        shooterIO.setVoltage(0, 0);
+    } else {
+        shooterIO.setVoltage(leftMotorVoltage, rightMotorVoltage);
+    }
+    
+    isVoltageLeftClose(leftVoltage.getAsDouble());
+    isVoltageRightClose(rightVoltage.getAsDouble());
   }
 
   public void setVoltage(double volts){
-    shooterIO.setVoltage(volts, volts);
+    setVoltage(() -> volts, () -> volts);
   }
 
  
@@ -201,5 +226,10 @@ public class Shooter extends SubsystemBase {
 
   public double getRightSpeedMetersPerSecond() {
     return shooterInputs.rightFlywheelVelocityRPM * wheelRadiusM * 2 * Math.PI / 60;
+  }
+
+  @AutoLogOutput(key = "Shooter/ReadyToShoot")
+  public boolean readyToShoot() {
+    return shooterInputs.rightFlywheelVelocityRPM > 5_000 && shooterInputs.leftFlywheelVelocityRPM > 5_000;
   }
 }

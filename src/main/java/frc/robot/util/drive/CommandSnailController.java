@@ -56,6 +56,10 @@ public class CommandSnailController extends CommandXboxController {
         return b();
     }
 
+    public Trigger getLefJoystucikPress() {
+        return button(9);
+    }
+
     public enum DPad {
         UP,
         RIGHT,

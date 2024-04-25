@@ -11,7 +11,6 @@ public final class DriveConstants {
   // the robot, rather the allowed maximum speeds
 
   // public static final double periodicTime = 0.02;
-  public static final double kMaxSpeedMetersPerSecond = 6;
   // public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
   //public static final double kDirectionSlewRate = 1.2; // radians per second
@@ -53,10 +52,10 @@ public final class DriveConstants {
   public static final int kRearRightTurningCanId = 6;
 
   //public static final boolean kGyroReversed = false;
-
-  public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-  public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-  public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+  public static final double kMaxSpeedMetersPerSecond = 5;
+  public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
+  public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI * 1.5;
+  public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI * 2;
 
   public static final PathConstraints kPathConstraints = new PathConstraints(
       kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared,
@@ -68,5 +67,7 @@ public final class DriveConstants {
   public static final double kTurnSpeakerD = 0;
   public static final double kTurnSpeakerTolerance = 0.05;
   public static final double kTurnSpeakerRateTolerance = 0.02;
+
+  public static final double angleThreshold = 3;
   
 }

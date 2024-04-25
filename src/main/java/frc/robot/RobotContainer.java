@@ -6,9 +6,11 @@ package frc.robot;
 
 import static frc.robot.util.drive.DriveControls.*;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -37,7 +39,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.LED.BlinkinLEDController;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.groundIntake.*;
@@ -76,9 +77,12 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+  // crete mode changers
   private LoggedDashboardNumber autoWait = new LoggedDashboardNumber("AutoWait", 0);
   private LoggedDashboardNumber rightShooterVolts = new LoggedDashboardNumber("RightShooter", ShooterConstants.SHOOTER_FULL_VOLTAGE);
   private LoggedDashboardNumber leftShooterVolts = new LoggedDashboardNumber("LeftShooter", ShooterConstants.SHOOTER_FULL_VOLTAGE);
+  private LoggedDashboardBoolean brakeModeDashboard = new LoggedDashboardBoolean("Brake Mode", true);
+  private LoggedDashboardBoolean setStartPosition = new LoggedDashboardBoolean("Set Start Position", false);
 
   // Field
   private final Field2d field;
@@ -144,6 +148,7 @@ public class RobotContainer {
 
     System.out.println("[Init] Setting up Choosers");
     AutoChooser.setupChoosers();
+    drive.updateDeadzoneChooser();
 
     System.out.println("[Init] Setting up Mechanisms");
     
@@ -181,24 +186,33 @@ public class RobotContainer {
       Logger.recordOutput("PathPlanner/ActivePath", poses.toArray(new Pose2d[0]));
     });
 
+    
 
     // Named Commands
     System.out.println("[Init] Setting up Named Commands");
     
     NamedCommands.registerCommand("Shoot", shootSpeaker().andThen(zeroPosition()));
-    NamedCommands.registerCommand("ShootSide", shootSpeakerSide().andThen(zeroPosition()));
+    NamedCommands.registerCommand("shootSide", shootSpeakerSide().andThen(zeroPosition()));
     NamedCommands.registerCommand("ShootAnywhere", shootAnywhereAuto());
 
     NamedCommands.registerCommand("Intake",
         (indexer.IntakeLoopCommand(5).deadlineWith(groundIntake.manualCommand(() -> 5))).deadlineWith(shooter.runVoltage(0)));
-    NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked(groundIntake, indexer));
+    NamedCommands.registerCommand("IntakeWhile", intakeUntilIntaked());
 
     NamedCommands.registerCommand("Zero", zeroPosition());
     NamedCommands.registerCommand("ZeroPivot", pivot.bringDownCommand());
 
     NamedCommands.registerCommand("PrepShot", rotateArmSpeaker());
+    // TODO clean these up later
     NamedCommands.registerCommand("PrepShootAnywhere", rotateArmtoSpeakerForever()
                                                               .alongWith(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)));
+    NamedCommands.registerCommand("PrepPass", shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE).alongWith(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE)).withTimeout(0.1)
+                                                      .andThen(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+                                                      .deadlineWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE)));
+    NamedCommands.registerCommand("Pass", indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)
+                                                        .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+                                                        .alongWith(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE))
+                                                        .withTimeout(0.5));
 
     System.out.println("[Init] Setting up Triggers");
     configureControls();
@@ -209,12 +223,9 @@ public class RobotContainer {
 
     // Set up feedforward characterization
     autoChooser.addOption(
-        "Drive FF Characterization",
-        new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption("driveOutShoot", DriveCommands.driveBackandShooter(drive, pivot, shooter, indexer));
-    autoChooser.addOption("drive out", DriveCommands.driveBackAuto(drive));
-    autoChooser.addOption("shoot out", DriveCommands.justShooter(pivot, shooter, indexer));
+        "Just Shoot",
+        justShootAuto()
+    );
 
     // this is defined later
     autoChooser.addOption("Custom", new InstantCommand());
@@ -224,15 +235,14 @@ public class RobotContainer {
     configureButtonBindings();
 
     LookupTuner.setupTuner();
-    SmartDashboard.putBoolean("Brake Mode", true);
-    SmartDashboard.putBoolean("Set Start Position", false);
-    SmartDashboard.putBoolean("ShootSide", false); // TODO comp fix change later
+
   }
 
+  // zero gyro
   public void reset() {
     drive.resetYaw();
   }
-
+  
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -264,6 +274,10 @@ public class RobotContainer {
     DRIVE_STOP.onTrue(new InstantCommand(() -> {
       drive.stopWithX();
       drive.resetYaw();
+    }, drive));
+
+        DRIVE_HOLD_STOP.onTrue(new InstantCommand(() -> {
+      drive.stopWithX();
     }, drive));
 
     // Drive Modes
@@ -307,11 +321,12 @@ public class RobotContainer {
     PIVOT_TO_SPEAKER.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_SUBWOOFER_ANGLE));
     PIVOT_PODIUM.whileTrue(pivot.PIDCommandForever(PivotArmConstants.PIVOT_PODIUM_ANGLE));
     PIVOT_ANYWHERE.whileTrue(pivot.PIDCommandForever(this::getAngle));
+    PIVOT_HOLD.whileTrue(pivot.PIDHoldCommand());
 
     // Intake Commands
     INTAKE_IN.whileTrue(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE));
     INTAKE_OUT.whileTrue(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE));
-    INTAKE_UNTIL_INTAKED.onTrue(intakeUntilIntaked(groundIntake, indexer));
+    INTAKE_UNTIL_INTAKED.onTrue(intakeUntilIntaked());
 
     // Ground Intake Commands
     GROUND_INTAKE_IN.whileTrue(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE));
@@ -324,11 +339,17 @@ public class RobotContainer {
     SHOOTER_UNJAM.whileTrue(
         (indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2)
             .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE))));
+    SHOOTER_PREPARE_THEN_SHOOT.whileTrue(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE));
+    SHOOTER_PREPARE_THEN_SHOOT.onFalse(new WaitCommand(1)
+                                        .deadlineWith(shooter.runVoltage(ShooterConstants.SHOOTER_FULL_VOLTAGE))
+                                        .deadlineWith(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)));
             
-
+    // add controller rumble triggers
     new Trigger(() -> (int) Timer.getMatchTime() == 30.0).onTrue(getRumbleDriver());
     new Trigger(indexer::isIntaked).onTrue(getRumbleOperator());
-
+    new Trigger(this::isAimedAtSpeaker).onTrue(getRumbleDriver());
+    
+    // add extra commands in tuning mode
     if (Constants.tuningMode) {
       SmartDashboard.putData("Pivot Sysid", 
         new SequentialCommandGroup(
@@ -342,6 +363,7 @@ public class RobotContainer {
   }
 
   public void setPivotPose3d() {
+    // log the component positions for viewing in advantage scope
     Logger.recordOutput("PivotPoseThing",
         new Pose3d(
             new Translation3d(0, 0, 0.28),
@@ -363,24 +385,36 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    // make sure choosers are configured for correct alliance poses
     AutoChooser.setupChoosers();
+    drive.updateDeadzoneChooser();
+
+    // if we are running a custom auto create one
     if (autoChooser.getSendableChooser().getSelected().equals("Custom")) {
-      return new WaitCommand(autoWait.get()).andThen(MakeAutos.makeAutoCommand(
-          drive,
-          //this::shootAnywhere,
-          this::shootSpeaker,
-          () -> {
-            return groundIntake.manualCommand(() -> GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE).alongWith(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE));
-          },
-          () -> {
-            // use a vision command later
-            return new InstantCommand();
-          },
-          this::zeroPositionWhileMoving,
-          lockOnSpeakerFull()
-        ));
+      Command custom = MakeAutos.makeAutoCommand(
+        drive,
+        this::shootAnywhere,
+        this::justShootAuto,
+        this::intakeUntilIntaked,
+        pivot::bringDownCommand,
+        indexer::isIntaked
+      );
+
+      // add auto wait if needed
+      if (autoWait.get() > 0) {
+        return new WaitCommand(autoWait.get()).andThen(custom);
+      }
+
+      return custom;
     }
-    return new WaitCommand(autoWait.get()).andThen(autoChooser.get());
+
+    // add auto wait if needed
+    if (autoWait.get() > 0) {
+      return new WaitCommand(autoWait.get()).andThen(autoChooser.get());
+    }
+
+    // get path planner auto
+    return autoChooser.get();    
   }
 
   /**
@@ -397,6 +431,9 @@ public class RobotContainer {
     );
   }
 
+  /* 
+   * Compound Commands
+   */
   public Command zeroPosition() {
     return pivot.bringDownCommand()
         .deadlineWith(
@@ -432,14 +469,6 @@ public class RobotContainer {
             DRIVE_STRAFE)); 
   }
 
-  public boolean isPointedAtSpeaker() {
-    return DriveCommands.pointedAtSpeaker(drive);
-  }
-
-  public boolean isAimedAtSpeaker() {
-    return DriveCommands.pointedAtSpeaker(drive) && pivot.atSetpoint();
-  }
-
   public Command shootAnywhere() {
     return (new WaitUntilCommand(this::isPointedAtSpeaker).andThen(shootNote()))
               .deadlineWith(lockOnSpeakerFull());
@@ -452,13 +481,17 @@ public class RobotContainer {
               .deadlineWith(rotateArmtoSpeakerForever());
   }
 
+  public Command justShootAuto() {
+    return shootSpeakerSide();
+  }
+
   public Command prepShooter() {
     return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get);
   }
 
   public Command shootSpeaker() {
     return (
-      rotateArmSpeaker().deadlineWith(prepShooter())
+      rotateArmSpeaker().deadlineWith(shooter.runVoltage(0))
         .andThen(shootNote().deadlineWith(rotateArmSpeaker().repeatedly())));
   }
 
@@ -501,23 +534,19 @@ public class RobotContainer {
   }
 
   public Command shootNote() {
-    return shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get)
+    return (indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2)
+    .alongWith(shooter.runVoltage(ShooterConstants.SHOOTER_UNJAM_VOLTAGE))).withTimeout(0.1).andThen(shooter.runVoltageBoth(rightShooterVolts::get, leftShooterVolts::get) // run shooter full speed
         .alongWith(
             new SequentialCommandGroup(
-              indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 2).withTimeout(0.1),
-              new WaitCommand(0.25),
-              indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)
+              indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE / 100).withTimeout(1.2), // run intake back for 0.1 seconds
+              /*new WaitCommand(0.8).andThen */(indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)) // run intake in to shoot
             ))
-        .withTimeout(1).alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();}));
+        .withTimeout(1.9));//.alongWith(new InstantCommand(() -> {NoteVisualizer.shoot().schedule();})); // run the visualizer
   }
 
-  /* // Brings the note forward and back for 0.5 seconds each to center it
-  public Command intakeShimmyCommand() {
-    return (indexer.manualCommand(IndexerConstants.INDEXER_IN_VOLTAGE)
-      .alongWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE)))
-      .withTimeout(ShooterConstants.SHOOTER_SPINUP_TIME)
-      .andThen(indexer.manualCommand(IndexerConstants.INDEXER_OUT_VOLTAGE).withTimeout(ShooterConstants.SHOOTER_SPINUP_TIME));
-  } */
+  public Command intakeUntilIntaked(){
+    return indexer.IntakeLoopCommand(IndexerConstants.INDEXER_IN_VOLTAGE_WEAK).deadlineWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE)).deadlineWith(shooter.runVoltage(0));
+  }
 
   // Returns the estimated transformation over the next tick (The change in
   // position)
@@ -533,26 +562,35 @@ public class RobotContainer {
 
   // Returns the distance between the robot's next estimated position and the
   // speaker position
+  @AutoLogOutput(key = "DistanceAway")
   private double getEstimatedDistance() {
     Transform2d targetTransform = getEstimatedPosition().minus(FieldConstants.speakerPosition());
-    Logger.recordOutput("DistanceAway", targetTransform.getTranslation().getNorm());
-
     return targetTransform.getTranslation().getNorm();
   }
 
-  // Gets RPM based on distance from speaker, taking into account the actual
-  // shooting position
-  /* private double getRPM() {
-    return Lookup.getRPM(getEstimatedDistance());
-  } */
+  @AutoLogOutput(key = "PointedAtSpeaker")
+  public boolean isPointedAtSpeaker() {
+    return DriveCommands.pointedAtSpeaker(drive);
+  }
+
+  @AutoLogOutput(key = "AimedAtSpeaker")
+  public boolean isAimedAtSpeaker() {
+    return DriveCommands.pointedAtSpeaker(drive) && pivot.atSetpoint();
+  }
+
 
   // Gets angle based on distance from speaker, taking into account the actual
   // shooting position
+  @AutoLogOutput(key = "ShootAnywhereAngle")
   private double getAngle() {
     double angle = Lookup.getAngle(getEstimatedDistance());
     Logger.recordOutput("ShootAnywhereAngle", angle);
     return angle;
   }
+
+  /* 
+   * Other Periodic Methods
+   */
 
   public void LEDPeriodic() {
     BlinkinLEDController.isEndgame = DriverStation.getMatchTime() <= 30;
@@ -565,23 +603,22 @@ public class RobotContainer {
 
   public void disabledPeriodic() {
     LEDPeriodic();
-    if (SmartDashboard.getBoolean("Brake Mode", true) != brakeMode) {
+    if (brakeModeDashboard.get() != brakeMode) {
       brakeMode = !brakeMode;
       pivot.setBrake(brakeMode);
     }
 
-    if (SmartDashboard.getBoolean("Set Start Position", false)) {
+    if (setStartPosition.get()) {
       AutoChooser.setupChoosers();
+      drive.updateDeadzoneChooser();
       resetRobotPose(AutoChooser.getStartPose());
-      SmartDashboard.putBoolean("Set Start Position", false);
+      setStartPosition.set(false);
     }
 
     setPivotPose3d();
     field.setRobotPose(drive.getPose());
-  }
-
-  public Command intakeUntilIntaked(GroundIntake groundIntake, Indexer indexer){
-    return indexer.IntakeLoopCommand(IndexerConstants.INDEXER_IN_VOLTAGE_WEAK).deadlineWith(groundIntake.manualCommand(GroundIntakeConstants.GROUND_INTAKE_IN_VOLTAGE)).deadlineWith(shooter.runVoltage(0));
+    Logger.recordOutput("DriveAimed", DriveCommands.pointedAtSpeaker(drive));
+    Logger.recordOutput("PivotAimed", pivot.atSetpoint());
   }
   
 }

@@ -22,7 +22,8 @@ public class GroundIntakeConstants {
       public static final double kGroundIntakeD = 0.0;
     }
 
-    public static final double GROUND_INTAKE_IN_VOLTAGE = 9;
+    public static final double GROUND_INTAKE_IN_VOLTAGE = 9.2;
     public static final double GROUND_INTAKE_WEAK_IN_VOLTAGE = 4.5;
     public static final double GROUND_INTAKE_OUT_VOLTAGE = -9;
+    public static final double GROUND_INTAKE_TOLERANCE = 1;
   }

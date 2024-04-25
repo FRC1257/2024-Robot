@@ -10,6 +10,7 @@ import static frc.robot.subsystems.vision.VisionConstants.cam3RobotToCam;
 import static frc.robot.subsystems.vision.VisionConstants.kTagLayout;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -17,7 +18,9 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionIOPhoton implements VisionIO {
 
@@ -31,6 +34,8 @@ public class VisionIOPhoton implements VisionIO {
     private final PhotonPoseEstimator camera3Estimator;
 
     private Pose2d lastEstimate = new Pose2d();
+
+    LoggedDashboardBoolean killSideCams = new LoggedDashboardBoolean("Vision/KillSideCams", false);
 
     public VisionIOPhoton() {
         PortForwarder.add(5800, "photonvision.local", 5800);
@@ -52,6 +57,8 @@ public class VisionIOPhoton implements VisionIO {
         camera3Estimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera3,
                 cam3RobotToCam);
         camera3Estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+        SmartDashboard.putBoolean("KillSideCams", false);
     }
 
     @Override
@@ -67,11 +74,25 @@ public class VisionIOPhoton implements VisionIO {
         inputs.timestamp = estimateLatestTimestamp(results);
 
         if (hasEstimate(results)) {
+            // inputs.results = results;
             inputs.estimate = getEstimatesArray(results, photonEstimators);
-            inputs.targets3d = getTargetsPositions(results);
-            inputs.targets = Pose3dToPose2d(inputs.targets3d);
-            inputs.tagCount = tagCounts(results);
             inputs.hasEstimate = true;
+
+            int[][] cameraTargets = getCameraTargets(results);
+            inputs.camera1Targets = cameraTargets[0];
+
+            if (killSideCams.get()) {
+                inputs.camera2Targets = new int[0];
+                inputs.camera3Targets = new int[0];
+            } else {
+                inputs.camera2Targets = cameraTargets[1];
+                inputs.camera3Targets = cameraTargets[2];
+            }
+
+            Pose3d[] tags = getTargetsPositions(results);
+            Logger.recordOutput("Vision/Targets3D", tags);
+            Logger.recordOutput("Vision/Targets", Pose3dToPose2d(tags));
+            Logger.recordOutput("Vision/TagCounts", tagCounts(results));
         } else {
             inputs.timestamp = inputs.timestamp;
             inputs.hasEstimate = false;
@@ -84,6 +105,14 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     private PhotonPipelineResult[] getAprilTagResults() {
+        if (killSideCams.get()) {
+            PhotonPipelineResult cam1_result = getLatestResult(camera1);
+
+            printStuff("cam1", cam1_result);
+
+            return new PhotonPipelineResult[] { cam1_result };
+        }
+
         PhotonPipelineResult cam1_result = getLatestResult(camera1);
         PhotonPipelineResult cam2_result = getLatestResult(camera2);
         PhotonPipelineResult cam3_result = getLatestResult(camera3);
@@ -106,6 +135,12 @@ public class VisionIOPhoton implements VisionIO {
     }
 
     private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
+        if (killSideCams.get()) {
+            camera1Estimator.setReferencePose(currentEstimate);
+
+            return new PhotonPoseEstimator[] { camera1Estimator };
+        }
+
         camera1Estimator.setReferencePose(currentEstimate);
         camera2Estimator.setReferencePose(currentEstimate);
         camera3Estimator.setReferencePose(currentEstimate);
@@ -115,20 +150,20 @@ public class VisionIOPhoton implements VisionIO {
 
     @Override
     public boolean goodResult(PhotonPipelineResult result) {
-        return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD/*
-                                                                                                      * && kTagLayout.
-                                                                                                      * getTagPose(
-                                                                                                      * result.
-                                                                                                      * getBestTarget().
-                                                                                                      * getFiducialId())
-                                                                                                      * .get().toPose2d(
-                                                                                                      * ).getTranslation
-                                                                                                      * ()
-                                                                                                      * .getDistance(
-                                                                                                      * lastEstimate.
-                                                                                                      * getTranslation()
-                                                                                                      * ) < MAX_DISTANCE
-                                                                                                      */;
+        return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD
+        /*
+         * && kTagLayout.
+         * getTagPose(
+         * result.
+         * getBestTarget().
+         * getFiducialId())
+         * .get().toPose2d(
+         * ).getTranslation
+         * ()
+         * .getDistance(
+         * lastEstimate.
+         * getTranslation()
+         * ) < MAX_DISTANCE
+         */;
     }
-
 }
