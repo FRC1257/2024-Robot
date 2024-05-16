@@ -212,20 +212,6 @@ public class GyroIOReal implements GyroIO {
         return navx.isConnected();
     }
 
-    /**
-     * Displays the angles on {@code SmartDashboard}.
-     */
-    public void outputValues() {
-        SmartDashboard.putNumber("/Gyro/Yaw Angle", getYawAngle());
-        SmartDashboard.putNumber("/Gyro/Roll Angle", getRollAngle());
-        SmartDashboard.putNumber("/Gyro/Pitch Angle", getPitchAngle());
-
-        SmartDashboard.putNumber("Robot Angle", getRobotAngle());
-        SmartDashboard.putNumber("Robot Angle Vel", getRobotAngleVelocity());
-        // SmartDashboard.putNumber("Tilt Angle", getTiltAngle());
-        SmartDashboard.putBoolean("Gyro Connected", navXConnected());
-    }
-
     public static GyroIOReal getInstance() {
         if (instance == null) {
             instance = new GyroIOReal();

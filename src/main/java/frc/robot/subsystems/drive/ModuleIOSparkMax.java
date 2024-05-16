@@ -285,6 +285,4 @@ public class ModuleIOSparkMax implements ModuleIO {
     driveSparkMax.setSmartCurrentLimit(limit);
   }
   
-
-
 }

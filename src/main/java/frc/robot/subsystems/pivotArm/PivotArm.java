@@ -1,5 +1,8 @@
 package frc.robot.subsystems.pivotArm;
 
+import frc.robot.subsystems.pivotArm.PivotArmConstants;
+import frc.robot.util.drive.DashboardValues;
+
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -9,6 +12,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -134,6 +138,12 @@ public class PivotArm extends SubsystemBase {
         io.setBrake(brake);
     }
 
+    @AutoLogOutput(key = "PivotArm/Close")
+    public boolean isVoltageClose(double setVoltage) {
+        double voltageDifference = Math.abs(setVoltage - inputs.appliedVolts);
+        return voltageDifference <= PivotArmConstants.PIVOT_ARM_TOLERANCE;
+    }
+
     public void setVoltage(double motorVolts) {
         // limit the arm if its past the limit
         if (io.getAngle() > PivotArmConstants.PIVOT_ARM_MAX_ANGLE && motorVolts > 0) {
@@ -142,11 +152,13 @@ public class PivotArm extends SubsystemBase {
             motorVolts = 0;
         }
 
-        if(SmartDashboard.getBoolean("Turbo Mode", false)){
+        if(DashboardValues.turboMode.get()) {
             io.setVoltage(0);
         } else {
             io.setVoltage(motorVolts);
         }
+        
+        isVoltageClose(motorVolts);
     }
 
     public void move(double speed) {
@@ -325,4 +337,3 @@ public class PivotArm extends SubsystemBase {
     }
 
 }
-
